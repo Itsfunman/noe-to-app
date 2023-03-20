@@ -110,8 +110,8 @@ public class RegisterFrame extends JFrame {
                         }
                     }
 
-                    // DOES NOT WORK
-                    if (p1 != p2){
+                    // Is fixed
+                    if (!p1.equals(p2)){
                         System.out.println(p1 + " " + p2);
                         throw new IllegalArgumentException("Make sure you use the correct password!");
 
