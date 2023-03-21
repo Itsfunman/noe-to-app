@@ -117,7 +117,8 @@ public class RegisterFrame extends JFrame {
 
                     }
 
-                    LoginHandler.addUser(nameField.getText(), p1);
+                    User u = new User(nameField.getText(), p1);
+
                     returnToLogin();
 
                 } catch (Exception ex){

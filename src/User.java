@@ -1,7 +1,13 @@
 package src;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class User {
 
+    //Currently the file only saves name and password, this can be changed by modifiying the FileReader and FileWriter
     private String name;
     private String password;
     private boolean hasAdminRights;
@@ -13,6 +19,32 @@ public class User {
 
         LoginHandler.addUser(this.name, this.password);
 
+        addToFile(this.name, this.password);
+
+
+    }
+
+    private void addToFile(String name, String password) {
+        String filePath = "data/testData.txt";
+        try (FileReader fileReader = new FileReader(filePath);
+             BufferedReader bufferedReader = new BufferedReader(fileReader);
+             FileWriter writer = new FileWriter(filePath, true)) {
+
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                String[] parts = line.split(",");
+                if (parts[0].equals(name)) {
+                    // user already exists in file, so return without adding
+                    return;
+                }
+                line = bufferedReader.readLine();
+            }
+
+            // user does not exist in file, so add to file
+            writer.write(name + "," + password + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getName() {
