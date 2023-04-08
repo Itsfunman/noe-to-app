@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class User {
 
-    //Currently the file only saves name and password, this can be changed by modifiying the FileReader and FileWriter
+    //Currently, the file only saves name and password, this can be changed by modifying the FileReader and FileWriter
     private String name;
     private String password;
     private boolean hasAdminRights;

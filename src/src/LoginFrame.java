@@ -24,6 +24,8 @@ public class LoginFrame extends JFrame {
         registerButtonInit();
         addLogo();
 
+
+
     }
 
     private void addLogo(){
@@ -92,19 +94,15 @@ public class LoginFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e){
                 if (checkInput()){
-                    System.out.println("Valid input!");
-                    setVisible(false);
 
-                    //------------------------------------
-                    MainFrame frame = new MainFrame("NOE-TO");
+                    confirmInput();
 
-                    //....................................
                 } else {
                     System.out.println("Invalid input!");
                 }
             }
         });
-        checkInput();
+
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -130,7 +128,7 @@ public class LoginFrame extends JFrame {
 
             }
         });
-        checkInput();
+
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -160,4 +158,15 @@ public class LoginFrame extends JFrame {
         return false;
     }
 
+    private void confirmInput(){
+        System.out.println("Valid input!");
+        setVisible(false);
+
+        //------------------------------------
+        MainFrame frame = new MainFrame("NOE-TO");
+
+        //....................................
+
+
+    }
 }
