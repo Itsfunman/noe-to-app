@@ -3,8 +3,6 @@ package src;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 
 public class LoginFrame extends JFrame {
 
@@ -163,7 +161,7 @@ public class LoginFrame extends JFrame {
         setVisible(false);
 
         //------------------------------------
-        MainFrame frame = new MainFrame("NOE-TO");
+        CapacityFrame frame = new CapacityFrame("NOE-TO");
 
         //....................................
 
