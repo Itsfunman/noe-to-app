@@ -9,20 +9,39 @@ import java.awt.event.ComponentEvent;
 public class CapacityFrame extends JFrame {
 
     private CapacityTable capacityTable;
+    private Toolbar toolbar;
     //private JButton testButton = new JButton("Test");
 
     public CapacityFrame(String title) {
         super(title);
 
         setSize(800, 500);
-        setResizable(true);
+        setResizable(false);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
 
+        InitToolbar();
         InitCapacityTable();
 
+    }
+
+    private void InitToolbar() {
+        toolbar = new Toolbar(this);
+        toolbar.setVisible(true);
+        toolbar.setLocation(0,0);
+
+        add(toolbar);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+
+                toolbar.setSize(getWidth(), 30);
+
+            }
+        });
     }
 
     private void InitCapacityTable() {
