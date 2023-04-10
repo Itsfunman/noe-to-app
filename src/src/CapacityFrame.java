@@ -8,11 +8,7 @@ import java.awt.event.ComponentEvent;
 //Gets originally initialized in the LoginFrame
 public class CapacityFrame extends JFrame {
 
-    private JPanel capacityView = new JPanel();
-
-
-    private CapacityTable capacityTable = new CapacityTable();
-
+    private CapacityTable capacityTable;
     //private JButton testButton = new JButton("Test");
 
     public CapacityFrame(String title) {
@@ -26,33 +22,23 @@ public class CapacityFrame extends JFrame {
         setLayout(null);
 
         InitCapacityTable();
+
     }
 
-    private void InitCapacityTable(){
-
-        capacityView.setSize((getWidth()/4) * 3, (getHeight()/4) * 3);
-        capacityView.setVisible(true);
-
-        add(capacityView);
-
-        capacityTable.setSize((getWidth()/4) * 3, (getHeight()/4) * 3);
+    private void InitCapacityTable() {
+        capacityTable = new CapacityTable();
+        capacityTable.setLocation(0, 30);
         capacityTable.setVisible(true);
+        add(capacityTable);
 
+        // Set the width of the JScrollPane to 3/4 of the window width and the height to equal the combined height of
+        //the rows times 1.5 (don´t ask why, I don´t know
+        double tableWidth = getWidth() * 0.75;
+        double tableHeight = capacityTable.getTable().getRowHeight() * (capacityTable.getTable().getRowCount() + 1.5);
+        capacityTable.setSize((int) tableWidth, (int) tableHeight);
 
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int x = 0;
-                int y = 30;
-                capacityView.setLocation(x,y);
-                capacityView.setSize((getWidth()/4) * 3, (getHeight()/4) * 3);
-                capacityTable.setLocation(x,y - 30);
-                capacityTable.setSize((getWidth()/4) * 3, (getHeight()/4) * 3);
-
-            }
-        });
-        capacityView.add(capacityTable);
     }
+
 
     /*
     private void InitTestButton(){
