@@ -9,6 +9,8 @@ public class Toolbar extends JToolBar {
 
     private JButton goCapacityButton;
     private JButton goOccupancyButton;
+
+    private JButton goHotelEditButton;
     private JFrame frame;
 
     public Toolbar(JFrame frame) {
@@ -23,7 +25,28 @@ public class Toolbar extends JToolBar {
 
         InitGoCapacityButton();
         InitGoOccupancyButton();
+        InitGoHotelEditButton();
 
+    }
+
+    private void InitGoHotelEditButton() {
+        goHotelEditButton = new JButton("EDIT");
+        goHotelEditButton.setVisible(true);
+
+        add(goHotelEditButton);
+
+        goHotelEditButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!(frame instanceof CapacityFrame)){
+                    if(frame instanceof JFrame){
+                        frame.dispose();
+                    }
+                    frame = new HotelEdit("NOE-TO");
+                }
+
+            }
+        });
     }
 
     private void InitGoCapacityButton(){
