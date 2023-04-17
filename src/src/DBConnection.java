@@ -23,7 +23,7 @@ public class DBConnection {
                 //System.out.println(con.getMetaData());
                 System.out.println("OK");
             } else {
-                System.out.println("Keine Verbindnug m�glich");
+                System.out.println("Keine Verbindnug möglich");
             }
 
         } catch (SQLException e) {

@@ -38,12 +38,10 @@ public class Toolbar extends JToolBar {
         goHotelEditButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!(frame instanceof CapacityFrame)){
-                    if(frame instanceof JFrame){
-                        frame.dispose();
-                    }
-                    frame = new HotelEdit("NOE-TO");
+                if(frame instanceof JFrame){
+                    frame.dispose();
                 }
+                frame = new HotelEditFrame("NOE-TO");
 
             }
         });
@@ -59,12 +57,10 @@ public class Toolbar extends JToolBar {
         goCapacityButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!(frame instanceof CapacityFrame)){
-                    if(frame instanceof JFrame){
-                        frame.dispose();
-                    }
-                    frame = new CapacityFrame("NOE-TO");
+                if(frame instanceof JFrame){
+                    frame.dispose();
                 }
+                frame = new CapacityFrame("NOE-TO");
 
             }
         });
@@ -81,12 +77,10 @@ public class Toolbar extends JToolBar {
         goOccupancyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!(frame instanceof OccupancyFrame)){
-                    if(frame instanceof JFrame){
-                        frame.dispose();
-                    }
-                    frame = new OccupancyFrame("NOE-TO");
+                if(frame instanceof JFrame){
+                    frame.dispose();
                 }
+                frame = new OccupancyFrame("NOE-TO");
             }
         });
     }
