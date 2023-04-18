@@ -218,7 +218,19 @@ public class HotelEditFrame extends JFrame{
 
                 String[] hotelData = st.split(",");
                 Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3]);
-                Hotel.hotels.add(hotel);
+
+                //Must be changed in the future to check for more factors
+                boolean hotelExists = false;
+                for (Hotel h : Hotel.hotels){
+                    if (h.getHotelName().equals(hotel.getHotelName())){
+                        hotelExists = true;
+                        break;
+                    }
+                }
+
+                if (!hotelExists){
+                    Hotel.hotels.add(hotel);
+                }
 
                 row[0] = hotelData[0];
                 row[1] = hotelData[1];
