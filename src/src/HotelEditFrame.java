@@ -13,8 +13,6 @@ import java.util.List;
 
 public class HotelEditFrame extends JFrame{
 
-    private static boolean dataLoaded = false;
-
     private String [] labelNames = {"Name:", "Kategorie:", "Zimmer:", "Betten:"};
 
     private JTextField[] textFields = new JTextField[4];
@@ -46,13 +44,7 @@ public class HotelEditFrame extends JFrame{
         InitTable();
 
         InitButtons();
-
-        if(!dataLoaded){
-
-            loadHotels();
-            dataLoaded = true;
-
-        }
+        loadHotels();
 
 
     }
@@ -137,9 +129,9 @@ public class HotelEditFrame extends JFrame{
                 textFields[2].setText("");
                 textFields[3].setText("");
 
-                System.out.println(Hotel.hotels.size());
             }
         });
+
         addButton.setBounds(60,180,100,20);
         add(addButton);
     }
@@ -166,10 +158,9 @@ public class HotelEditFrame extends JFrame{
 
                 Hotel.hotels.remove(selectedRow);
 
-                System.out.println(Hotel.hotels.size());
-
             }
         });
+
         deleteButton.setBounds(60,210,100,20);
         add(deleteButton);
     }
@@ -209,10 +200,9 @@ public class HotelEditFrame extends JFrame{
                     }
                 }
 
-                System.out.println(Hotel.hotels.size());
-
             }
         });
+
         updateButton.setBounds(60,240,100,20);
         add(updateButton);
 

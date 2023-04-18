@@ -2,34 +2,107 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class CapacityTable extends JScrollPane {
 
     private JTable table;
     private TableModel tableModel;
+    private int totalCount;
 
     private String [] columnNames = {"Kategorie", "Betriebe", "Zimmer", "Betten", "Ø Zimmer", "Ø Betten"};
     //Enter hotel information here
-    Object[][] data = {
-            {"*****", "row1col2", "row1col3", "row1col4", "row1col5", "row1col6"},
-            {"****", "row2col2", "row2col3", "row2col4", "row2col5", "row2col6"},
-            {"***", "row3col2", "row3col3", "row3col4", "row3col5", "row3col6"},
-            {"**", "row4col2", "row4col3", "row4col4", "row4col5", "row4col6"},
-            {"*", "row5col2", "row5col3", "row5col4", "row5col5", "row5col6"},
-            {"Total", "row6col2", "row6col3", "row6col4", "row6col5", "row6col6"}
-    };
+    Object[][] data = new Object[6][6];
 
 
     public CapacityTable() {
 
-        tableModel = new TableModel(data, columnNames);
-        table = new JTable(tableModel);
+        refillData();
 
         setLayout(new ScrollPaneLayout());
 
         setViewportView(table);
 
     }
+
+    private void refillData(){
+        // clear the data array
+        for (int i = 1; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                data[i][j] = 0;
+            }
+        }
+
+        fillData();
+
+        tableModel = new TableModel(data, columnNames);
+        table = new JTable(tableModel);
+
+    }
+    private void fillData(){
+
+        // fill the data array with new data
+        for (int i = 0; i < data.length - 1; i++){
+            data[i][0] = 5 - i;
+
+            int [] betriebInfo = getBetriebInfo(5 - i);
+            data[i][1] = betriebInfo[0];
+            data[i][2] = betriebInfo[1];
+            data[i][3] = betriebInfo[2];
+            data[i][4] = betriebInfo[3];
+            data[i][5] = betriebInfo[4];
+        }
+
+        data[5][0] = "Total";
+
+        for(int i = 1; i < 4; i++){
+            int count = 0;
+            for (int k = 0; k < data.length - 1; k++){
+                count += (Integer) data[k][i];
+                totalCount++;
+            }
+            data[5][i] = count;
+        }
+
+        if((Integer) data[5][1] > 0){
+            data[5][4] = (Integer) data[5][2] / (Integer) data[5][1];
+            data[5][5] = (Integer) data[5][3] / (Integer) data[5][1];
+        }
+
+
+    }
+
+    private int [] getBetriebInfo(int kat){
+        int [] betriebInfo = new int[5];
+        for (int i = 0; i < betriebInfo.length; i++){
+            betriebInfo[i] = 0;
+        }
+
+        Hotel.hotels.clear();
+        loadHotels();
+
+        for (int i = 0; i < Hotel.hotels.size(); i++){
+            if (kat == Hotel.hotels.get(i).getStars()){
+                Hotel hotel = Hotel.hotels.get(i);
+                betriebInfo[0]++;
+                betriebInfo[1] += hotel.getRoomNumber();
+                betriebInfo[2] += hotel.getBedNumber();
+            }
+        }
+
+        if (betriebInfo[0] > 0){
+            betriebInfo[3] = (Integer) betriebInfo[1] / betriebInfo[0];
+            betriebInfo[4] = (Integer) betriebInfo[2] / betriebInfo[0];
+        }
+
+        return betriebInfo;
+    }
+
+
+
 
     public JTable getTable() {
         return table;
@@ -45,5 +118,26 @@ public class CapacityTable extends JScrollPane {
 
     public void setTableModel(TableModel tableModel) {
         this.tableModel = tableModel;
+    }
+
+    private void loadHotels() {
+        try {
+            File file = new File("data/hotelData.txt");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            String st;
+            while ((st = br.readLine()) != null) {
+
+                String[] hotelData = st.split(",");
+                Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3]);
+                Hotel.hotels.add(hotel);
+
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
