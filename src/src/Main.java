@@ -3,7 +3,6 @@ package src;
 import javax.swing.*;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -33,9 +32,11 @@ public class Main {
     }
 
     public static void loadData() throws IOException {
-        FileReader fileReader = new FileReader("data/testData.txt");
+
+        FileReader fileReader = new FileReader("data/loginData.txt");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String line = bufferedReader.readLine();
+
         while (line != null){
             String [] parts = line.split(",");
             User u = new User(parts[0], parts[1]);

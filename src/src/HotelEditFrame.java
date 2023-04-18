@@ -6,12 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
 
 public class HotelEditFrame extends JFrame{
 
-    private String [] labelNames = {"Kategorie:", "Zimmer:", "Betten:"};
+    private static boolean dataLoaded = false;
 
-    private JTextField[] textFields = new JTextField[3];
+    private String [] labelNames = {"Name:", "Kategorie:", "Zimmer:", "Betten:"};
+
+    private JTextField[] textFields = new JTextField[4];
 
     private  JToolBar toolbar;
 
@@ -25,8 +31,7 @@ public class HotelEditFrame extends JFrame{
 
     DefaultTableModel model;
 
-    public HotelEditFrame(String windowName)
-    {
+    public HotelEditFrame(String windowName) throws IOException {
         super(windowName);
 
         setSize(800,500);
@@ -36,12 +41,19 @@ public class HotelEditFrame extends JFrame{
         setLayout(null);
         setLocationRelativeTo(null);
 
-
         InitToolbar();
         InitEntryFields();
         InitTable();
 
         InitButtons();
+
+        if(!dataLoaded){
+
+            loadHotels();
+            dataLoaded = true;
+
+        }
+
 
     }
 
@@ -64,7 +76,7 @@ public class HotelEditFrame extends JFrame{
 
     private void InitEntryFields(){
 
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < labelNames.length; i++){
             JLabel lblName = new JLabel(labelNames[i]);
             lblName.setBounds(21, 83 + (22 * i) , 100, 20);
             add(lblName);
@@ -81,7 +93,7 @@ public class HotelEditFrame extends JFrame{
 
         table = new JTable();
         model = new DefaultTableModel();
-        Object[] column = {"Kategorie","Zimmer","Betten"};
+        Object[] column = {"Name", "Kategorie","Zimmer","Betten"};
         model.setColumnIdentifiers(column);
         table.setModel(model);
 
@@ -89,7 +101,7 @@ public class HotelEditFrame extends JFrame{
         scrollPane.setBounds(240,50,300,300);
         add(scrollPane);
 
-        row = new String[3];
+        row = new String[4];
 
     }
 
@@ -113,11 +125,19 @@ public class HotelEditFrame extends JFrame{
                 row[0] = textFields[0].getText();
                 row[1] = textFields[1].getText();
                 row[2] = textFields[2].getText();
+                row[3] = textFields[3].getText();
                 model.addRow(row);
+
+                Hotel hotel = new Hotel(row[0], row[1], row[2], row[3]);
+                Hotel.hotels.add(hotel);
+                hotel.addToFile(hotel);
 
                 textFields[0].setText("");
                 textFields[1].setText("");
                 textFields[2].setText("");
+                textFields[3].setText("");
+
+                System.out.println(Hotel.hotels.size());
             }
         });
         addButton.setBounds(60,180,100,20);
@@ -131,11 +151,29 @@ public class HotelEditFrame extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 model.removeRow(selectedRow);
+
+                // Remove the hotel from the hotelData.txt file
+                try {
+                    File file = new File("data/hotelData.txt");
+                    List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+                    Hotel hotel = (Hotel) Hotel.hotels.get(selectedRow);
+                    String lineToRemove = hotel.toStringSimple();
+                    lines.remove(lineToRemove);
+                    Files.write(file.toPath(), lines, StandardCharsets.UTF_8);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                Hotel.hotels.remove(selectedRow);
+
+                System.out.println(Hotel.hotels.size());
+
             }
         });
         deleteButton.setBounds(60,210,100,20);
         add(deleteButton);
     }
+
 
     private void InitUpdateButton(){
         updateButton = new JButton("Update");
@@ -143,12 +181,68 @@ public class HotelEditFrame extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
+
                 model.setValueAt(textFields[0].getText(),selectedRow,0);
                 model.setValueAt(textFields[1].getText(),selectedRow,1);
                 model.setValueAt(textFields[2].getText(),selectedRow,2);
+                model.setValueAt(textFields[3].getText(),selectedRow,3);
+
+                Hotel hotel = (Hotel) Hotel.hotels.get(selectedRow);
+                hotel.setHotelName((textFields[0].getText()));
+                hotel.setStars(Integer.parseInt((textFields[1].getText())));
+                hotel.setRoomNumber(Integer.parseInt((textFields[2].getText())));
+                hotel.setBedNumber(Integer.parseInt((textFields[3].getText())));
+
+                // Update the hotel information in the hotelData.txt file
+                boolean caughtException = false;
+                while (!caughtException){
+                    try {
+                        File file = new File("data/hotelData.txt");
+                        List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+                        String lineToUpdate = hotel.toStringSimple();
+                        String newLine = String.format("%s,%d,%d,%d", hotel.getHotelName(), hotel.getStars(), hotel.getRoomNumber(), hotel.getBedNumber());
+                        lines.set(selectedRow, newLine);
+                        Files.write(file.toPath(), lines, StandardCharsets.UTF_8);
+                        caughtException = true;
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+                System.out.println(Hotel.hotels.size());
+
             }
         });
         updateButton.setBounds(60,240,100,20);
         add(updateButton);
+
     }
+
+    private void loadHotels() {
+        try {
+            File file = new File("data/hotelData.txt");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            String st;
+            while ((st = br.readLine()) != null) {
+
+                String[] hotelData = st.split(",");
+                Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3]);
+                Hotel.hotels.add(hotel);
+
+                row[0] = hotelData[0];
+                row[1] = hotelData[1];
+                row[2] = hotelData[2];
+                row[3] = hotelData[3];
+                model.addRow(row);
+
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 }

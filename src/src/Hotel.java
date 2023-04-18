@@ -1,12 +1,16 @@
 package src;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
 public class Hotel {
 
-    public static ArrayList hotels = new ArrayList();
+    public static ArrayList <Hotel> hotels = new ArrayList();
 
     //hotelID counter:
     private static int COUNTER = 0;
@@ -22,15 +26,18 @@ public class Hotel {
 
     private HashMap <String, Boolean> extras;
 
-    public Hotel(String hotelName, int roomNumber, int bedNumber, int stars){
+    public Hotel(String hotelName, String stars, String roomNumber, String bedNumber){
         this.hotelID = COUNTER++;
         this.hotelName = hotelName;
-        this.stars = stars;
-        this.roomNumber = roomNumber;
-        this.bedNumber = bedNumber;
+        this.stars = Integer.parseInt(stars);
+        this.roomNumber = Integer.parseInt(roomNumber);
+        this.bedNumber = Integer.parseInt(bedNumber);
 
-        hotels.add(this);
         //Add rest with try catch blocks;
+    }
+
+    public String toStringSimple() {
+        return hotelName + "," + stars + "," + roomNumber + "," + bedNumber;
     }
 
     public int getHotelID() {
@@ -95,5 +102,24 @@ public class Hotel {
 
     public void setExtras(HashMap<String, Boolean> extras) {
         this.extras = extras;
+    }
+
+    public void addToFile(Hotel hotel) {
+        String filePath = "data/hotelData.txt";
+        try (FileReader fileReader = new FileReader(filePath);
+             BufferedReader bufferedReader = new BufferedReader(fileReader);
+             FileWriter writer = new FileWriter(filePath, true)) {
+
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                String[] parts = line.split(",");
+                line = bufferedReader.readLine();
+            }
+
+            // user does not exist in file, so add to file
+            writer.write(hotel.hotelName + "," + hotel.stars + "," + hotel.roomNumber + "," + hotel.bedNumber + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
