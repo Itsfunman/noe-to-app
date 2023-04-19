@@ -46,7 +46,7 @@ public class CapacityFrame extends JFrame {
 
     private void InitCapacityTable() {
         capacityTable = new CapacityTable();
-        capacityTable.setLocation(0, 30);
+        capacityTable.setLocation(100, 60);
         capacityTable.setVisible(true);
         add(capacityTable);
 
