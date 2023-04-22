@@ -1,24 +1,29 @@
 package src;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.io.*;
+import java.util.List;
 import java.util.Objects;
 
 /*
 UP NEXT:
  - add a neat way to edit months
  - find a way to safe and load transactional data
- - add hotelID to hotelData
  */
+
 public class OccupancyEditFrame extends JFrame {
 
     private String currentHotel = Hotel.hotels.get(0).getHotelName();
-    private int currentYear = 0;
-    private String currentMode = "BedOccupancy";
+    private int currentYear;
+    private int currentMode;
 
     private JToolBar toolbar;
 
@@ -35,8 +40,9 @@ public class OccupancyEditFrame extends JFrame {
 
     private JTextField [] monthInput;
 
-    private JButton goButton;
     private JButton updateButton;
+
+    private int editedRowIndex;
 
     public OccupancyEditFrame(String title){
         super(title);
@@ -49,7 +55,7 @@ public class OccupancyEditFrame extends JFrame {
 
         InitToolbar();
         InitSelector();
-        InitButtons();
+        InitUpdateButton();
     }
 
     private void InitToolbar(){
@@ -77,11 +83,6 @@ public class OccupancyEditFrame extends JFrame {
         InitModeChoice();
         InitLabels();
         InitMonthChoice();
-    }
-
-    private void InitButtons(){
-        InitGoButton();
-        InitUpdateButton();
     }
 
     private void InitLabels(){
@@ -122,8 +123,7 @@ public class OccupancyEditFrame extends JFrame {
 
         hotelChoice.addActionListener(e -> {
             setCurrentHotel(Objects.requireNonNull(hotelChoice.getSelectedItem()).toString());
-            InitSelector();
-            InitButtons();
+            InitMonthChoice();
         });
 
         hotelChoice.addComponentListener(new ComponentAdapter() {
@@ -152,8 +152,7 @@ public class OccupancyEditFrame extends JFrame {
 
         yearChoice.addActionListener(e -> {
             setCurrentYear(currentYear = yearChoice.getSelectedIndex());
-            InitSelector();
-            InitButtons();
+            InitMonthChoice();
         });
 
         yearChoice.addComponentListener(new ComponentAdapter() {
@@ -171,10 +170,9 @@ public class OccupancyEditFrame extends JFrame {
         add(modeChoice);
 
         modeChoice.addActionListener(e -> {
-            setCurrentMode(Objects.requireNonNull(modeChoice.getSelectedItem()).toString().replaceAll(" ", ""));
-            System.out.println(currentMode);
-            InitSelector();
-            InitButtons();
+            //setCurrentMode(Objects.requireNonNull(modeChoice.getSelectedItem()).toString().replaceAll(" ", ""));
+            setCurrentMode(modeChoice.getSelectedIndex());
+            InitMonthChoice();
         });
 
         modeChoice.addComponentListener(new ComponentAdapter() {
@@ -204,36 +202,25 @@ public class OccupancyEditFrame extends JFrame {
 
     }
 
-    private void InitGoButton(){
-
-        goButton = new JButton("GO");
-        goButton.setBounds(getWidth()/2 - 110, 80, 100, 20);
-        add(goButton);
-
-        goButton.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                goButton.setLocation(getWidth()/2 - 110, 80);
-            }
-        });
-
-        goButton.addActionListener(e -> {
-            InitSelector();
-            InitButtons();
-        });
-
-    }
-
     private void InitUpdateButton(){
 
         updateButton = new JButton("UPDATE");
-        updateButton.setBounds(getWidth()/2 + 10, 80, 100, 20);
+        updateButton.setSize(100,20);
+        updateButton.setLocation((getWidth() - updateButton.getWidth())/2, 80);
         add(updateButton);
 
         updateButton.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                updateButton.setLocation(getWidth()/2 + 10, 80);
+                updateButton.setLocation((getWidth() - updateButton.getWidth())/2, 80);
+            }
+        });
+
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("yay");
+                updateData();
             }
         });
 
@@ -298,29 +285,82 @@ public class OccupancyEditFrame extends JFrame {
 
     private void fillField(JTextField[] monthInput, int i){
 
-        int currentRow = 0;
+        String [] lineContent  = findData();
 
-        String fileName = "data/" + getCurrentHotel() + getCurrentMode() + ".txt";
+        monthInput[i].setText(lineContent[i]);
+
+    }
+
+    private void updateData(){
+
+        String newLineContent = "";
+
+        for (int i = 0; i < monthInput.length; i++){
+            String text = monthInput[i].getText();
+            System.out.println("text[" + i + "] = " + text);
+            newLineContent = newLineContent + text + ",";
+        }
+
+
+        String mode = "";
+
+        if (getCurrentMode() == 0){
+            mode = "BedOccupancy";
+        } else {
+            mode = "RoomOccupancy";
+        }
+        String fileName = "data/" + getCurrentHotel() + mode + ".txt";
+
+        System.out.println(fileName + getEditedRowIndex());
+        // Update the hotel information in the hotelData.txt file
+        boolean caughtException = false;
+        while (!caughtException){
+            try {
+                File file = new File(fileName);
+                List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+                lines.set(getEditedRowIndex(), newLineContent);
+                Files.write(file.toPath(), lines, StandardCharsets.UTF_8);
+                caughtException = true;
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    }
+
+    private String [] findData(){
+
+        setEditedRowIndex(0);
+
+        String mode = "";
+
+        if (getCurrentMode() == 0){
+            mode = "BedOccupancy";
+        } else {
+            mode = "RoomOccupancy";
+        }
+        String fileName = "data/" + getCurrentHotel() + mode + ".txt";
         String [] lineContent = new String[12];
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
             String line;
             while((line = br.readLine()) != null){
-                if(currentRow == getCurrentYear()){
+                if(getEditedRowIndex() == getCurrentYear()){
+
                     line = line.replaceAll(",", "");
                     for (int k = 0; k < lineContent.length; k++){
                         lineContent[k] = line.substring(k,k + 1);
                     }
+
                     break;
                 }
-                currentRow++;
+                setEditedRowIndex(getEditedRowIndex() + 1);
             }
         } catch (IOException e){
             e.printStackTrace();
         }
 
-        monthInput[i].setText(lineContent[i]);
-
+        return lineContent;
     }
 
     public String getCurrentHotel() {
@@ -339,11 +379,19 @@ public class OccupancyEditFrame extends JFrame {
         this.currentYear = currentYear;
     }
 
-    public String getCurrentMode() {
+    public int getCurrentMode() {
         return currentMode;
     }
 
-    public void setCurrentMode(String currentMode) {
+    public void setCurrentMode(int currentMode) {
         this.currentMode = currentMode;
+    }
+
+    public int getEditedRowIndex() {
+        return editedRowIndex;
+    }
+
+    public void setEditedRowIndex(int editedRowIndex) {
+        this.editedRowIndex = editedRowIndex;
     }
 }

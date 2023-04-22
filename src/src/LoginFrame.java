@@ -6,10 +6,12 @@ import java.awt.event.*;
 
 public class LoginFrame extends JFrame {
 
-    private JButton loginButton = new JButton("Login");
-    private JTextField nameField = new JTextField("User");
-    private JPasswordField passwordField = new JPasswordField("Password");
-    private JButton registerButton = new JButton("Register");
+    private JButton loginButton = new JButton("LOGIN");
+    private JLabel nameTag = new JLabel("USER");
+    private JTextField nameField = new JTextField();
+    private JLabel passwordTag = new JLabel("PASSWORD");
+    private JPasswordField passwordField = new JPasswordField();
+    private JButton registerButton = new JButton("REGISTER");
 
     public LoginFrame(String title) {
         super(title);
@@ -51,10 +53,11 @@ public class LoginFrame extends JFrame {
     };
 
     private void nameFieldInit(){
+        nameTag.setBounds((getWidth() - nameTag.getWidth())/2 - 45, (getHeight() - nameTag.getHeight()) / 2 - 30, 100, 20 );
         nameField.setSize(100,20);
-        nameField.setVisible(true);
 
         add(nameField);
+        add(nameTag);
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -62,15 +65,18 @@ public class LoginFrame extends JFrame {
                 int x = ((getWidth() - nameField.getWidth()) / 2);
                 int y = ((getHeight() - nameField.getHeight()) / 2) - 30;
                 nameField.setLocation(x, y);
+                nameTag.setLocation(x - 45,y);
             }
         });
     }
 
     private void passwordFieldInit(){
+        passwordTag.setBounds((getWidth() - passwordTag.getWidth())/2 - 80, (getHeight() - passwordTag.getHeight()) / 2, 100, 20 );
         passwordField.setSize(100,20);
         passwordField.setVisible(true);
 
         add(passwordField);
+        add(passwordTag);
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -78,6 +84,7 @@ public class LoginFrame extends JFrame {
                 int x = ((getWidth() - passwordField.getWidth()) / 2);
                 int y = ((getHeight() - passwordField.getHeight()) / 2);
                 passwordField.setLocation(x, y);
+                passwordTag.setLocation(x - 80,y);
             }
         });
     }
