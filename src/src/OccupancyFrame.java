@@ -5,6 +5,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class OccupancyFrame extends JFrame {
 
@@ -15,9 +16,14 @@ public class OccupancyFrame extends JFrame {
     private JLabel [] labels = new JLabel[3];
     private String [] labelNames = {"Hotel:", "Jahr:", "Monat:"};
     private JComboBox<String> hotelChoice;
-    private String [] hotelOptions;
+    private Hotel [] hotelOptions;
     private JComboBox<Integer> yearChoice;
-    private JComboBox<Month> monthChoice;
+    private JComboBox<String> modeChoice;
+    private final String [] modeOptions = {"Bed Occupancy", "Room Occupancy"};
+
+    private String currentHotel;
+    private int currentYear;
+    private int currentMode;
 
 
     public OccupancyFrame(String title) {
@@ -31,8 +37,8 @@ public class OccupancyFrame extends JFrame {
         setLayout(null);
 
         InitToolbar();
-        InitCapacityTable();
-        InitSelector();
+        InitOccupancyTable();
+        InitDetailedMode();
 
     }
 
@@ -53,7 +59,7 @@ public class OccupancyFrame extends JFrame {
         });
     }
 
-    private void InitCapacityTable() {
+    private void InitOccupancyTable() {
         occupancyTable = new OccupancyTable();
         occupancyTable.setLocation(100, 60);
         occupancyTable.setVisible(true);
@@ -67,19 +73,19 @@ public class OccupancyFrame extends JFrame {
 
     }
 
-    private void InitSelector() {
-        InitLabels();
+    private void InitDetailedMode() {
+        InitDMLabels();
         InitHotelChoice();
         InitYearChoice();
-        InitMonthChoice();
+        InitModeChoice();
     }
 
-    private void InitLabels(){
+    private void InitDMLabels(){
 
         for (int i = 0; i < labels.length; i++ ){
             JLabel label = new JLabel(labelNames[i]);
 
-            label.setBounds(((getWidth()/3) * (i + 1)) - 210, 35, 60, 20);
+            label.setBounds(((getWidth()/3) * (i + 1)) - 200, 250, 60, 20);
             label.setVisible(true);
 
             add(label);
@@ -90,7 +96,7 @@ public class OccupancyFrame extends JFrame {
             label.addComponentListener(new ComponentAdapter() {
                 @Override
                 public void componentResized(ComponentEvent e) {
-                    label.setLocation(((getWidth()/3) * (pos + 1)) - 210, 35);
+                    label.setLocation(((getWidth()/3) * (pos + 1)) - 200, 250);
                 }
             });
 
@@ -100,16 +106,26 @@ public class OccupancyFrame extends JFrame {
 
     private void InitHotelChoice(){
 
-        hotelOptions = new String[Hotel.hotels.size()];
+        hotelOptions = new Hotel[Hotel.hotels.size()];
+        hotelChoice = new JComboBox<>();
+
         fillHotelOptions();
-        hotelChoice = new JComboBox<>(hotelOptions);
-        hotelChoice.setBounds((getWidth()/3) - 150, 35, 110, 20);
+
+        for (Hotel hotelOption : hotelOptions) {
+            String h = hotelOption.getHotelName();
+            hotelChoice.addItem(h);
+        }
+        hotelChoice.setBounds((getWidth()/2) - 260, 250, 130, 20);
         add(hotelChoice);
+
+        hotelChoice.addActionListener(e -> {
+            setCurrentHotel(Objects.requireNonNull(hotelChoice.getSelectedItem()).toString());
+        });
 
         hotelChoice.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                hotelChoice.setLocation(((getWidth()/3) - 150), 35);
+                hotelChoice.setLocation((getWidth()/2) - 260, 250);
             }
         });
 
@@ -120,38 +136,43 @@ public class OccupancyFrame extends JFrame {
         ArrayList<Integer> years = new ArrayList<>();
 
         Calendar calendar = Calendar.getInstance();
-        int currentYear = calendar.get(Calendar.YEAR);
+        int thisYear = calendar.get(Calendar.YEAR);
 
-        for (int i = 2000; i <= currentYear; i++){
+        for (int i = 2000; i <= thisYear; i++){
             years.add(i);
         }
 
         yearChoice = new JComboBox<>(years.toArray(new Integer[0]));
-        yearChoice.setBounds((getWidth()/3) * 2 - 150, 35, 110, 20);
+        yearChoice.setBounds((getWidth()/2), 250, 130, 20);
         add(yearChoice);
+
+        yearChoice.addActionListener(e -> {
+            setCurrentYear(currentYear = yearChoice.getSelectedIndex());
+        });
 
         yearChoice.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                yearChoice.setLocation((getWidth()/3) * 2 - 150, 35);
+                yearChoice.setLocation((getWidth()/2), 250);
             }
         });
     }
 
-    private void InitMonthChoice(){
+    private void InitModeChoice(){
 
-        Month[] months = Month.values();
+        modeChoice = new JComboBox<>(modeOptions);
+        modeChoice.setBounds((getWidth()/2) + 240, 250, 130, 20);
+        add(modeChoice);
 
-        monthChoice = new JComboBox<>(months);
+        modeChoice.addActionListener(e -> {
+            //setCurrentMode(Objects.requireNonNull(modeChoice.getSelectedItem()).toString().replaceAll(" ", ""));
+            setCurrentMode(modeChoice.getSelectedIndex());
+        });
 
-
-        monthChoice.setBounds((getWidth()/3) * 3 - 150, 35, 110, 20);
-        add(monthChoice);
-
-        monthChoice.addComponentListener(new ComponentAdapter() {
+        modeChoice.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                monthChoice.setLocation((getWidth()/3) * 3 - 150, 35);
+                modeChoice.setLocation((getWidth()/2) + 240, 250);
             }
         });
 
@@ -160,7 +181,31 @@ public class OccupancyFrame extends JFrame {
     private void fillHotelOptions(){
 
         for (int i = 0; i < hotelOptions.length; i++){
-            hotelOptions[i] = Hotel.hotels.get(i).getHotelName();
+            hotelOptions[i] = Hotel.hotels.get(i);
         }
+    }
+
+    public String getCurrentHotel() {
+        return currentHotel;
+    }
+
+    public void setCurrentHotel(String currentHotel) {
+        this.currentHotel = currentHotel;
+    }
+
+    public int getCurrentYear() {
+        return currentYear;
+    }
+
+    public void setCurrentYear(int currentYear) {
+        this.currentYear = currentYear;
+    }
+
+    public int getCurrentMode() {
+        return currentMode;
+    }
+
+    public void setCurrentMode(int currentMode) {
+        this.currentMode = currentMode;
     }
 }

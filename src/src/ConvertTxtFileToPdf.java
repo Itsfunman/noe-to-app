@@ -1,15 +1,15 @@
 package src;
-
+/*
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
-
+*/
 import java.io.*;
 
 public class ConvertTxtFileToPdf {
-
+/*
     public static void main(String[] args) {
         FileInputStream fis = null;
         DataInputStream in = null;
@@ -66,5 +66,5 @@ public class ConvertTxtFileToPdf {
         }
 
     }
-
+*/
 }

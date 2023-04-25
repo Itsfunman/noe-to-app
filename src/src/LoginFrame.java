@@ -8,9 +8,9 @@ public class LoginFrame extends JFrame {
 
     private JButton loginButton = new JButton("LOGIN");
     private JLabel nameTag = new JLabel("USER");
-    private JTextField nameField = new JTextField();
+    private JTextField nameField = new JTextField("User");
     private JLabel passwordTag = new JLabel("PASSWORD");
-    private JPasswordField passwordField = new JPasswordField();
+    private JPasswordField passwordField = new JPasswordField("Password");
     private JButton registerButton = new JButton("REGISTER");
 
     public LoginFrame(String title) {

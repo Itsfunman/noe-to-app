@@ -1,5 +1,7 @@
 package src;
 
+import com.formdev.flatlaf.*;
+
 import javax.swing.*;
 
 import java.io.BufferedReader;
@@ -10,7 +12,9 @@ public class Main {
 
     private static boolean dataLoaded = false;
 
-    public static void main(String [] args) throws IOException {
+    public static void main(String [] args) throws IOException, UnsupportedLookAndFeelException {
+
+        UIManager.setLookAndFeel(new FlatLightLaf());
 
         LoginFrame loginFrame = new LoginFrame("NOE-TO Login");
 

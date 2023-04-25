@@ -15,8 +15,7 @@ import java.util.Objects;
 
 /*
 UP NEXT:
- - add a neat way to edit months
- - find a way to safe and load transactional data
+ - add a neat way to edit months (ADD FUNCTIONING UPDATE BUTTON!!!)
  */
 
 public class OccupancyEditFrame extends JFrame {
@@ -220,7 +219,10 @@ public class OccupancyEditFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("yay");
-                updateData();
+                //Currently data is only correctly updated when hitting the enter key, this needs to change
+                //Maybe we can somehow call the correct fillFIeld methods from here?
+
+
             }
         });
 
@@ -289,9 +291,16 @@ public class OccupancyEditFrame extends JFrame {
 
         monthInput[i].setText(lineContent[i]);
 
+        monthInput[i].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateData(monthInput);
+            }
+        });
+
     }
 
-    private void updateData(){
+    private void updateData(JTextField[]monthInput){
 
         String newLineContent = "";
 
@@ -328,40 +337,38 @@ public class OccupancyEditFrame extends JFrame {
 
     }
 
-    private String [] findData(){
-
+    private String[] findData() {
         setEditedRowIndex(0);
 
-        String mode = "";
-
-        if (getCurrentMode() == 0){
-            mode = "BedOccupancy";
-        } else {
-            mode = "RoomOccupancy";
-        }
+        String mode = getCurrentMode() == 0 ? "BedOccupancy" : "RoomOccupancy";
         String fileName = "data/" + getCurrentHotel() + mode + ".txt";
-        String [] lineContent = new String[12];
+        String[] lineContent = new String[12];
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while((line = br.readLine()) != null){
-                if(getEditedRowIndex() == getCurrentYear()){
+            while ((line = br.readLine()) != null) {
+                if (getEditedRowIndex() == getCurrentYear()) {
 
-                    line = line.replaceAll(",", "");
-                    for (int k = 0; k < lineContent.length; k++){
-                        lineContent[k] = line.substring(k,k + 1);
+                    String[] tokens = line.split(",");
+                    for (int k = 0; k < lineContent.length; k++) {
+                        if (tokens.length > k) {
+                            lineContent[k] = tokens[k];
+                        } else {
+                            lineContent[k] = "";
+                        }
                     }
 
                     break;
                 }
                 setEditedRowIndex(getEditedRowIndex() + 1);
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         return lineContent;
     }
+
 
     public String getCurrentHotel() {
         return currentHotel;
