@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class User {
 
@@ -12,10 +15,16 @@ public class User {
     private String password;
     private boolean hasAdminRights;
 
+    private final int id;
+
+    private  static int COUTNER = 10;
+
     public User(String name, String password) {
         this.name = name;
         this.password = password;
         this.hasAdminRights = false;
+        this.id = COUTNER;
+        COUTNER++;
 
         LoginHandler.addUser(this.name, this.password);
 
@@ -39,12 +48,29 @@ public class User {
                 }
                 line = bufferedReader.readLine();
             }
-
+            //AddUserToDB
+            addUserToDB();
             // user does not exist in file, so add to file
             writer.write(name + "," + password + "\n");
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    public void addUserToDB() throws SQLException {
+        PreparedStatement pst = null;
+        Connection connection = DBConnection.getConnection();
+
+        System.out.println(connection);
+        pst = connection.prepareStatement("insert into dbo.example (id,username) values (?,?)");
+        pst.setInt(1, id);
+        pst.setString(2, name);
+//        pst.setInt(3, 3);
+//        pst.setInt(4, 4);
+        pst.executeUpdate();
+        // JOptionPane.showConfirmDialog(null, "Added to DB");
     }
 
     public String getName() {

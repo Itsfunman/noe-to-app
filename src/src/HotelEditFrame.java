@@ -6,9 +6,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 public class HotelEditFrame extends JFrame{
@@ -107,6 +113,22 @@ public class HotelEditFrame extends JFrame{
 
     }
 
+    public void addHotelToDB() throws SQLException {
+        PreparedStatement pst = null;
+        Connection connection = DBConnection.getConnection();
+
+        System.out.println(connection);
+        pst = connection.prepareStatement("insert into dbo.hotel (hotelname,kategorie,roomNumber,bedNumber) values (?,?,?,?)");
+        pst.setString(1, textFields[0].getText());
+        pst.setString(2, textFields[1].getText());
+        pst.setString(3, textFields[2].getText());
+        pst.setString(4, textFields[3].getText());
+
+//        pst.setInt(3, 3);
+//        pst.setInt(4, 4);
+        pst.executeUpdate();
+    }
+
     private void InitAddButton(){
 
         addButton = new JButton("Add");
@@ -123,6 +145,12 @@ public class HotelEditFrame extends JFrame{
                 Hotel hotel = new Hotel(row[0], row[1], row[2], row[3]);
                 Hotel.hotels.add(hotel);
                 hotel.addToFile(hotel);
+
+                try {
+                    addHotelToDB();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
 
                 textFields[0].setText("");
                 textFields[1].setText("");

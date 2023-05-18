@@ -1,9 +1,6 @@
 package src;
 
-import com.formdev.flatlaf.*;
-
 import javax.swing.*;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,7 +11,7 @@ public class Main {
 
     public static void main(String [] args) throws IOException, UnsupportedLookAndFeelException {
 
-        UIManager.setLookAndFeel(new FlatLightLaf());
+        //UIManager.setLookAndFeel(new FlatLightLaf());
 
         LoginFrame loginFrame = new LoginFrame("NOE-TO Login");
 

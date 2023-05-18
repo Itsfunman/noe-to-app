@@ -6,3 +6,4 @@ Sonja,FH1
 Ming,beijing
 User,Password
 mn,mn
+Mina,mina
