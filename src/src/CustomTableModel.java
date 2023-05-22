@@ -11,15 +11,15 @@ public class CustomTableModel extends AbstractTableModel {
 
     public CustomTableModel(String[][] data, String fileName) {
         this.data = data;
-        this.columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAI", "JUN",
-                "JUL", "AUG", "SEP", "OKT", "NOV", "DEZ"};
+        this.columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
         this.fileName = fileName;
     }
 
     public CustomTableModel(String[][] data) {
         this.data = data;
-        this.columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAI", "JUN",
-                "JUL", "AUG", "SEP", "OKT", "NOV", "DEZ"};
+        this.columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
     }
 
     public void saveData() {
@@ -76,4 +76,25 @@ public class CustomTableModel extends AbstractTableModel {
         data = newData;
         fireTableDataChanged();
     }
+
+    public String[][] getData() {
+        return this.data;
+    }
+
+    public String[] getColumnNames() {
+        return columnNames;
+    }
+
+    public void setColumnNames(String[] columnNames) {
+        this.columnNames = columnNames;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 }
+

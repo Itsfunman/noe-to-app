@@ -1,10 +1,9 @@
 package src;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -55,7 +54,7 @@ public class OccupancyEditFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 if (fileName != null && !fileName.equals(null)){
-                    saveData(fileName, getData(fileName));
+                    saveData(fileName, fetchData(fileName));
                 }
                 String selectedHotelName = (String) hotelChoice.getSelectedItem();
                 Hotel selectedHotel = hotelMap.get(selectedHotelName);
@@ -79,7 +78,7 @@ public class OccupancyEditFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 if (!fileName.equals(null)){
-                    saveData(fileName, getData(fileName));
+                    saveData(fileName, fetchData(fileName));
                 }
                 String selectedHotelName = (String) hotelChoice.getSelectedItem();
                 Hotel selectedHotel = hotelMap.get(selectedHotelName);
@@ -104,13 +103,16 @@ public class OccupancyEditFrame extends JFrame {
 
         return newFileName;
     }
+
     private void InitHotelOccupancyTable(String fileName) {
 
-        String[][] data = getData(fileName);
+        String[][] data = fetchData(fileName);
         // Check if there are fewer rows than years
         if (data.length - 1 < getNumberOfYears()) {
+
             addRowsToCoverYears(fileName, data.length - 1);
-            data = getData(fileName);
+            data = fetchData(fileName);
+
         }
 
         if (hotelOccupancyTable != null) {
@@ -121,12 +123,38 @@ public class OccupancyEditFrame extends JFrame {
 
         hotelOccupancyTable = new HotelOccupancyTable(data);
         hotelOccupancyTable.setBounds(10, 50, 770, 350);
+
+        hotelOccupancyTable.getTable().getModel().addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                int row = e.getFirstRow();
+                int column = e.getColumn();
+
+                String [][] tableData = hotelOccupancyTable.getTableModel().getData();
+                if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
+                    String newValue = tableData[row][column];
+                    editRow(fileName, row, column, newValue);
+                }
+            }
+        });
+
         add(hotelOccupancyTable);
 
         tableModel = new CustomTableModel(data, fileName);
 
         revalidate();
         repaint();
+    }
+
+    private void editRow(String fileName, int rowIndex, int columnIndex, String newValue) {
+        String[][] data = fetchData(fileName);
+
+        if (rowIndex >= 0 && rowIndex < data.length && columnIndex >= 0 && columnIndex < data[rowIndex].length) {
+            data[rowIndex][columnIndex] = newValue;
+            saveData(fileName, data);
+        } else {
+            System.out.println("Invalid row index or column index.");
+        }
     }
 
     private void saveTableData() {
@@ -158,8 +186,7 @@ public class OccupancyEditFrame extends JFrame {
         });
     }
 
-
-    private String[][] getData(String fileName) {
+    private String[][] fetchData(String fileName) {
         String[][] data;
 
         try (FileReader fileReader = new FileReader("data/" + fileName);
@@ -174,25 +201,20 @@ public class OccupancyEditFrame extends JFrame {
                 String[] values = line.split(",");
 
                 // Skip invalid lines or lines with insufficient values
-                if (values.length != 12) {
+                if (values.length != 13) {
                     continue;
                 }
 
-                String[] row = new String[13];
-                row[0] = String.valueOf(year);
-                System.arraycopy(values, 0, row, 1, 12);
-
-                dataList.add(row);
+                dataList.add(values);
                 year++;
             }
 
-            System.out.println(dataList.size());
             data = new String[dataList.size()][13];
             dataList.toArray(data);
 
         } catch (IOException e) {
             e.printStackTrace();
-            data = new String[0][0];
+            data = new String[0][13]; // Empty array for new file
         }
 
         return data;
@@ -220,53 +242,21 @@ public class OccupancyEditFrame extends JFrame {
         }
     }
 
-
     private void addRowsToCoverYears(String fileName, int currentRowCount) {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        String[][] data = getData(fileName);
+        String[][] data = fetchData(fileName);
 
-        int lastYear = data.length - 1;
+        for (int year = currentRowCount + 2001; year <= currentYear; year++) {
+            String[] newRow = new String[13];
+            newRow[0] = String.valueOf(year);
 
-        for (int year = lastYear + 1; year <= currentYear - 2000; year++) {
-            String[] newRow = new String[12];  // Update the row size to 12
-            Arrays.fill(newRow, "0");
+            Arrays.fill(newRow, 1, newRow.length, "0"); // Fill elements from index 1 to end with "0"
 
             data = Arrays.copyOf(data, data.length + 1);
             data[data.length - 1] = newRow;
         }
 
-        // Exclude the year column when saving the data
-        String[][] dataWithoutYear = new String[data.length][12];
-        for (int i = 0; i < data.length; i++) {
-            System.arraycopy(data[i], 1, dataWithoutYear[i], 0, 11);
-            dataWithoutYear[i][11] = "0";  // Set the last element to "0"
-        }
-
-        saveData(fileName, dataWithoutYear);
+        saveData(fileName, data);
     }
-
-
-
-
-
-
-
-
-    // Example usage to edit a row
-// Example usage to edit a row
-    private void editRow(String fileName, int rowIndex, String[] updatedRow) {
-        String[][] data = getData(fileName);
-
-        if (rowIndex >= 0 && rowIndex < data.length && updatedRow.length == 12) {
-            System.arraycopy(updatedRow, 0, data[rowIndex], 1, 12);
-            saveData(fileName, data);
-
-            // Update the table with the modified data
-            hotelOccupancyTable.updateData(data);
-        } else {
-            System.out.println("Invalid row index or row data.");
-        }
-    }
-
 
 }

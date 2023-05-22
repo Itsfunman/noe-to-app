@@ -19,5 +19,22 @@ public class HotelOccupancyTable extends JScrollPane {
     public void updateData(String[][] newData) {
         tableModel.setData(newData);
     }
+
+    public CustomTableModel getTableModel() {
+        return tableModel;
+    }
+
+    public void setTableModel(CustomTableModel tableModel) {
+        this.tableModel = tableModel;
+    }
+
+    public JTable getTable() {
+        return table;
+    }
+
+    public void setTable(JTable table) {
+        this.table = table;
+    }
+
 }
 
