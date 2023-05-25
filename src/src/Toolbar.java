@@ -8,6 +8,7 @@ import java.io.IOException;
 
 public class Toolbar extends JToolBar {
 
+    private JLabel logo;
     private JButton goCapacityButton;
     private JButton goOccupancyButton;
     private JButton goHotelEditButton;
@@ -24,11 +25,23 @@ public class Toolbar extends JToolBar {
         setVisible(true);
         setSize(frame.getWidth(), 30);
 
+        InitLogo();
         InitGoCapacityButton();
         InitGoOccupancyButton();
         InitGoHotelEditButton();
         InitGoOccupancyEditButton();
 
+
+    }
+
+    private void InitLogo() {
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
+        Image img = icon.getImage();
+        Image newImg = img.getScaledInstance(66, 30, Image.SCALE_SMOOTH);
+        ImageIcon newIcon = new ImageIcon(newImg);
+        logo = new JLabel(newIcon);
+        logo.setVisible(true);
+        add(logo);
     }
 
     private void InitGoOccupancyEditButton(){

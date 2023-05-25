@@ -38,7 +38,7 @@ public class OccupancyEditFrame extends JFrame {
 
     private void InitHotelChoice() {
         hotelChoice = new JComboBox<>();
-        hotelChoice.setBounds((getWidth() / 2) - 65, getHeight() - 70, 130, 20);
+        hotelChoice.setBounds(410, getHeight() - 70, 130, 20);
 
         hotelMap = new HashMap<>();
 
@@ -66,7 +66,7 @@ public class OccupancyEditFrame extends JFrame {
 
     private void InitOccupancyTypeChoice(){
         occupancyTypeChoice = new JComboBox<>();
-        occupancyTypeChoice.setBounds((getWidth() / 2) - 215, getHeight() - 70, 130, 20);
+        occupancyTypeChoice.setBounds(260, getHeight() - 70, 130, 20);
 
         occupancyTypeChoice.addItem("Bed Occupancy");
         occupancyTypeChoice.addItem("Room Occupancy");
@@ -231,7 +231,7 @@ public class OccupancyEditFrame extends JFrame {
                 for (String value : row) {
                     line = line + value + ",";
                 }
-                System.out.println(line);
+                //System.out.println(line);
                 writer.write(line);
                 writer.newLine();
             }

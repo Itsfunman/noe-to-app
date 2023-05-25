@@ -32,9 +32,9 @@ public class LoginFrame extends JFrame {
       ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
       Image img = icon.getImage();
 
-      Dimension size = getSize();
-      int width = size.width/4;
-      int height = size.height/4;
+      //Dimension size = getSize();
+      //int width = size.width/4;
+      //int height = size.height/4;
       Image newImg = img.getScaledInstance(440, 200, Image.SCALE_SMOOTH );
 
       ImageIcon newIcon = new ImageIcon(newImg);
