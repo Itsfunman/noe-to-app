@@ -1,7 +1,6 @@
 package src;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -28,7 +27,7 @@ public class CapacityTable extends JScrollPane {
 
     }
 
-    private void refillData(){
+    private void refillData() {
         // clear the data array
         for (int i = 1; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
@@ -41,7 +40,9 @@ public class CapacityTable extends JScrollPane {
         tableModel = new TableModel(data, columnNames);
         table = new JTable(tableModel);
 
+        setViewportView(table);
     }
+
     private void fillData(){
 
         // fill the data array with new data
@@ -85,7 +86,7 @@ public class CapacityTable extends JScrollPane {
         loadHotels();
 
         for (int i = 0; i < Hotel.hotels.size(); i++){
-            if (kat == Hotel.hotels.get(i).getStars()){
+            if (kat == Hotel.hotels.get(i).getCategory()){
                 Hotel hotel = Hotel.hotels.get(i);
                 betriebInfo[0]++;
                 betriebInfo[1] += hotel.getRoomNumber();
@@ -127,17 +128,24 @@ public class CapacityTable extends JScrollPane {
 
             String st;
             while ((st = br.readLine()) != null) {
-
                 String[] hotelData = st.split(",");
-                Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3]);
-                Hotel.hotels.add(hotel);
 
+                if (hotelData.length == 14) {
+                    Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3], hotelData[4],
+                            hotelData[5], hotelData[6], hotelData[7], hotelData[8], hotelData[9], hotelData[10],
+                            hotelData[11], hotelData[12], hotelData[13]);
+                    Hotel.hotels.add(hotel);
+                } else {
+                    // Handle the case where the hotelData array doesn't have enough elements
+                    System.out.println("Invalid hotel data: " + st);
+                }
             }
             br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
+
+
+
 }

@@ -1,64 +1,95 @@
 package src;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
+import java.io.*;
+import java.util.ArrayList;
 
 public class HotelEditFrame extends JFrame{
 
-    private String [] labelNames = {"Name:", "Kategorie:", "Zimmer:", "Betten:"};
-
-    private JTextField[] textFields = new JTextField[4];
-
-    private  JToolBar toolbar;
-
-    private String[] row;
-
-    private JTable table;
+    private JToolBar toolbar;
+    private CustomTable customTable;
     private JButton addButton;
     private JButton deleteButton;
-    private JButton updateButton;
-    private JScrollBar scrollBar;
 
-    DefaultTableModel model;
+    private String fileName = "data/hotelData.txt";
 
-    public HotelEditFrame(String windowName) throws IOException {
-        super(windowName);
+    private String[] columnNames = {"Name", "Kategorie", "Zimmer", "Betten",
+            "BesiterIn", "Kontakt", "Strasse/HNr",
+            "Ort", "PLZ", "Telefonnummer", "Familien", "Hunde", "Spa", "Fitness"};
 
-        setSize(800,500);
+    public HotelEditFrame(String title) {
+        super(title);
+
+        setSize(800, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        getContentPane().setLayout(null);
-        setVisible(true);
         setLayout(null);
         setLocationRelativeTo(null);
 
-        InitToolbar();
-        InitEntryFields();
-        InitTable();
+        initToolbar();
+        initCustomTable();
+        initAddButton();
+        initDeleteButton();
 
-        InitButtons();
-        loadHotels();
-
-
+        setVisible(true);
     }
 
-    private void InitToolbar() {
+    private void initDeleteButton() {
+        deleteButton = new JButton("DELETE HOTEL");
+        deleteButton.setBounds(335, 440, 130, 20);
+
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = customTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    // Remove the selected row from the table model
+                    customTable.getTableModel().removeRow(selectedRow);
+                    // Save the updated data to the file
+                    customTable.getTableModel().saveData();
+                } else {
+                    JOptionPane.showMessageDialog(null, "No row selected.");
+                }
+            }
+        });
+
+        deleteButton.setVisible(true);
+        add(deleteButton);
+    }
+
+    private void initAddButton() {
+        addButton = new JButton("ADD HOTEL");
+        addButton.setBounds(335, 410, 130, 20);
+
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String[] rowData = new String[columnNames.length];
+                // Open a dialog box to get input from the user for each column
+                for (int i = 0; i < columnNames.length; i++) {
+                    String input = JOptionPane.showInputDialog("Enter value for " + columnNames[i]);
+                    rowData[i] = input;
+                }
+                // Add the new row to the table
+                customTable.getTableModel().addRow(rowData);
+                // Save the updated data to the file
+                customTable.getTableModel().saveData();
+            }
+        });
+
+        addButton.setVisible(true);
+        add(addButton);
+    }
+
+    private void initToolbar() {
         toolbar = new Toolbar(this);
         toolbar.setVisible(true);
-        toolbar.setLocation(0,0);
+        toolbar.setLocation(0, 0);
 
         add(toolbar);
 
@@ -67,212 +98,97 @@ public class HotelEditFrame extends JFrame{
             public void componentResized(ComponentEvent e) {
 
                 toolbar.setSize(getWidth(), 30);
-
             }
         });
     }
 
-    private void InitEntryFields(){
+    private void initCustomTable() {
+        ArrayList<String[]> dataList = fetchData(fileName);
+        int rowCount = dataList.size();
+        int columnCount = columnNames.length;
 
-        for (int i = 0; i < labelNames.length; i++){
-            JLabel lblName = new JLabel(labelNames[i]);
-            lblName.setBounds(21, 83 + (22 * i) , 100, 20);
-            add(lblName);
-
-            textFields[i] = new JTextField();
-            textFields[i].setBounds(125, 83 + (22 * i) , 100, 20);
-            add(textFields[i]);
-            textFields[i].setColumns(10);
+        String[][] data = new String[rowCount][columnCount];
+        for (int i = 0; i < rowCount; i++) {
+            data[i] = dataList.get(i);
         }
 
-    }
+        CustomTableModel customTableModel = new CustomTableModel(data, fileName, columnNames);
+        customTable = new CustomTable(customTableModel);
+        customTable.setBounds(10, 50, 770, 350);
 
-    private void InitTable(){
-
-        table = new JTable();
-        model = new DefaultTableModel();
-        Object[] column = {"Name", "Kategorie","Zimmer","Betten"};
-        model.setColumnIdentifiers(column);
-        table.setModel(model);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(240,50,300,300);
-        add(scrollPane);
-
-        row = new String[4];
-
-    }
-
-    private void InitButtons()
-
-    {
-
-        InitAddButton();
-        InitDeleteButton();
-        InitUpdateButton();
-
-    }
-
-    public void addHotelToDB() throws SQLException {
-        PreparedStatement pst = null;
-        Connection connection = DBConnection.getConnection();
-
-        System.out.println(connection);
-        pst = connection.prepareStatement("insert into dbo.hotel (hotelname,kategorie,roomNumber,bedNumber) values (?,?,?,?)");
-        pst.setString(1, textFields[0].getText());
-        pst.setString(2, textFields[1].getText());
-        pst.setString(3, textFields[2].getText());
-        pst.setString(4, textFields[3].getText());
-
-//        pst.setInt(3, 3);
-//        pst.setInt(4, 4);
-        pst.executeUpdate();
-    }
-
-    private void InitAddButton(){
-
-        addButton = new JButton("Add");
-        addButton.addActionListener(new ActionListener() {
+        customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void tableChanged(TableModelEvent e) {
+                int row = e.getFirstRow();
+                int column = e.getColumn();
 
-                row[0] = textFields[0].getText();
-                row[1] = textFields[1].getText();
-                row[2] = textFields[2].getText();
-                row[3] = textFields[3].getText();
-                model.addRow(row);
-
-                Hotel hotel = new Hotel(row[0], row[1], row[2], row[3]);
-                Hotel.hotels.add(hotel);
-                hotel.addToFile(hotel);
-
-                try {
-                    addHotelToDB();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                String [][] tableData = customTable.getTableModel().getData();
+                if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
+                    String newValue = tableData[row][column];
+                    editRow(fileName, row, column, newValue);
                 }
-
-                textFields[0].setText("");
-                textFields[1].setText("");
-                textFields[2].setText("");
-                textFields[3].setText("");
-
             }
         });
 
-        addButton.setBounds(60,180,100,20);
-        add(addButton);
+        add(customTable);
     }
 
-    private void InitDeleteButton(){
-        deleteButton = new JButton("Delete");
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = table.getSelectedRow();
-                model.removeRow(selectedRow);
+    private void editRow(String fileName, int rowIndex, int columnIndex, String newValue) {
+        ArrayList<String[]> data = fetchData(fileName);
 
-                // Remove the hotel from the hotelData.txt file
-                try {
-                    File file = new File("data/hotelData.txt");
-                    List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-                    Hotel hotel = (Hotel) Hotel.hotels.get(selectedRow);
-                    String lineToRemove = hotel.toStringSimple();
-                    lines.remove(lineToRemove);
-                    Files.write(file.toPath(), lines, StandardCharsets.UTF_8);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-
-                Hotel.hotels.remove(selectedRow);
-
-            }
-        });
-
-        deleteButton.setBounds(60,210,100,20);
-        add(deleteButton);
+        if (rowIndex >= 0 && rowIndex < data.size() && columnIndex >= 0 && columnIndex < data.get(rowIndex).length) {
+            data.get(rowIndex)[columnIndex] = newValue;
+            saveData(fileName, data);
+        } else {
+            System.out.println("Invalid row index or column index.");
+        }
     }
 
+    private void saveData(String fileName, ArrayList<String[]> data) {
 
-    private void InitUpdateButton(){
-        updateButton = new JButton("Update");
-        updateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = table.getSelectedRow();
-
-                model.setValueAt(textFields[0].getText(),selectedRow,0);
-                model.setValueAt(textFields[1].getText(),selectedRow,1);
-                model.setValueAt(textFields[2].getText(),selectedRow,2);
-                model.setValueAt(textFields[3].getText(),selectedRow,3);
-
-                Hotel hotel = (Hotel) Hotel.hotels.get(selectedRow);
-                hotel.setHotelName((textFields[0].getText()));
-                hotel.setStars(Integer.parseInt((textFields[1].getText())));
-                hotel.setRoomNumber(Integer.parseInt((textFields[2].getText())));
-                hotel.setBedNumber(Integer.parseInt((textFields[3].getText())));
-
-                // Update the hotel information in the hotelData.txt file
-                boolean caughtException = false;
-                while (!caughtException){
-                    try {
-                        File file = new File("data/hotelData.txt");
-                        List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-                        String lineToUpdate = hotel.toStringSimple();
-                        String newLine = String.format("%s,%d,%d,%d", hotel.getHotelName(), hotel.getStars(), hotel.getRoomNumber(), hotel.getBedNumber());
-                        lines.set(selectedRow, newLine);
-                        Files.write(file.toPath(), lines, StandardCharsets.UTF_8);
-                        caughtException = true;
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+        try (FileWriter fileWriter = new FileWriter(fileName);
+             BufferedWriter writer = new BufferedWriter(fileWriter)){
+            // user does not exist in file, so add to file
+            for (String[] row : data)
+            {
+                String line = "";
+                for (String value : row) {
+                    line = line + value + ",";
                 }
-
+                //System.out.println(line);
+                writer.write(line);
+                writer.newLine();
             }
-        });
 
-        updateButton.setBounds(60,240,100,20);
-        add(updateButton);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void loadHotels() {
-        try {
-            File file = new File("data/hotelData.txt");
-            BufferedReader br = new BufferedReader(new FileReader(file));
+    private ArrayList<String[]> fetchData(String fileName) {
+        ArrayList<String[]> dataList = new ArrayList<>();
 
-            String st;
-            while ((st = br.readLine()) != null) {
+        try (FileReader fileReader = new FileReader(fileName);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 
-                String[] hotelData = st.split(",");
-                Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3]);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] values = line.split(",");
 
-                //Must be changed in the future to check for more factors
-                boolean hotelExists = false;
-                for (Hotel h : Hotel.hotels){
-                    if (h.getHotelName().equals(hotel.getHotelName())){
-                        hotelExists = true;
-                        break;
-                    }
+                // Skip invalid lines or lines with insufficient values
+                if (values.length != 14) {
+                    continue;
                 }
 
-                if (!hotelExists){
-                    Hotel.hotels.add(hotel);
-                }
-
-                row[0] = hotelData[0];
-                row[1] = hotelData[1];
-                row[2] = hotelData[2];
-                row[3] = hotelData[3];
-                model.addRow(row);
-
+                dataList.add(values);
             }
-            br.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
+        return dataList;
     }
 
 }

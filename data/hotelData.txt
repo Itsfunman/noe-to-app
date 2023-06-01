@@ -1,6 +1,2 @@
-Marko,2,10,12
-Müller,1,23,142
-Meier,5,12,24
-Ben,4,12,24
-Rosa,4,12,50
-Ibis,2,33,66
+Hotel Rosi,3,15,54,Rosa Huber,huber@rosi.at,Murstrasse 12,Sankt Poelten,3010,35135513513,true,false,false,false,
+Hotel Bratan,3,12,34,Brati,brati@bratan.br,Meinstrasse 12,Waldviertel,3223,3141351,true,false,false,true,

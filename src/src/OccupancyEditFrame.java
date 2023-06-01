@@ -15,12 +15,15 @@ import java.util.Arrays;
 public class OccupancyEditFrame extends JFrame {
 
     private JToolBar toolbar;
-    private HotelOccupancyTable hotelOccupancyTable;
+    private CustomTable customTable;
     private JComboBox hotelChoice;
     private JComboBox occupancyTypeChoice;
     private HashMap<String, Hotel> hotelMap;
     private CustomTableModel tableModel;
     private String fileName;
+
+    private String [] columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
     public OccupancyEditFrame(String title){
         super(title);
@@ -115,22 +118,22 @@ public class OccupancyEditFrame extends JFrame {
 
         }
 
-        if (hotelOccupancyTable != null) {
-            remove(hotelOccupancyTable); // Remove the existing table
+        if (customTable != null) {
+            remove(customTable); // Remove the existing table
         }
 
         saveTableData();
 
-        hotelOccupancyTable = new HotelOccupancyTable(data);
-        hotelOccupancyTable.setBounds(10, 50, 770, 350);
+        customTable = new CustomTable(data, columnNames);
+        customTable.setBounds(10, 50, 770, 350);
 
-        hotelOccupancyTable.getTable().getModel().addTableModelListener(new TableModelListener() {
+        customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
                 int row = e.getFirstRow();
                 int column = e.getColumn();
 
-                String [][] tableData = hotelOccupancyTable.getTableModel().getData();
+                String [][] tableData = customTable.getTableModel().getData();
                 if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
                     String newValue = tableData[row][column];
                     editRow(fileName, row, column, newValue);
@@ -138,9 +141,9 @@ public class OccupancyEditFrame extends JFrame {
             }
         });
 
-        add(hotelOccupancyTable);
+        add(customTable);
 
-        tableModel = new CustomTableModel(data, fileName);
+        tableModel = new CustomTableModel(data, "data/" + fileName, columnNames);
 
         revalidate();
         repaint();

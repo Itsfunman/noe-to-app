@@ -14,18 +14,40 @@ public class Hotel {
     private int hotelID;
 
     //Basic information:
+    private int category;
     private String hotelName;
-    private int stars;
+    private String hotelOwner;
+    private String hotelContactInformation;
+    private String address;
+    private String city;
+    private int cityCode;
+    private Long phoneNumber;
     private int roomNumber;
     private int bedNumber;
-    private HashMap <String, Boolean> extras;
+    private boolean family;
+    private boolean dog;
+    private boolean spa;
+    private boolean fitness;
 
-    public Hotel(String hotelName, String stars, String roomNumber, String bedNumber){
+
+    public Hotel(String hotelName, String category, String roomNumber, String bedNumber, String hotelOwner,
+                 String hotelContactInformation, String address, String city, String cityCode, String phoneNumber,
+                 String family, String dog, String spa, String fitness){
         this.hotelID = COUNTER++;
         this.hotelName = hotelName;
-        this.stars = Integer.parseInt(stars);
+        this.category = Integer.parseInt(category);
         this.roomNumber = Integer.parseInt(roomNumber);
         this.bedNumber = Integer.parseInt(bedNumber);
+        this.hotelOwner = hotelOwner;
+        this.hotelContactInformation = hotelContactInformation;
+        this.address = address;
+        this.city = city;
+        this.cityCode = Integer.parseInt(cityCode);
+        this.phoneNumber = Long.parseLong(phoneNumber);
+        this.family = family.equals("true");
+        this.dog = dog.equals("true");
+        this.spa = spa.equals("true");
+        this.fitness = fitness.equals("true");
 
         createBedOccupancyFile();
         createRoomOccupancyFile();
@@ -33,7 +55,9 @@ public class Hotel {
     }
 
     public String toStringSimple() {
-        return hotelName + "," + stars + "," + roomNumber + "," + bedNumber;
+        return hotelID + "," + hotelName + "," + category + "," + roomNumber + "," + bedNumber + "," + hotelOwner +
+                "," + hotelContactInformation + "," + address + "," + city + "," + cityCode + "," + phoneNumber +
+                "," + family + "," + dog + "," + spa + "," + fitness;
     }
 
     public int getHotelID() {
@@ -52,12 +76,12 @@ public class Hotel {
         this.hotelName = hotelName;
     }
 
-    public int getStars() {
-        return stars;
+    public int getCategory() {
+        return category;
     }
 
-    public void setStars(int stars) {
-        this.stars = stars;
+    public void setCategory(int category) {
+        this.category = category;
     }
 
     public int getRoomNumber() {
@@ -76,12 +100,52 @@ public class Hotel {
         this.bedNumber = bedNumber;
     }
 
-    public HashMap<String, Boolean> getExtras() {
-        return extras;
+    public String getHotelOwner() {
+        return hotelOwner;
     }
 
-    public void setExtras(HashMap<String, Boolean> extras) {
-        this.extras = extras;
+    public void setHotelOwner(String hotelOwner) {
+        this.hotelOwner = hotelOwner;
+    }
+
+    public String getHotelContactInformation() {
+        return hotelContactInformation;
+    }
+
+    public void setHotelContactInformation(String hotelContactInformation) {
+        this.hotelContactInformation = hotelContactInformation;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public int getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(int cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public Long getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public void addToFile(Hotel hotel) {
@@ -97,7 +161,7 @@ public class Hotel {
             }
 
             // user does not exist in file, so add to file
-            writer.write(hotel.hotelName + "," + hotel.stars + "," + hotel.roomNumber + "," + hotel.bedNumber + "\n");
+            writer.write(this.toStringSimple() + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
