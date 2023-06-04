@@ -3,7 +3,6 @@ package src;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 public class Hotel {
 
@@ -227,3 +226,4 @@ public class Hotel {
         }
     }
 }
+

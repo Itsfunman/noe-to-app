@@ -10,7 +10,7 @@ import java.awt.event.ComponentEvent;
 import java.io.*;
 import java.util.ArrayList;
 
-public class HotelEditFrame extends JFrame{
+public class HotelEditFrame extends JFrame {
 
     private JToolBar toolbar;
     private CustomTable customTable;
@@ -48,10 +48,17 @@ public class HotelEditFrame extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = customTable.getSelectedRow();
                 if (selectedRow != -1) {
-                    // Remove the selected row from the table model
-                    customTable.getTableModel().removeRow(selectedRow);
-                    // Save the updated data to the file
-                    customTable.getTableModel().saveData();
+                    // Show a confirmation dialog with a checkbox
+                    JCheckBox checkBox = new JCheckBox("Are you sure?");
+                    Object[] message = {checkBox};
+                    int option = JOptionPane.showConfirmDialog(null, message, "Confirmation", JOptionPane.OK_CANCEL_OPTION);
+
+                    if (option == JOptionPane.OK_OPTION && checkBox.isSelected()) {
+                        // Remove the selected row from the table model
+                        customTable.getTableModel().removeRow(selectedRow);
+                        // Save the updated data to the file
+                        customTable.getTableModel().saveData();
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "No row selected.");
                 }
@@ -71,14 +78,31 @@ public class HotelEditFrame extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 String[] rowData = new String[columnNames.length];
                 // Open a dialog box to get input from the user for each column
-                for (int i = 0; i < columnNames.length; i++) {
-                    String input = JOptionPane.showInputDialog("Enter value for " + columnNames[i]);
-                    rowData[i] = input;
+                JPanel inputPanel = new JPanel();
+                inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
+
+                // Create checkboxes for GDPR confirmation
+                JCheckBox gdprCheckBox = new JCheckBox("I confirm that I have processed the data according to GDPR");
+
+                // Add checkboxes to the input panel
+                inputPanel.add(gdprCheckBox);
+
+                // Show the input dialog
+                int result = JOptionPane.showConfirmDialog(null, inputPanel, "Enter Hotel Details", JOptionPane.OK_CANCEL_OPTION);
+
+                if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
+                    // User confirmed GDPR processing, proceed with adding the hotel
+                    for (int i = 0; i < columnNames.length; i++) {
+                        String input = JOptionPane.showInputDialog("Enter value for " + columnNames[i]);
+                        rowData[i] = input;
+                    }
+                    // Add the new row to the table
+                    customTable.getTableModel().addRow(rowData);
+                    // Save the updated data to the file
+                    customTable.getTableModel().saveData();
+                } else {
+                    JOptionPane.showMessageDialog(null, "GDPR confirmation is required to add a hotel.");
                 }
-                // Add the new row to the table
-                customTable.getTableModel().addRow(rowData);
-                // Save the updated data to the file
-                customTable.getTableModel().saveData();
             }
         });
 
@@ -122,7 +146,7 @@ public class HotelEditFrame extends JFrame{
                 int row = e.getFirstRow();
                 int column = e.getColumn();
 
-                String [][] tableData = customTable.getTableModel().getData();
+                String[][] tableData = customTable.getTableModel().getData();
                 if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
                     String newValue = tableData[row][column];
                     editRow(fileName, row, column, newValue);
@@ -147,10 +171,9 @@ public class HotelEditFrame extends JFrame{
     private void saveData(String fileName, ArrayList<String[]> data) {
 
         try (FileWriter fileWriter = new FileWriter(fileName);
-             BufferedWriter writer = new BufferedWriter(fileWriter)){
+             BufferedWriter writer = new BufferedWriter(fileWriter)) {
             // user does not exist in file, so add to file
-            for (String[] row : data)
-            {
+            for (String[] row : data) {
                 String line = "";
                 for (String value : row) {
                     line = line + value + ",";
