@@ -1,2 +1,1 @@
-Hotel Rosi,3,15,54,Rosa Huber,huber@rosi.at,Murstrasse 12,Sankt Poelten,3010,35135513513,true,false,false,false
 Hotel Bratan,3,12,34,Brati,brati@bratan.br,Meinstrasse 12,Waldviertel,3223,3141351,true,false,false,true

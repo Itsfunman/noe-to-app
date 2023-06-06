@@ -2,7 +2,10 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class LoginFrame extends JFrame {
 
@@ -29,20 +32,20 @@ public class LoginFrame extends JFrame {
     }
 
     private void addLogo(){
-      ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
-      Image img = icon.getImage();
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
+        Image img = icon.getImage();
 
-      //Dimension size = getSize();
-      //int width = size.width/4;
-      //int height = size.height/4;
-      Image newImg = img.getScaledInstance(440, 200, Image.SCALE_SMOOTH );
+        //Dimension size = getSize();
+        //int width = size.width/4;
+        //int height = size.height/4;
+        Image newImg = img.getScaledInstance(440, 200, Image.SCALE_SMOOTH );
 
-      ImageIcon newIcon = new ImageIcon(newImg);
-      JLabel label = new JLabel(newIcon);
-      label.setBounds(0,0, newIcon.getIconWidth(), newIcon.getIconHeight());
-      getContentPane().add(label);
+        ImageIcon newIcon = new ImageIcon(newImg);
+        JLabel label = new JLabel(newIcon);
+        label.setBounds(0,0, newIcon.getIconWidth(), newIcon.getIconHeight());
+        getContentPane().add(label);
 
-      addComponentListener(new ComponentAdapter() {
+        addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 int x = ((getWidth() - label.getWidth())/2);

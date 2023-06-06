@@ -6,7 +6,7 @@ import java.util.Calendar;
 
 public class Hotel {
 
-    public static ArrayList <Hotel> hotels = new ArrayList();
+    public static ArrayList<Hotel> hotels = new ArrayList();
 
     //hotelID counter:
     private static int COUNTER = 0;
@@ -31,28 +31,22 @@ public class Hotel {
 
     public Hotel(String hotelName, String category, String roomNumber, String bedNumber, String hotelOwner,
                  String hotelContactInformation, String address, String city, String cityCode, String phoneNumber,
-                 String family, String dog, String spa, String fitness){
+                 String family, String dog, String spa, String fitness) {
         this.hotelID = COUNTER++;
         this.hotelName = hotelName;
-        this.category = Integer.parseInt(category);
-        this.roomNumber = Integer.parseInt(roomNumber);
-        this.bedNumber = Integer.parseInt(bedNumber);
-        this.hotelOwner = hotelOwner;
-        this.hotelContactInformation = hotelContactInformation;
-        this.address = address;
-        this.city = city;
-        this.cityCode = Integer.parseInt(cityCode);
-        this.phoneNumber = Long.parseLong(phoneNumber);
-        this.family = family.equals("true");
-        this.dog = dog.equals("true");
-        this.spa = spa.equals("true");
-        this.fitness = fitness.equals("true");
-
-        createBedOccupancyFile();
-        createRoomOccupancyFile();
-        //Add rest with try catch blocks;
+        try {
+            this.category = Integer.parseInt(category);
+            this.roomNumber = Integer.parseInt(roomNumber);
+            this.bedNumber = Integer.parseInt(bedNumber);
+            this.cityCode = Integer.parseInt(cityCode);
+            this.phoneNumber = Long.parseLong(phoneNumber);
+        } catch (NumberFormatException e) {
+            // Handle the error, e.g., display an error message or provide default values
+            e.printStackTrace();
+            return; // exit the constructor or handle the error in a different way
+        }
+        // Rest of the constructor code...
     }
-
     public String toStringSimple() {
         return hotelID + "," + hotelName + "," + category + "," + roomNumber + "," + bedNumber + "," + hotelOwner +
                 "," + hotelContactInformation + "," + address + "," + city + "," + cityCode + "," + phoneNumber +
@@ -166,7 +160,7 @@ public class Hotel {
         }
     }
 
-    public void createBedOccupancyFile(){
+    public void createBedOccupancyFile() {
 
         String name = "data/" + hotelName + "BedOccupancy.txt";
         File file = new File(name);
@@ -196,7 +190,7 @@ public class Hotel {
         }
     }
 
-    public void createRoomOccupancyFile(){
+    public void createRoomOccupancyFile() {
 
         String name = "data/" + hotelName + "RoomOccupancy.txt";
         File file = new File(name);
@@ -225,5 +219,7 @@ public class Hotel {
 
         }
     }
+
+
 }
 
