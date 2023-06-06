@@ -34,19 +34,26 @@ public class Hotel {
                  String family, String dog, String spa, String fitness) {
         this.hotelID = COUNTER++;
         this.hotelName = hotelName;
-        try {
-            this.category = Integer.parseInt(category);
-            this.roomNumber = Integer.parseInt(roomNumber);
-            this.bedNumber = Integer.parseInt(bedNumber);
-            this.cityCode = Integer.parseInt(cityCode);
-            this.phoneNumber = Long.parseLong(phoneNumber);
-        } catch (NumberFormatException e) {
-            // Handle the error, e.g., display an error message or provide default values
-            e.printStackTrace();
-            return; // exit the constructor or handle the error in a different way
-        }
-        // Rest of the constructor code...
+        this.category = Integer.parseInt(category);
+        this.roomNumber = Integer.parseInt(roomNumber);
+        this.bedNumber = Integer.parseInt(bedNumber);
+        this.hotelOwner = hotelOwner;
+        this.hotelContactInformation = hotelContactInformation;
+        this.address = address;
+        this.city = city;
+        this.cityCode = Integer.parseInt(cityCode);
+        this.phoneNumber = Long.parseLong(phoneNumber);
+        this.family = family.equals("true");
+        this.dog = dog.equals("true");
+        this.spa = spa.equals("true");
+        this.fitness = fitness.equals("true");
+
+        createBedOccupancyFile();
+        createRoomOccupancyFile();
+
+        //Add rest with try catch blocks;
     }
+
     public String toStringSimple() {
         return hotelID + "," + hotelName + "," + category + "," + roomNumber + "," + bedNumber + "," + hotelOwner +
                 "," + hotelContactInformation + "," + address + "," + city + "," + cityCode + "," + phoneNumber +
