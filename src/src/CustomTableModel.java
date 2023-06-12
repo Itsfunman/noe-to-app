@@ -1,7 +1,9 @@
 package src;
 
 import javax.swing.table.AbstractTableModel;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class CustomTableModel extends AbstractTableModel {
 

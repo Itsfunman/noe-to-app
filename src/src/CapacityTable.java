@@ -12,7 +12,7 @@ public class CapacityTable extends JScrollPane {
     private TableModel tableModel;
     private int totalCount;
 
-    private String [] columnNames = {"Kategorie", "Betriebe", "Zimmer", "Betten", "Ø Zimmer", "Ø Betten"};
+    private String[] columnNames = {"Kategorie", "Betriebe", "Zimmer", "Betten", "Ø Zimmer", "Ø Betten"};
     //Enter hotel information here
     Object[][] data = new Object[6][6];
 
@@ -43,13 +43,13 @@ public class CapacityTable extends JScrollPane {
         setViewportView(table);
     }
 
-    private void fillData(){
+    private void fillData() {
 
         // fill the data array with new data
-        for (int i = 0; i < data.length - 1; i++){
+        for (int i = 0; i < data.length - 1; i++) {
             data[i][0] = 5 - i;
 
-            int [] betriebInfo = getBetriebInfo(5 - i);
+            int[] betriebInfo = getBetriebInfo(5 - i);
             data[i][1] = betriebInfo[0];
             data[i][2] = betriebInfo[1];
             data[i][3] = betriebInfo[2];
@@ -59,16 +59,16 @@ public class CapacityTable extends JScrollPane {
 
         data[5][0] = "Total";
 
-        for(int i = 1; i < 4; i++){
+        for (int i = 1; i < 4; i++) {
             int count = 0;
-            for (int k = 0; k < data.length - 1; k++){
+            for (int k = 0; k < data.length - 1; k++) {
                 count += (Integer) data[k][i];
                 totalCount++;
             }
             data[5][i] = count;
         }
 
-        if((Integer) data[5][1] > 0){
+        if ((Integer) data[5][1] > 0) {
             data[5][4] = (Integer) data[5][2] / (Integer) data[5][1];
             data[5][5] = (Integer) data[5][3] / (Integer) data[5][1];
         }
@@ -76,17 +76,17 @@ public class CapacityTable extends JScrollPane {
 
     }
 
-    private int [] getBetriebInfo(int kat){
-        int [] betriebInfo = new int[5];
-        for (int i = 0; i < betriebInfo.length; i++){
+    private int[] getBetriebInfo(int kat) {
+        int[] betriebInfo = new int[5];
+        for (int i = 0; i < betriebInfo.length; i++) {
             betriebInfo[i] = 0;
         }
 
         Hotel.hotels.clear();
         loadHotels();
 
-        for (int i = 0; i < Hotel.hotels.size(); i++){
-            if (kat == Hotel.hotels.get(i).getCategory()){
+        for (int i = 0; i < Hotel.hotels.size(); i++) {
+            if (kat == Hotel.hotels.get(i).getCategory()) {
                 Hotel hotel = Hotel.hotels.get(i);
                 betriebInfo[0]++;
                 betriebInfo[1] += hotel.getRoomNumber();
@@ -94,15 +94,13 @@ public class CapacityTable extends JScrollPane {
             }
         }
 
-        if (betriebInfo[0] > 0){
+        if (betriebInfo[0] > 0) {
             betriebInfo[3] = (Integer) betriebInfo[1] / betriebInfo[0];
             betriebInfo[4] = (Integer) betriebInfo[2] / betriebInfo[0];
         }
 
         return betriebInfo;
     }
-
-
 
 
     public JTable getTable() {
@@ -121,9 +119,9 @@ public class CapacityTable extends JScrollPane {
         this.tableModel = tableModel;
     }
 
-    private void loadHotels() {
+    private  void loadHotels() {
         try {
-            File file = new File("data/hotelData.txt");
+            File file = new File("data/oldhotels.txt");
             BufferedReader br = new BufferedReader(new FileReader(file));
 
             String st;
@@ -145,7 +143,6 @@ public class CapacityTable extends JScrollPane {
             e.printStackTrace();
         }
     }
-
 
 
 }

@@ -17,11 +17,12 @@ public class HotelEditFrame extends JFrame {
     private JButton addButton;
     private JButton deleteButton;
 
-    private String fileName = "data/hotelData.txt";
+   // private String fileName = "data/hotelData.txt";
 
-    private String[] columnNames = {"Name", "Kategorie", "Zimmer", "Betten",
-            "BesiterIn", "Kontakt", "Strasse/HNr",
-            "Ort", "PLZ", "Telefonnummer", "Familien", "Hunde", "Spa", "Fitness"};
+    private String fileName = "data/oldhotels.txt";
+
+    private String[] columnNames = {"ID", "Kategorie", "Name", "BesitzerIn", "Kontakt", "Adresse",
+            "Stadt", "PLZ", "Telefonnummer", "Anzahl Zimmer", "Anzahl Betten"};
 
     public HotelEditFrame(String title) {
         super(title);
@@ -69,6 +70,8 @@ public class HotelEditFrame extends JFrame {
         add(deleteButton);
     }
 
+
+
     private void initAddButton() {
         addButton = new JButton("ADD HOTEL");
         addButton.setBounds(335, 410, 130, 20);
@@ -110,6 +113,8 @@ public class HotelEditFrame extends JFrame {
         add(addButton);
     }
 
+
+
     private void initToolbar() {
         toolbar = new Toolbar(this);
         toolbar.setVisible(true);
@@ -126,36 +131,8 @@ public class HotelEditFrame extends JFrame {
         });
     }
 
-    private void initCustomTable() {
-        ArrayList<String[]> dataList = fetchData(fileName);
-        int rowCount = dataList.size();
-        int columnCount = columnNames.length;
 
-        String[][] data = new String[rowCount][columnCount];
-        for (int i = 0; i < rowCount; i++) {
-            data[i] = dataList.get(i);
-        }
 
-        CustomTableModel customTableModel = new CustomTableModel(data, fileName, columnNames);
-        customTable = new CustomTable(customTableModel);
-        customTable.setBounds(10, 50, 770, 350);
-
-        customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                int row = e.getFirstRow();
-                int column = e.getColumn();
-
-                String[][] tableData = customTable.getTableModel().getData();
-                if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
-                    String newValue = tableData[row][column];
-                    editRow(fileName, row, column, newValue);
-                }
-            }
-        });
-
-        add(customTable);
-    }
 
     private void editRow(String fileName, int rowIndex, int columnIndex, String newValue) {
         ArrayList<String[]> data = fetchData(fileName);
@@ -189,6 +166,30 @@ public class HotelEditFrame extends JFrame {
         }
     }
 
+    private void initCustomTable() {
+        ArrayList<String[]> dataList = fetchData(fileName);
+        int rowCount = dataList.size();
+        int columnCount = columnNames.length;
+
+        String[][] data = new String[rowCount][columnCount];
+        for (int i = 0; i < rowCount; i++) {
+            data[i] = dataList.get(i);
+        }
+
+        CustomTableModel customTableModel = new CustomTableModel(data, columnNames);
+        customTable = new CustomTable(customTableModel);
+        customTable.setBounds(10, 50, 770, 350);
+
+        customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                // ...
+            }
+        });
+
+        add(customTable);
+    }
+
     private ArrayList<String[]> fetchData(String fileName) {
         ArrayList<String[]> dataList = new ArrayList<>();
 
@@ -200,7 +201,7 @@ public class HotelEditFrame extends JFrame {
                 String[] values = line.split(",");
 
                 // Skip invalid lines or lines with insufficient values
-                if (values.length != 14) {
+                if (values.length != columnNames.length) {
                     continue;
                 }
 

@@ -54,6 +54,12 @@ public class Hotel {
         //Add rest with try catch blocks;
     }
 
+    public Hotel(String category, int noRooms, int noBeds) {
+        this.category = Integer.parseInt(category);
+        this.roomNumber = noRooms;
+        this.bedNumber= noBeds;
+    }
+
     public String toStringSimple() {
         return hotelID + "," + hotelName + "," + category + "," + roomNumber + "," + bedNumber + "," + hotelOwner +
                 "," + hotelContactInformation + "," + address + "," + city + "," + cityCode + "," + phoneNumber +
