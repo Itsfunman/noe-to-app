@@ -21,12 +21,34 @@ public class CustomTableModel extends AbstractTableModel {
         this.data = data;
         this.columnNames = columnNames;
     }
-
+    /*
     public void saveData() {
         try (FileWriter fileWriter = new FileWriter(fileName);
              BufferedWriter writer = new BufferedWriter(fileWriter)) {
 
             for (String[] row : data) {
+                StringBuilder line = new StringBuilder();
+                for (String value : row) {
+                    line.append(value).append(",");
+                }
+                line.deleteCharAt(line.length() - 1); // Remove the trailing comma
+                writer.write(line.toString());
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    */
+
+    public void saveData() {
+        try (FileWriter fileWriter = new FileWriter(fileName);
+             BufferedWriter writer = new BufferedWriter(fileWriter)) {
+
+            String[][] currentData = getData(); // Retrieve the current data from the table model
+
+            for (String[] row : currentData) {
                 StringBuilder line = new StringBuilder();
                 for (String value : row) {
                     line.append(value).append(",");
@@ -63,7 +85,7 @@ public class CustomTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int row, int col) {
-        return true; // Set the cells as editable
+        return col != 0; // Set the cells as editable
     }
 
     @Override

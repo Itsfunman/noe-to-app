@@ -25,7 +25,7 @@ public class User {
     }
 
     private void addToFile(String name, String password) {
-        String filePath = "data/LoginData.txt";
+        String filePath = "data/loginData.txt";
         try (FileReader fileReader = new FileReader(filePath);
              BufferedReader bufferedReader = new BufferedReader(fileReader);
              FileWriter writer = new FileWriter(filePath, true)) {

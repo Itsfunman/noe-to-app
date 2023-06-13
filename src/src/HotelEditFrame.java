@@ -19,10 +19,10 @@ public class HotelEditFrame extends JFrame {
 
    // private String fileName = "data/hotelData.txt";
 
-    private String fileName = "data/oldhotels.txt";
+    private String fileName = "data/hotelData.txt";
 
-    private String[] columnNames = {"ID", "Kategorie", "Name", "BesitzerIn", "Kontakt", "Adresse",
-            "Stadt", "PLZ", "Telefonnummer", "Anzahl Zimmer", "Anzahl Betten"};
+    private String[] columnNames = {"ID", "Name", "Kategorie", "Anzahl Zimmer", "Anzahl Betten", "BesitzerIn", "Kontakt", "Adresse",
+            "Stadt", "PLZ", "Telefonnummer", "Familien", "Hunde", "Spa", "Fitness"};
 
     public HotelEditFrame(String title) {
         super(title);
@@ -95,10 +95,15 @@ public class HotelEditFrame extends JFrame {
 
                 if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
                     // User confirmed GDPR processing, proceed with adding the hotel
-                    for (int i = 0; i < columnNames.length; i++) {
+                    for (int i = 1; i < columnNames.length; i++) {
                         String input = JOptionPane.showInputDialog("Enter value for " + columnNames[i]);
                         rowData[i] = input;
                     }
+
+                    Hotel hotel = new Hotel(rowData[1], rowData[2], rowData[3], rowData[4], rowData[5], rowData[6], rowData[7],
+                                        rowData[8], rowData[9], rowData[10], rowData[11], rowData[12], rowData[13], rowData[14]);
+
+                    rowData[0] = String.valueOf(hotel.getHotelID());
                     // Add the new row to the table
                     customTable.getTableModel().addRow(rowData);
                     // Save the updated data to the file
@@ -176,14 +181,21 @@ public class HotelEditFrame extends JFrame {
             data[i] = dataList.get(i);
         }
 
-        CustomTableModel customTableModel = new CustomTableModel(data, columnNames);
+        CustomTableModel customTableModel = new CustomTableModel(data, fileName, columnNames);
         customTable = new CustomTable(customTableModel);
         customTable.setBounds(10, 50, 770, 350);
 
         customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
-                // ...
+                int row = e.getFirstRow();
+                int column = e.getColumn();
+                if (row >= 0 && column >= 0) {
+                    Object updatedValue = customTableModel.getValueAt(row, column);
+                    // Perform any necessary actions with the updated value
+
+                    customTableModel.saveData(); // Save the updated data to the file
+                }
             }
         });
 
