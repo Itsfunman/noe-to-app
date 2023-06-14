@@ -1,5 +1,7 @@
 package src;
 
+import lombok.SneakyThrows;
+
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -8,6 +10,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class HotelEditFrame extends JFrame {
@@ -17,7 +22,7 @@ public class HotelEditFrame extends JFrame {
     private JButton addButton;
     private JButton deleteButton;
 
-   // private String fileName = "data/hotelData.txt";
+    // private String fileName = "data/hotelData.txt";
 
     private String fileName = "data/hotelData.txt";
 
@@ -55,8 +60,19 @@ public class HotelEditFrame extends JFrame {
                     int option = JOptionPane.showConfirmDialog(null, message, "Confirmation", JOptionPane.OK_CANCEL_OPTION);
 
                     if (option == JOptionPane.OK_OPTION && checkBox.isSelected()) {
+                        // Retrieve the hotel ID from the selected row
+                        String hotelID = customTable.getValueAt(selectedRow, 0).toString();
+
+                        // Delete the hotel from the database
+                        try {
+                            deleteHotelFromDB(hotelID);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
                         // Remove the selected row from the table model
                         customTable.getTableModel().removeRow(selectedRow);
+
                         // Save the updated data to the file
                         customTable.getTableModel().saveData();
                     }
@@ -69,14 +85,31 @@ public class HotelEditFrame extends JFrame {
         deleteButton.setVisible(true);
         add(deleteButton);
     }
+    public void deleteHotelFromDB(String hotelID) throws SQLException {
+        // Delete from DB
+        PreparedStatement pst = null;
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnection();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
 
-
+        try {
+            pst = connection.prepareStatement("DELETE FROM dbo.hotel WHERE hotelid = ?");
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        pst.setInt(1, Integer.parseInt(hotelID));
+        pst.executeUpdate();
+    }
 
     private void initAddButton() {
         addButton = new JButton("ADD HOTEL");
-        addButton.setBounds(335, 410, 130, 20);
+        addButton.setBounds(175, 440, 130, 20);
 
         addButton.addActionListener(new ActionListener() {
+            @SneakyThrows
             @Override
             public void actionPerformed(ActionEvent e) {
                 String[] rowData = new String[columnNames.length];
@@ -101,15 +134,15 @@ public class HotelEditFrame extends JFrame {
                     }
 
                     Hotel hotel = new Hotel(rowData[1], rowData[2], rowData[3], rowData[4], rowData[5], rowData[6], rowData[7],
-                                        rowData[8], rowData[9], rowData[10], rowData[11], rowData[12], rowData[13], rowData[14]);
+                            rowData[8], rowData[9], rowData[10], rowData[11], rowData[12], rowData[13], rowData[14]);
 
                     rowData[0] = String.valueOf(hotel.getHotelID());
                     // Add the new row to the table
                     customTable.getTableModel().addRow(rowData);
                     // Save the updated data to the file
                     customTable.getTableModel().saveData();
-                } else {
-                    JOptionPane.showMessageDialog(null, "GDPR confirmation is required to add a hotel.");
+
+                    addHotelToDB(rowData);
                 }
             }
         });
@@ -118,113 +151,150 @@ public class HotelEditFrame extends JFrame {
         add(addButton);
     }
 
+    public void addHotelToDB(String[] rowData) throws SQLException {
 
+        //add to DB
+        PreparedStatement pst = null;
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnection();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
 
-    private void initToolbar() {
-        toolbar = new Toolbar(this);
-        toolbar.setVisible(true);
-        toolbar.setLocation(0, 0);
+        System.out.println(connection);
+        try {
+            pst = connection.prepareStatement("insert into dbo.hotel (hotelid,hotelname,kategorie,roomNumber,bedNumber,owner,contact,adress,city,plz,tel,family,animals,spa,fitness) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        pst.setInt(1, Integer.parseInt(rowData[0]));
+        pst.setString(2, rowData[1]);
+        pst.setString(3, rowData[2]);
+        pst.setInt(4, Integer.parseInt(rowData[3]));
+        pst.setInt(5, Integer.parseInt(rowData[4]));
+        pst.setString(6, rowData[5]);
+        pst.setString(7, rowData[6]);
+        pst.setString(8, rowData[7]);
+        pst.setString(9, rowData[8]);
+        pst.setInt(10, Integer.parseInt(rowData[9]));
+        pst.setLong(11, Long.parseLong(rowData[10]));
+        pst.setString(12, rowData[11]);
+        pst.setString(13, rowData[12]);
+        pst.setString(14, rowData[13]);
+        pst.setString(15, rowData[14]);
 
-        add(toolbar);
+        pst.executeUpdate();
 
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-
-                toolbar.setSize(getWidth(), 30);
-            }
-        });
-    }
-
-
-
-
-    private void editRow(String fileName, int rowIndex, int columnIndex, String newValue) {
-        ArrayList<String[]> data = fetchData(fileName);
-
-        if (rowIndex >= 0 && rowIndex < data.size() && columnIndex >= 0 && columnIndex < data.get(rowIndex).length) {
-            data.get(rowIndex)[columnIndex] = newValue;
-            saveData(fileName, data);
-        } else {
-            System.out.println("Invalid row index or column index.");
+        {
+            JOptionPane.showMessageDialog(null, "GDPR confirmation is required to add a hotel.");
         }
     }
 
-    private void saveData(String fileName, ArrayList<String[]> data) {
 
-        try (FileWriter fileWriter = new FileWriter(fileName);
-             BufferedWriter writer = new BufferedWriter(fileWriter)) {
-            // user does not exist in file, so add to file
-            for (String[] row : data) {
-                String line = "";
-                for (String value : row) {
-                    line = line + value + ",";
+    private void initToolbar () {
+            toolbar = new Toolbar(this);
+            toolbar.setVisible(true);
+            toolbar.setLocation(0, 0);
+
+            add(toolbar);
+
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+
+                    toolbar.setSize(getWidth(), 30);
                 }
-                //System.out.println(line);
-                writer.write(line);
-                writer.newLine();
-            }
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initCustomTable() {
-        ArrayList<String[]> dataList = fetchData(fileName);
-        int rowCount = dataList.size();
-        int columnCount = columnNames.length;
-
-        String[][] data = new String[rowCount][columnCount];
-        for (int i = 0; i < rowCount; i++) {
-            data[i] = dataList.get(i);
+            });
         }
 
-        CustomTableModel customTableModel = new CustomTableModel(data, fileName, columnNames);
-        customTable = new CustomTable(customTableModel);
-        customTable.setBounds(10, 50, 770, 350);
 
-        customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                int row = e.getFirstRow();
-                int column = e.getColumn();
-                if (row >= 0 && column >= 0) {
-                    Object updatedValue = customTableModel.getValueAt(row, column);
-                    // Perform any necessary actions with the updated value
+        private void editRow (String fileName,int rowIndex, int columnIndex, String newValue){
+            ArrayList<String[]> data = fetchData(fileName);
 
-                    customTableModel.saveData(); // Save the updated data to the file
-                }
+            if (rowIndex >= 0 && rowIndex < data.size() && columnIndex >= 0 && columnIndex < data.get(rowIndex).length) {
+                data.get(rowIndex)[columnIndex] = newValue;
+                saveData(fileName, data);
+            } else {
+                System.out.println("Invalid row index or column index.");
             }
-        });
+        }
 
-        add(customTable);
-    }
+        private void saveData (String fileName, ArrayList < String[]>data){
 
-    private ArrayList<String[]> fetchData(String fileName) {
-        ArrayList<String[]> dataList = new ArrayList<>();
-
-        try (FileReader fileReader = new FileReader(fileName);
-             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] values = line.split(",");
-
-                // Skip invalid lines or lines with insufficient values
-                if (values.length != columnNames.length) {
-                    continue;
+            try (FileWriter fileWriter = new FileWriter(fileName);
+                 BufferedWriter writer = new BufferedWriter(fileWriter)) {
+                // user does not exist in file, so add to file
+                for (String[] row : data) {
+                    String line = "";
+                    for (String value : row) {
+                        line = line + value + ",";
+                    }
+                    //System.out.println(line);
+                    writer.write(line);
+                    writer.newLine();
                 }
 
-                dataList.add(values);
-            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        return dataList;
-    }
+        private void initCustomTable () {
+            ArrayList<String[]> dataList = fetchData(fileName);
+            int rowCount = dataList.size();
+            int columnCount = columnNames.length;
 
-}
+            String[][] data = new String[rowCount][columnCount];
+            for (int i = 0; i < rowCount; i++) {
+                data[i] = dataList.get(i);
+            }
+
+            CustomTableModel customTableModel = new CustomTableModel(data, fileName, columnNames);
+            customTable = new CustomTable(customTableModel);
+            customTable.setBounds(10, 50, 770, 350);
+
+            customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
+                @Override
+                public void tableChanged(TableModelEvent e) {
+                    int row = e.getFirstRow();
+                    int column = e.getColumn();
+                    if (row >= 0 && column >= 0) {
+                        Object updatedValue = customTableModel.getValueAt(row, column);
+                        // Perform any necessary actions with the updated value
+
+                        customTableModel.saveData(); // Save the updated data to the file
+                    }
+                }
+            });
+
+            add(customTable);
+        }
+
+        private ArrayList<String[]> fetchData (String fileName){
+            ArrayList<String[]> dataList = new ArrayList<>();
+
+            try (FileReader fileReader = new FileReader(fileName);
+                 BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    String[] values = line.split(",");
+
+                    // Skip invalid lines or lines with insufficient values
+                    if (values.length != columnNames.length) {
+                        continue;
+                    }
+
+                    dataList.add(values);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return dataList;
+        }
+
+    }

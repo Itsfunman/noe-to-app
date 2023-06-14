@@ -1,4 +1,3 @@
-661,Gasthof Singula,*,62,41,Strelitzer Daouia,Gschihay Mateeas,Hauptstraße 22,Payerbach,2650,2853103,false,false,false,false
 145,Konditorei Müssauer,*,12,15,Gröbler Trinity,Götzfried Himat,Böhmgasse 19,Waidhofen,3830,2882571,false,false,false,false
 55,Hotel garni Steinfeld,***,79,100,Niederhametner Kilian-Noel,Klopstech-Wieter Sakine,Nikolaus-August-Otto-Straße 4,Wiener,2700,3563381,false,false,false,false
 353,Land- und Seminarpension Gamerith,*,54,131,Tichauer Annamária,Mowinckel Luta,Mottingeramt 41,Mottingeramt,3532,2375369,false,false,false,false
@@ -687,4 +686,6 @@
 447,Schlaffass - Schlafen im Holzfass,**,20,141,Pietka Olivia-Chelsea,Krojer Seila,Dumba Park 1,Tattendorf,2523,6726807,false,false,false,false
 297,Dorfwirtshaus Rauch,*,59,73,Lezak Celio,Ploub Mehvan,Eschabruck 11,Eschabruck,3533,8635887,false,false,false,false
 0,Hotel Rosi,***,15,54,Rosa Huber,huber@rosi.at,Murstrasse 12,Sankt Poelten,3010,35135513513,true,false,false,false
-1,Hotel Bratan,***,12,34,Brati,brati@bratan.br,Meinstrasse 12,Waldviertel,3223,3141351,true,false,false,true
+1,Hotel Bratan,***,12,40,Brati,brati@bratan.br,Meinstrasse 12,Waldviertel,3223,3141351,true,false,false,true
+47,Sacher,*****,100,200,Marcel,Hase,Sacherstraße 10,Wien,1010,066769959595,true,false,true,true
+58,Delphin,*****,200,300,Pia Zimmernmann,Marcel Nikolic,Delphinstraße 50 ,Wien,1080,066784959192,true,false,true,true

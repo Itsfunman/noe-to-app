@@ -74,4 +74,9 @@ public class CustomTable extends JScrollPane {
     public void setSelectedRow(int selectedRow) {
         this.selectedRow = selectedRow;
     }
+
+    public Object getValueAt(int row, int column) {
+        return tableModel.getValueAt(row, column);
+    }
+
 }
