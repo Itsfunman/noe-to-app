@@ -107,7 +107,7 @@ public class HotelEditFrame extends JFrame {
     private void initAddButton() {
         addButton = new JButton("ADD HOTEL");
         addButton.setBounds(175, 440, 130, 20);
-
+        //updated version from Pia Zimmermann
         addButton.addActionListener(new ActionListener() {
             @SneakyThrows
             @Override
