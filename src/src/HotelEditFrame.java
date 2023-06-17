@@ -116,7 +116,7 @@ public class HotelEditFrame extends JFrame {
                 // Open a dialog box to get input from the user for each column
                 JPanel inputPanel = new JPanel();
                 inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
-
+                //Updated version
                 // Create checkboxes for GDPR confirmation
                 JCheckBox gdprCheckBox = new JCheckBox("I confirm that I have processed the data according to GDPR");
 
@@ -128,11 +128,13 @@ public class HotelEditFrame extends JFrame {
 
                 if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
                     // User confirmed GDPR processing, proceed with adding the hotel
-                    for (int i = 1; i < columnNames.length; i++) {
-                        String input = JOptionPane.showInputDialog("Enter value for " + columnNames[i]);
-                        rowData[i] = input;
-                    }
+                    for (String columnName : Arrays.copyOfRange(columnNames, 1, columnNames.length)) {
 
+                        String input = JOptionPane.showInputDialog("Enter value for " + columnName);
+
+                        rowData[Arrays.asList(columnNames).indexOf(columnName)] = input;
+
+                    }
                     Hotel hotel = new Hotel(rowData[1], rowData[2], rowData[3], rowData[4], rowData[5], rowData[6], rowData[7],
                             rowData[8], rowData[9], rowData[10], rowData[11], rowData[12], rowData[13], rowData[14]);
 
