@@ -1,11 +1,17 @@
 package src;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /*
 
@@ -18,24 +24,52 @@ Selection shall be possible for one hotel and/or year and/or category (all hotel
 
 public class OccupancyFrame extends JFrame {
 
-    private OccupancyTable occupancyTable;
+    String [] columnNames = new String[]{"JAHR/MONAT", "ANZAHL", "RÄUME", "BENUTZT", "BETTEN", "BENUTZT"};
+
     private Toolbar toolbar;
 
-    //Creates interface to choose a date
-    private JLabel [] labels = new JLabel[3];
-    private String [] labelNames = {"Hotel:", "Jahr:", "Monat:"};
-    private JComboBox<String> hotelChoice;
-    private Hotel [] hotelOptions;
-    private JComboBox<Integer> yearChoice;
-    private JComboBox<String> modeChoice;
-    private final String [] modeOptions = {"Bed Occupancy", "Room Occupancy"};
 
-    private String currentHotel;
-    private int currentYear;
-    private int currentMode;
+    private CustomTable occupancyTable;
+    public static String[][] selectedOccupancyData;
 
+    private int startYear;
+    private int endYear;
+    private int startMonth;
+    private int endMonth;
+    private String minCategory;
+    private String maxCategory;
+    private Hotel hotel;
 
-    public OccupancyFrame(String title) {
+    private JCheckBox multiHotel;
+    private JLabel multiHotelLabel;
+
+    private JComboBox <String> hotelComboBox;
+    private JLabel hotelLabel;
+
+    private JComboBox <Integer> startYearBox;
+    private JComboBox <Integer> endYearBox;
+    private JLabel yearLabel;
+
+    private JComboBox <Integer> startMonthBox;
+    private JComboBox <Integer> endMonthBox;
+    private JLabel monthLabel;
+
+    private JComboBox <String> minCategoryBox;
+    private JComboBox <String> maxCategoryBox;
+    private JLabel categoryLabel;
+
+    private JButton applyButton;
+
+    private HashMap<String, Hotel> hotelMap = new HashMap<>();
+
+    private int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+    private ArrayList <Integer> years = new ArrayList<>();
+
+    private Integer [] months = new Integer[12];
+
+    private String [] categories = new String[5];
+
+    public OccupancyFrame(String title){
         super(title);
 
         setSize(800, 500);
@@ -46,8 +80,7 @@ public class OccupancyFrame extends JFrame {
         setLayout(null);
 
         InitToolbar();
-        InitOccupancyTable();
-        InitDetailedMode();
+        InitMultiHotelCheckBox();
 
     }
 
@@ -68,73 +101,118 @@ public class OccupancyFrame extends JFrame {
         });
     }
 
-    private void InitOccupancyTable() {
-        occupancyTable = new OccupancyTable();
-        occupancyTable.setLocation(100, 60);
-        occupancyTable.setVisible(true);
-        add(occupancyTable);
+    private void InitMultiHotelCheckBox(){
 
-        // Set the width of the JScrollPane to 3/4 of the window width and the height to equal the combined height of
-        //the rows times 1.5 (don´t ask why, I don´t know
-        double tableWidth = getWidth() * 0.75;
-        double tableHeight = occupancyTable.getTable().getRowHeight() * (occupancyTable.getTable().getRowCount() + 1.5);
-        occupancyTable.setSize((int) tableWidth, (int) tableHeight);
+        multiHotel = new JCheckBox();
+        multiHotel.setBounds((getWidth()/2) - 80, 250, 20,20);
 
-    }
+        add(multiHotel);
 
-    private void InitDetailedMode() {
-        InitDMLabels();
+        multiHotelLabel = new JLabel("MULTI-HOTEL MODUS");
+        multiHotelLabel.setBounds((getWidth()/2) - 60, 250, 150,20);
+        add(multiHotelLabel);
+
         InitHotelChoice();
-        InitYearChoice();
-        InitModeChoice();
+
+        multiHotel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (multiHotel.isSelected()){
+                    InitMultiChoice();
+                } else {
+                    InitHotelChoice();
+                }
+            }
+        });
+
     }
 
-    private void InitDMLabels(){
+    private void InitMultiChoice(){
 
-        for (int i = 0; i < labels.length; i++ ){
-            JLabel label = new JLabel(labelNames[i]);
-
-            label.setBounds(((getWidth()/3) * (i + 1)) - 200, 250, 60, 20);
-            label.setVisible(true);
-
-            add(label);
-
-            //Must be done this way because we can´t use int i in the addComponentAdapter
-            int pos = i;
-
-            label.addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    label.setLocation(((getWidth()/3) * (pos + 1)) - 200, 250);
-                }
-            });
-
+        if (hotelComboBox != null){
+            hotelComboBox.setVisible(false);
+            hotelLabel.setVisible(false);
 
         }
+
+        repaint();
+
+        InitCategoryChoice();
+        InitYearChoice();
+        InitMonthChoice();
+        InitApplyButton();
+
     }
 
     private void InitHotelChoice(){
 
-        hotelOptions = new Hotel[Hotel.hotels.size()];
-        hotelChoice = new JComboBox<>();
+        if (startYearBox != null){
+            remove(startYearBox);
+            remove(endYearBox);
+            remove(yearLabel);
 
-        fillHotelOptions();
+            remove(startMonthBox);
+            remove(endMonthBox);
+            remove(monthLabel);
 
-        for (Hotel hotelOption : hotelOptions) {
-            String h = hotelOption.getHotelName();
-            hotelChoice.addItem(h);
+            remove(minCategoryBox);
+            remove(maxCategoryBox);
+            remove(categoryLabel);
+
+            remove(applyButton);
         }
-        hotelChoice.setBounds((getWidth()/2) - 260, 250, 130, 20);
-        add(hotelChoice);
 
-        hotelChoice.addActionListener(e -> {
-            setCurrentHotel(Objects.requireNonNull(hotelChoice.getSelectedItem()).toString());
-        });
+        repaint();
 
-        hotelChoice.addComponentListener(new ComponentAdapter() {
+        hotelComboBox = new JComboBox<>();
+
+        for (Hotel hotel : Hotel.hotels){
+            hotelComboBox.addItem(hotel.getHotelName());
+            hotelMap.put(hotel.getHotelName(), hotel);
+        }
+
+        hotelComboBox.setBounds((getWidth()/2) - 60, 325, 160, 20);
+        add(hotelComboBox);
+
+        hotelLabel = new JLabel("HOTEL : ");
+        hotelLabel.setBounds(getWidth()/2 - 110, 325, 60, 20);
+        add(hotelLabel);
+
+        InitYearChoice();
+        InitMonthChoice();
+        InitApplyButton2();
+
+    }
+    private void InitApplyButton2(){
+
+        applyButton = new JButton("APPLY");
+        applyButton.setBounds((getWidth()/2) - 45, 350, 90, 20);
+        add(applyButton);
+
+        applyButton.addActionListener(new ActionListener() {
             @Override
-            public void componentResized(ComponentEvent e) {
-                hotelChoice.setLocation((getWidth()/2) - 260, 250);
+            public void actionPerformed(ActionEvent e) {
+
+                startYear = (int) startYearBox.getSelectedItem();
+                endYear = (int) endYearBox.getSelectedItem();
+
+                startMonth = (int) startMonthBox.getSelectedItem();
+                endMonth = (int) endMonthBox.getSelectedItem();
+
+                int hotelID = hotelMap.get(hotelComboBox.getSelectedItem()).getHotelID();
+
+                try {
+                    if (startYear < endYear) {
+                        InitSingleOccupancyTable(startYear, endYear, startMonth, endMonth, hotelID);
+                    } else if (startYear == endYear && startMonth <= endMonth && minCategory.length() <= maxCategory.length()){
+                        InitMultiOccupancyTable(startYear, endYear, startMonth, endMonth, minCategory, maxCategory);
+                    } else{
+                        throw new IllegalArgumentException("Invalid value size!");
+                    }
+                } catch (IllegalArgumentException iae){
+                    iae.printStackTrace();
+                }
+
             }
         });
 
@@ -142,79 +220,500 @@ public class OccupancyFrame extends JFrame {
 
     private void InitYearChoice(){
 
-        ArrayList<Integer> years = new ArrayList<>();
-
-        Calendar calendar = Calendar.getInstance();
-        int thisYear = calendar.get(Calendar.YEAR);
-
-        for (int i = 2000; i <= thisYear; i++){
+        for (int i = 2014; i <= currentYear; i++){
             years.add(i);
         }
 
-        yearChoice = new JComboBox<>(years.toArray(new Integer[0]));
-        yearChoice.setBounds((getWidth()/2), 250, 130, 20);
-        add(yearChoice);
+        startYearBox = new JComboBox<>(years.toArray(new Integer[0]));
+        startYearBox.setBounds((getWidth()/2) - 115, 275, 100,20);
+        add(startYearBox);
 
-        yearChoice.addActionListener(e -> {
-            setCurrentYear(currentYear = yearChoice.getSelectedIndex());
-        });
+        endYearBox = new JComboBox<>(years.toArray(new Integer[0]));
+        endYearBox.setBounds((getWidth()/2) + 15, 275, 100,20);
+        add(endYearBox);
 
-        yearChoice.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                yearChoice.setLocation((getWidth()/2), 250);
-            }
-        });
-    }
-
-    private void InitModeChoice(){
-
-        modeChoice = new JComboBox<>(modeOptions);
-        modeChoice.setBounds((getWidth()/2) + 240, 250, 130, 20);
-        add(modeChoice);
-
-        modeChoice.addActionListener(e -> {
-            //setCurrentMode(Objects.requireNonNull(modeChoice.getSelectedItem()).toString().replaceAll(" ", ""));
-            setCurrentMode(modeChoice.getSelectedIndex());
-        });
-
-        modeChoice.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                modeChoice.setLocation((getWidth()/2) + 240, 250);
-            }
-        });
+        yearLabel = new JLabel("BIS");
+        yearLabel.setBounds((getWidth()/2) - 10, 275, 20,20);
+        add(yearLabel);
 
     }
 
-    private void fillHotelOptions(){
+    private void InitMonthChoice(){
 
-        for (int i = 0; i < hotelOptions.length; i++){
-            hotelOptions[i] = Hotel.hotels.get(i);
+        for (int i = 1; i <= months.length; i++){
+            months[i-1] = i;
         }
+
+        startMonthBox = new JComboBox<>(months);
+        startMonthBox.setBounds((getWidth()/2) - 115, 300, 100,20);
+        add(startMonthBox);
+
+        endMonthBox = new JComboBox<>(months);
+        endMonthBox.setBounds((getWidth()/2) + 15, 300, 100,20);
+        add(endMonthBox);
+
+        monthLabel = new JLabel("BIS");
+        monthLabel.setBounds((getWidth()/2) - 10, 300, 20,20);
+        add(monthLabel);
+
     }
 
-    public String getCurrentHotel() {
-        return currentHotel;
+    private void InitCategoryChoice(){
+
+        categories = new String[]{"*", "**", "***", "****", "*****"};
+
+        minCategoryBox = new JComboBox<>(categories);
+        minCategoryBox.setBounds((getWidth()/2) - 115, 325, 100,20);
+        add(minCategoryBox);
+
+        maxCategoryBox = new JComboBox<>(categories);
+        maxCategoryBox.setBounds((getWidth()/2) + 15, 325, 100,20);
+        add(maxCategoryBox);
+
+        categoryLabel = new JLabel("BIS");
+        categoryLabel.setBounds((getWidth()/2) - 10, 325, 20,20);
+        add(categoryLabel);
+
     }
 
-    public void setCurrentHotel(String currentHotel) {
-        this.currentHotel = currentHotel;
+    private void InitApplyButton(){
+
+        applyButton = new JButton("APPLY");
+        applyButton.setBounds((getWidth()/2) - 45, 350, 90, 20);
+        add(applyButton);
+
+        applyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                startYear = (int) startYearBox.getSelectedItem();
+                endYear = (int) endYearBox.getSelectedItem();
+
+                startMonth = (int) startMonthBox.getSelectedItem();
+                endMonth = (int) endMonthBox.getSelectedItem();
+
+                minCategory = (String) minCategoryBox.getSelectedItem();
+                maxCategory = (String) maxCategoryBox.getSelectedItem();
+
+                try {
+                    if (startYear < endYear && minCategory.length() <= maxCategory.length()) {
+                        InitMultiOccupancyTable(startYear, endYear, startMonth, endMonth, minCategory, maxCategory);
+                    } else if (startYear == endYear && startMonth <= endMonth && minCategory.length() <= maxCategory.length()){
+                        InitMultiOccupancyTable(startYear, endYear, startMonth, endMonth, minCategory, maxCategory);
+                    } else{
+                        throw new IllegalArgumentException("Invalid value size!");
+                    }
+                } catch (IllegalArgumentException iae){
+                    iae.printStackTrace();
+                }
+
+            }
+        });
+
     }
 
-    public int getCurrentYear() {
-        return currentYear;
+    private void InitSingleOccupancyTable(int startYear, int endYear, int startMonth, int endMonth, int hotelID){
+
+        if (occupancyTable != null){
+            remove(occupancyTable);
+        }
+
+        selectedOccupancyData = fetchSingleHotelData(startYear, endYear, startMonth, endMonth, hotelID);
+
+        occupancyTable = new CustomTable(selectedOccupancyData, columnNames);
+        occupancyTable.setLocation(100, 60);
+        occupancyTable.setVisible(true);
+        add(occupancyTable);
+
+        // Set the width of the JScrollPane to 3/4 of the window width and the height to equal the combined height of
+        //the rows times 1.5 (don´t ask why, I don´t know)
+        double tableWidth = getWidth() * 0.75;
+        double tableHeight = occupancyTable.getTable().getRowHeight() * (11.5);
+        occupancyTable.setSize((int) tableWidth, (int) tableHeight);
+
     }
 
-    public void setCurrentYear(int currentYear) {
-        this.currentYear = currentYear;
+    private String [][] fetchSingleHotelData(int startYear, int endYear, int startMonth, int endMonth, int hotelID){
+
+        int rowNumber = getRowCount(startYear, endYear, startMonth, endMonth);
+        String [][] workData = new String[rowNumber][columnNames.length];
+
+        //FORMAT:
+        //"YEAR/MONTH", "AMOUNT SELECTED", "ROOMS", "USEDROOMS", "BEDS", "USEDBEDS"
+
+        ArrayList<Integer> hotelIDs = new ArrayList<>();
+        hotelIDs.add(hotelID);
+        int[] otherValues = otherValues(hotelIDs);
+
+
+        //Initialize rooms and beds used
+        try (FileReader fileReader = new FileReader("data/occupancies.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] values = line.split(",");
+
+                // Skip invalid lines or lines with insufficient values
+                if (values.length != 7) {
+                    continue;
+                }
+
+
+                // Check if the line matches the given hotelID
+                if (hotelID == Integer.parseInt(values[0])) {
+
+                    if (Integer.parseInt(values[5]) >= startYear && Integer.parseInt(values[5]) <= endYear) {
+                        if (Integer.parseInt(values[5]) == startYear) {
+                            if (Integer.parseInt(values[6]) >= startMonth) {
+                                int rowIndex = ((Integer.parseInt(values[5]) - startYear) * 12) + (Integer.parseInt(values[6]) - startMonth);
+
+                                // Check if the row index is within the valid range
+                                if (rowIndex >= 0 && rowIndex < rowNumber) {
+                                    if (workData[rowIndex][3] == null) {
+                                        workData[rowIndex][3] = "0";
+                                    }
+                                    if (workData[rowIndex][5] == null) {
+                                        workData[rowIndex][5] = "0";
+                                    }
+
+                                    // Update room and bed values
+                                    workData[rowIndex][3] = String.valueOf(Integer.parseInt(workData[rowIndex][3]) + Integer.parseInt(values[2]));
+                                    workData[rowIndex][5] = String.valueOf(Integer.parseInt(workData[rowIndex][5]) + Integer.parseInt(values[4]));
+                                }
+                            }
+                        } else if (Integer.parseInt(values[5]) == endYear) {
+                            if (Integer.parseInt(values[6]) <= endMonth) {
+                                int rowIndex = ((Integer.parseInt(values[5]) - startYear) * 12) + (Integer.parseInt(values[6]) - startMonth);
+
+                                // Check if the row index is within the valid range
+                                if (rowIndex >= 0 && rowIndex < rowNumber) {
+                                    if (workData[rowIndex][3] == null) {
+                                        workData[rowIndex][3] = "0";
+                                    }
+                                    if (workData[rowIndex][5] == null) {
+                                        workData[rowIndex][5] = "0";
+                                    }
+
+                                    // Update room and bed values
+                                    workData[rowIndex][3] = String.valueOf(Integer.parseInt(workData[rowIndex][3]) + Integer.parseInt(values[2]));
+                                    workData[rowIndex][5] = String.valueOf(Integer.parseInt(workData[rowIndex][5]) + Integer.parseInt(values[4]));
+                                }
+                            }
+                        } else {
+                            int rowIndex = ((Integer.parseInt(values[5]) - startYear) * 12) + (Integer.parseInt(values[6]) - startMonth);
+
+                            // Check if the row index is within the valid range
+                            if (rowIndex >= 0 && rowIndex < rowNumber) {
+                                if (workData[rowIndex][3] == null) {
+                                    workData[rowIndex][3] = "0";
+                                }
+                                if (workData[rowIndex][5] == null) {
+                                    workData[rowIndex][5] = "0";
+                                }
+
+                                // Update room and bed values
+                                workData[rowIndex][3] = String.valueOf(Integer.parseInt(workData[rowIndex][3]) + Integer.parseInt(values[2]));
+                                workData[rowIndex][5] = String.valueOf(Integer.parseInt(workData[rowIndex][5]) + Integer.parseInt(values[4]));
+                            }
+                        }
+                    }
+
+
+                }
+
+
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            selectedOccupancyData = new String[0][7]; // Empty array for new file
+        }
+
+
+        int monthCount = startMonth - 1;
+        int yearCount = startYear;
+        //Initialize the rest
+        for (int i = 0; i < rowNumber; i++){
+
+            //Initialize Date
+            if (monthCount % 12 == 0){
+                yearCount++;
+                monthCount = 0;
+            }
+
+            monthCount++;
+
+            workData[i][0] = yearCount + "/" + monthCount;
+
+            //Initialize amount selected
+            workData[i][1] = "1";
+
+            //Initialize room number
+            workData[i][2] = String.valueOf(otherValues[0]);
+
+            //Initialize bed number
+            workData[i][4] = String.valueOf(otherValues[1]);
+        }
+
+        return workData;
     }
 
-    public int getCurrentMode() {
-        return currentMode;
+    private void InitMultiOccupancyTable(int startYear, int endYear, int startMonth, int endMonth, String minCategory, String maxCategory){
+
+        if (occupancyTable != null){
+            remove(occupancyTable);
+        }
+
+        selectedOccupancyData = fetchMultiHotelData(startYear, endYear, startMonth, endMonth, minCategory, maxCategory);
+
+        occupancyTable = new CustomTable(selectedOccupancyData, columnNames);
+        occupancyTable.setLocation(100, 60);
+        occupancyTable.setVisible(true);
+        add(occupancyTable);
+
+        // Set the width of the JScrollPane to 3/4 of the window width and the height to equal the combined height of
+        //the rows times 1.5 (don´t ask why, I don´t know)
+        double tableWidth = getWidth() * 0.75;
+        double tableHeight = occupancyTable.getTable().getRowHeight() * (11.5);
+        occupancyTable.setSize((int) tableWidth, (int) tableHeight);
+
     }
 
-    public void setCurrentMode(int currentMode) {
-        this.currentMode = currentMode;
+    private String [][] fetchMultiHotelData(int startYear, int endYear, int startMonth, int endMonth, String minCategory, String maxCategory){
+
+        int rowNumber = getRowCount(startYear, endYear, startMonth, endMonth);
+        String [][] workData = new String[rowNumber][columnNames.length];
+
+        //FORMAT:
+        //"YEAR/MONTH", "AMOUNT SELECTED", "ROOMS", "USEDROOMS", "BEDS", "USEDBEDS"
+
+        ArrayList<Integer> hotelIDs = getHotelIDs(minCategory, maxCategory);
+
+        int [] otherValues = otherValues(hotelIDs);
+
+        //Initialize rooms and beds used
+        try (FileReader fileReader = new FileReader("data/occupancies.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] values = line.split(",");
+
+                // Skip invalid lines or lines with insufficient values
+                if (values.length != 7) {
+                    continue;
+                }
+
+
+                // Check if the line matches the given hotelID
+                if (hotelIDs.contains(Integer.parseInt(values[0]))) {
+
+                    if (Integer.parseInt(values[5]) >= startYear && Integer.parseInt(values[5]) <= endYear) {
+                        if (Integer.parseInt(values[5]) == startYear) {
+                            if (Integer.parseInt(values[6]) >= startMonth) {
+                                int rowIndex = ((Integer.parseInt(values[5]) - startYear) * 12) + (Integer.parseInt(values[6]) - startMonth);
+
+                                // Check if the row index is within the valid range
+                                if (rowIndex >= 0 && rowIndex < rowNumber) {
+                                    if (workData[rowIndex][3] == null) {
+                                        workData[rowIndex][3] = "0";
+                                    }
+                                    if (workData[rowIndex][5] == null) {
+                                        workData[rowIndex][5] = "0";
+                                    }
+
+                                    // Update room and bed values
+                                    workData[rowIndex][3] = String.valueOf(Integer.parseInt(workData[rowIndex][3]) + Integer.parseInt(values[2]));
+                                    workData[rowIndex][5] = String.valueOf(Integer.parseInt(workData[rowIndex][5]) + Integer.parseInt(values[4]));
+                                }
+                            }
+                        } else if (Integer.parseInt(values[5]) == endYear) {
+                            if (Integer.parseInt(values[6]) <= endMonth) {
+                                int rowIndex = ((Integer.parseInt(values[5]) - startYear) * 12) + (Integer.parseInt(values[6]) - startMonth);
+
+                                // Check if the row index is within the valid range
+                                if (rowIndex >= 0 && rowIndex < rowNumber) {
+                                    if (workData[rowIndex][3] == null) {
+                                        workData[rowIndex][3] = "0";
+                                    }
+                                    if (workData[rowIndex][5] == null) {
+                                        workData[rowIndex][5] = "0";
+                                    }
+
+                                    // Update room and bed values
+                                    workData[rowIndex][3] = String.valueOf(Integer.parseInt(workData[rowIndex][3]) + Integer.parseInt(values[2]));
+                                    workData[rowIndex][5] = String.valueOf(Integer.parseInt(workData[rowIndex][5]) + Integer.parseInt(values[4]));
+                                }
+                            }
+                        } else {
+                            int rowIndex = ((Integer.parseInt(values[5]) - startYear) * 12) + (Integer.parseInt(values[6]) - startMonth);
+
+                            // Check if the row index is within the valid range
+                            if (rowIndex >= 0 && rowIndex < rowNumber) {
+                                if (workData[rowIndex][3] == null) {
+                                    workData[rowIndex][3] = "0";
+                                }
+                                if (workData[rowIndex][5] == null) {
+                                    workData[rowIndex][5] = "0";
+                                }
+
+                                // Update room and bed values
+                                workData[rowIndex][3] = String.valueOf(Integer.parseInt(workData[rowIndex][3]) + Integer.parseInt(values[2]));
+                                workData[rowIndex][5] = String.valueOf(Integer.parseInt(workData[rowIndex][5]) + Integer.parseInt(values[4]));
+                            }
+                        }
+                    }
+
+
+                }
+
+
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            selectedOccupancyData = new String[0][7]; // Empty array for new file
+        }
+
+
+        int monthCount = startMonth - 1;
+        int yearCount = startYear;
+        //Initialize the rest
+        for (int i = 0; i < rowNumber; i++){
+
+            //Initialize Date
+            if (monthCount % 12 == 0){
+                yearCount++;
+                monthCount = 0;
+            }
+
+            monthCount++;
+
+            workData[i][0] = yearCount + "/" + monthCount;
+
+            //Initialize amount selected
+            workData[i][1] = String.valueOf(hotelIDs.size());
+
+            //Initialize room number
+            workData[i][2] = String.valueOf(otherValues[0]);
+
+            //Initialize bed number
+            workData[i][4] = String.valueOf(otherValues[1]);
+        }
+
+        return workData;
+
     }
+
+    private int getRowCount(int startYear, int endYear, int startMonth, int endMonth){
+
+        int rowCount = 0;
+
+        int lowMonth = 12 - startMonth + 1;
+        int highMonth = endMonth;
+
+        int lowYear = startYear - 2014;
+        int highYear = endYear - 2014;
+        int yearDiff = highYear - lowYear;
+
+
+        if (yearDiff == 0){
+
+            rowCount = endMonth - startMonth + 1;
+
+        } else if (yearDiff == 1){
+
+            rowCount += 12 - startMonth + 1;
+            rowCount += endMonth;
+
+        } else if (yearDiff >= 2){
+
+            rowCount += 12 - startMonth + 1;
+            rowCount += (yearDiff - 1) * 12;
+            rowCount += endMonth;
+
+        }
+
+        System.out.println(rowCount);
+
+        return rowCount;
+
+    }
+
+    private ArrayList<Integer> getHotelIDs(String minCategory, String maxCategory){
+
+        ArrayList<Integer> hotelIDs = new ArrayList<>();
+
+        int minLength = minCategory.length();
+        int maxLength = maxCategory.length();
+
+        try (FileReader fileReader = new FileReader("data/hotelData.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] values = line.split(",");
+
+                // Skip invalid lines or lines with insufficient values
+                if (values.length != 15) {
+                    continue;
+                }
+
+                //Test whether hotel is of category of interest
+                int catInt = values[2].length();
+
+                if (catInt <= maxLength && catInt >= minLength){
+                    hotelIDs.add(Integer.valueOf(values[0]));
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            selectedOccupancyData = new String[0][15]; // Empty array for new file
+        }
+
+        return hotelIDs;
+    }
+
+    private int [] otherValues(ArrayList<Integer> hotelIDs){
+
+        int [] otherValues = new int[]{0,0};
+
+        try (FileReader fileReader = new FileReader("data/hotelData.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] values = line.split(",");
+
+                // Skip invalid lines or lines with insufficient values
+                if (values.length != 15) {
+                    continue;
+                }
+
+
+                // Check if the line matches the given hotelID
+                if (hotelIDs.contains(Integer.parseInt(values[0]))) {
+
+                    otherValues[0] += Integer.parseInt(values[3]);
+                    otherValues[1] += Integer.parseInt(values[4]);
+
+                }
+
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            selectedOccupancyData = new String[0][7]; // Empty array for new file
+        }
+
+        return otherValues;
+
+    }
+
 }

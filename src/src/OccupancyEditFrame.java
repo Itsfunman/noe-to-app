@@ -92,8 +92,8 @@ public class OccupancyEditFrame extends JFrame {
         occupancyTypeChoice = new JComboBox<>();
         occupancyTypeChoice.setBounds(260, getHeight() - 70, 130, 20);
 
-        occupancyTypeChoice.addItem("Bed Occupancy");
-        occupancyTypeChoice.addItem("Room Occupancy");
+        occupancyTypeChoice.addItem("Bettbelegung");
+        occupancyTypeChoice.addItem("Raumbelegung");
 
         add(occupancyTypeChoice);
 
