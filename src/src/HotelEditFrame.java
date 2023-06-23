@@ -11,6 +11,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -90,20 +91,51 @@ public class HotelEditFrame extends JFrame {
         add(deleteButton);
     }
 
-    private void deleteHotelFromOccupancies(String hotelID){
-
+    private void deleteHotelFromOccupancies(String hotelID) {
         String occupancyFile = "data/occupancies.txt";
         File occupancy = new File(occupancyFile);
 
-        try {
-            List<String> lines = Files.readAllLines(occupancy.toPath());
-            lines.removeIf(line -> line.startsWith(hotelID + ",")); // Remove lines that start with the given string
+        try (FileReader fileReader = new FileReader(occupancy);
+             BufferedReader bufferedReader = new BufferedReader(fileReader);
+             FileWriter fileWriter = new FileWriter("data/occupancies_temp2.txt");
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
 
-            Files.write(occupancy.toPath(), lines);
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] parts = line.split(",", 2);
+
+                String lineHotelID = parts[0];
+
+                if (!lineHotelID.equals(hotelID)) {
+                    bufferedWriter.write(line);
+                    bufferedWriter.newLine();
+                }
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        // Replace the original file with the temporary file
+        File originalFile = new File(occupancyFile);
+        File tempFile = new File("data/occupancies_temp2.txt");
+        try {
+            Files.copy(tempFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Hotel data deleted successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to delete hotel data.");
+        }
+
+        // Delete the temporary file
+        if (tempFile.exists()) {
+            if (tempFile.delete()) {
+                System.out.println("Temporary file deleted.");
+            } else {
+                System.out.println("Failed to delete temporary file.");
+            }
+        }
     }
 
     private void deleteHotelFromDB(String hotelID) throws SQLException {

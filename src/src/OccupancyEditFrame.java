@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.event.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,7 +66,8 @@ public class OccupancyEditFrame extends JFrame {
                 //Format: id,rooms,usedrooms,beds,usedbeds,year,month
 
                 if (hotelID != -1 && partpos != -1) {
-                    //saveData(fetchData(hotelID, partpos), partpos);
+                    System.out.println("CALLED SAVE");
+                    saveData(fetchData(hotelID, partpos), partpos);
                 }
 
                 String selectedHotelName = (String) hotelChoice.getSelectedItem();
@@ -101,7 +104,7 @@ public class OccupancyEditFrame extends JFrame {
                 //Format: id,rooms,usedrooms,beds,usedbeds,year,month
 
                 if (hotelID != -1 && partpos != -1) {
-                    //saveData(fetchData(hotelID, partpos), partpos);
+                    saveData(fetchData(hotelID, partpos), partpos);
                 }
 
 
@@ -144,7 +147,8 @@ public class OccupancyEditFrame extends JFrame {
                 String[][] tableData = customTable.getTableModel().getData();
                 if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
                     String newValue = tableData[row][column];
-                    editRow(row, column, newValue);
+                    System.out.println(partpos);
+                    editRow(row, column, newValue, partpos);
                 }
             }
         });
@@ -158,12 +162,14 @@ public class OccupancyEditFrame extends JFrame {
         repaint();
     }
 
-    private void editRow(int rowIndex, int columnIndex, String newValue) {
+    private void editRow(int rowIndex, int columnIndex, String newValue, int partpos) {
+
         String[][] data = fetchData(hotelID, partpos);
 
         if (rowIndex >= 0 && rowIndex < data.length && columnIndex >= 0 && columnIndex < data[rowIndex].length) {
             data[rowIndex][columnIndex] = newValue;
-            //saveData(data, partpos);
+            saveData(data, partpos);
+
         } else {
             System.out.println("Invalid row index or column index.");
         }
@@ -215,12 +221,9 @@ public class OccupancyEditFrame extends JFrame {
 
                 int lineHotelID = Integer.parseInt(values[0]);
 
-                System.out.println("lineHotelID: "+ lineHotelID);
-                System.out.println("hotelID: "+ hotelID);
-
                 // Check if the line matches the given hotelID
                 if (lineHotelID == hotelID) {
-                    System.out.println("Fired");
+
                     int lineYear = Integer.parseInt(values[5]);
                     int lineMonth = Integer.parseInt(values[6]);
                     int columnIndex = lineYear - 2014; // Calculate the column index based on the year
@@ -239,6 +242,9 @@ public class OccupancyEditFrame extends JFrame {
             data = new String[0][13]; // Empty array for new file
         }
 
+        for (int i = 0; i < data.length; i++){
+            data[i][0] = String.valueOf(2014 + i);
+        }
         return data;
     }
 
@@ -247,44 +253,96 @@ public class OccupancyEditFrame extends JFrame {
     private void saveData(String[][] data, int partpos) {
         try (FileReader fileReader = new FileReader("data/occupancies.txt");
              BufferedReader bufferedReader = new BufferedReader(fileReader);
-             FileWriter fileWriter = new FileWriter("data/occupancies.txt", false);
-             BufferedWriter writer = new BufferedWriter(fileWriter)) {
+             FileWriter fileWriter = new FileWriter("data/occupancies_temp.txt");
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
 
-            ArrayList<String> lines = new ArrayList<>();
             String line;
 
-            // Read the existing data and store it in the 'lines' list
             while ((line = bufferedReader.readLine()) != null) {
-                lines.add(line);
-            }
+                String[] parts = line.split(",");
 
-            // Update the specific lines for the given hotelID and partpos
-            for (String[] row : data) {
-                int rowIndex = Integer.parseInt(row[1]);
-                int columnIndex = Integer.parseInt(row[2]);
+                String lineHotelID = parts[0];
+                String lineYear = parts[5];
+                String lineMonth = parts[6];
 
-                if (rowIndex >= 0 && rowIndex < lines.size()) {
-                    String[] values = lines.get(rowIndex).split(",");
-                    if (columnIndex >= 0 && columnIndex < values.length) {
-                        if (partpos == 2) { // Update usedRooms
-                            values[columnIndex] = row[0];
-                        } else if (partpos == 4) { // Update usedBeds
-                            values[columnIndex + 1] = row[0];
+                String selectedHotelName = (String) hotelChoice.getSelectedItem();
+                Hotel selectedHotel = hotelMap.get(selectedHotelName);
+                String valueHotelID = String.valueOf(selectedHotel.getHotelID());
+                String valueYear = String.valueOf(customTable.getSelectedRow() + 2014);
+
+                boolean lineUpdated = false;
+                String newLine = line;
+
+                for (String[] row : data) {
+                    for (int i = 1; i < row.length; i++) {
+                        if (row[i] != null) {
+
+                            String valueMonth = String.valueOf(i);
+
+                            if (lineHotelID.equals(valueHotelID)) {
+
+                                if (lineYear.equals(valueYear)){
+
+                                    if (lineMonth.equals(valueMonth)){
+                                        System.out.println("ID AND YEAR AND MONTH FOUND");
+                                        System.out.println(lineHotelID + " " + lineYear + " " + lineMonth);
+
+                                        if (partpos == 2) {
+                                            System.out.println("PARTPOS 2");
+                                            newLine = parts[0] + "," + parts[1] + "," + row[i] + "," + parts[3] + "," + parts[4] + "," + parts[5] + "," + parts[6];
+                                            lineUpdated = true;
+                                            break;
+                                        } else if (partpos == 4) {
+                                            System.out.println("PARTPOS 4");
+                                            newLine = parts[0] + "," + parts[1] + "," + parts[2] + "," + parts[3] + "," + row[i] + "," + parts[5] + "," + parts[6];
+                                            lineUpdated = true;
+                                            break;
+                                        }
+
+                                    }
+
+                                }
+
+                            }
                         }
-                        lines.set(rowIndex, String.join(",", values));
+                    }
+                    if (lineUpdated) {
+                        break;
                     }
                 }
-            }
 
-            // Write the updated data back to the file
-            for (String updatedLine : lines) {
-                writer.write(updatedLine);
-                writer.newLine();
+                bufferedWriter.write(newLine);
+                bufferedWriter.newLine();
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Replace the original file with the temporary file
+        File originalFile = new File("data/occupancies.txt");
+        File tempFile = new File("data/occupancies_temp.txt");
+        try {
+            Files.copy(tempFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Data saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to save data.");
+        }
+
+        // Delete the temporary file
+        if (tempFile.exists()) {
+            if (tempFile.delete()) {
+                System.out.println("Temporary file deleted.");
+            } else {
+                System.out.println("Failed to delete temporary file.");
+            }
+        }
     }
 
+
+
 }
+
+
+

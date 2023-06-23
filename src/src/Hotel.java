@@ -88,9 +88,11 @@ public class Hotel {
             addToFile(this);
             this.hotelExists = true;
         }
+
+        System.out.println("THIS IS CALLED TO ADD");
         //createBedOccupancyFile(this.hotelName);
         //createRoomOccupancyFile(this.hotelName);
-        fillOccupancyFile();
+        addToOccupancyFile();
 
         //Add rest with try catch blocks;
     }
@@ -302,7 +304,34 @@ public class Hotel {
         }
     }
 
-    public void fillOccupancyFile() {
+    private void addToOccupancyFile() {
+        String occupancyFile = "data/occupancies.txt";
+        File occupancy = new File(occupancyFile);
+
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        try (FileWriter fileWriter = new FileWriter(occupancy, true);
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+
+            for (int year = 2014; year <= currentYear; year++) {
+                for (int month = 1; month <= 12; month++) {
+                    String newLine = this.hotelID + "," + this.roomNumber + ",0," + this.bedNumber + ",0," + year + "," + month;
+                    bufferedWriter.write(newLine);
+                    bufferedWriter.newLine();
+                }
+            }
+
+            System.out.println("Data added to the occupancy file.");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to add data to the occupancy file.");
+        }
+    }
+
+
+    private void fillOccupancyFile() {
         String hotelFile = "data/hotelData.txt";
         String occupancyFile = "data/occupancies.txt";
         File hotels = new File(hotelFile);
@@ -400,68 +429,6 @@ public class Hotel {
         return false;
     }
 
-
-    /*
-    public void createBedOccupancyFile(String hotelName) {
-
-        String name = "oldData/" + hotelName + "BedOccupancy.txt";
-        File file = new File(name);
-
-        if (!file.exists()) {
-
-            String baseContent = "";
-
-            Calendar calendar = Calendar.getInstance();
-            int currentYear = calendar.get(Calendar.YEAR);
-
-            for (int i = 2000; i <= currentYear; i++) {
-                for (int j = 0; j < 12; j++) {
-                    baseContent = baseContent + "0,";
-                }
-                baseContent = baseContent + "\n";
-            }
-
-            try {
-                FileWriter writer = new FileWriter(name);
-                writer.write(baseContent);
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-    public void createRoomOccupancyFile(String hotelName) {
-
-        String name = "oldData/" + hotelName + "RoomOccupancy.txt";
-        File file = new File(name);
-
-        if (!file.exists()) {
-
-            String baseContent = "";
-
-            Calendar calendar = Calendar.getInstance();
-            int currentYear = calendar.get(Calendar.YEAR);
-
-            for (int i = 2000; i <= currentYear; i++) {
-                for (int j = 0; j < 12; j++) {
-                    baseContent = baseContent + "0,";
-                }
-                baseContent = baseContent + "\n";
-            }
-
-            try {
-                FileWriter writer = new FileWriter(name);
-                writer.write(baseContent);
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-    */
 
 }
 
