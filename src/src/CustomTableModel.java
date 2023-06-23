@@ -21,26 +21,6 @@ public class CustomTableModel extends AbstractTableModel {
         this.data = data;
         this.columnNames = columnNames;
     }
-    /*
-    public void saveData() {
-        try (FileWriter fileWriter = new FileWriter(fileName);
-             BufferedWriter writer = new BufferedWriter(fileWriter)) {
-
-            for (String[] row : data) {
-                StringBuilder line = new StringBuilder();
-                for (String value : row) {
-                    line.append(value).append(",");
-                }
-                line.deleteCharAt(line.length() - 1); // Remove the trailing comma
-                writer.write(line.toString());
-                writer.newLine();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    */
 
     public void saveData() {
         try (FileWriter fileWriter = new FileWriter(fileName);

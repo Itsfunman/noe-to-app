@@ -685,7 +685,4 @@
 635,Gwörthwirt,**,2,11,Ruchinger Szonja,Silinger Thalia,Gwörth 3,Kasten,3072,0610245,false,false,false,false
 447,Schlaffass - Schlafen im Holzfass,**,20,141,Pietka Olivia-Chelsea,Krojer Seila,Dumba Park 1,Tattendorf,2523,6726807,false,false,false,false
 297,Dorfwirtshaus Rauch,*,59,73,Lezak Celio,Ploub Mehvan,Eschabruck 11,Eschabruck,3533,8635887,false,false,false,false
-0,Hotel Rosi,***,15,54,Rosa Huber,huber@rosi.at,Murstrasse 12,Sankt Poelten,3010,35135513513,true,false,false,false
-1,Hotel Bratan,***,12,40,Brati,brati@bratan.br,Meinstrasse 12,Waldviertel,3223,3141351,true,false,false,true
-47,Sacher,*****,100,200,Marcel,Hase,Sacherstraße 10,Wien,1010,066769959595,true,false,true,true
-58,Delphin,*****,200,300,Pia Zimmernmann,Marcel Nikolic,Delphinstraße 50 ,Wien,1080,066784959192,true,false,true,true
+47,Hotel Test,*****,12,24,gege,geg,sdgwesg,sdfewff,1234,12341242,true,true,true,true

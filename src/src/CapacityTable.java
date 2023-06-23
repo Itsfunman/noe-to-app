@@ -129,7 +129,7 @@ public class CapacityTable extends JScrollPane {
                      Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3], hotelData[4],
                              hotelData[5], hotelData[6], hotelData[7], hotelData[8], hotelData[9], hotelData[10],
                              hotelData[11], hotelData[12], hotelData[13], hotelData[14]);
-                     System.out.println(1);
+
                      if (!Hotel.hotels.contains(hotel)){
                          Hotel.hotels.add(hotel);
                      }

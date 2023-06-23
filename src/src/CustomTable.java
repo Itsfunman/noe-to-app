@@ -49,6 +49,7 @@ public class CustomTable extends JScrollPane {
 
     public void updateData(String[][] newData) {
         tableModel.setData(newData);
+        tableModel.fireTableDataChanged();//Notify CustomTableModel about data change
     }
 
     public CustomTableModel getTableModel() {

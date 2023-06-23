@@ -10,10 +10,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.*;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class HotelEditFrame extends JFrame {
 
@@ -66,6 +69,7 @@ public class HotelEditFrame extends JFrame {
                         // Delete the hotel from the database
                         try {
                             deleteHotelFromDB(hotelID);
+                            deleteHotelFromOccupancies(hotelID);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -85,7 +89,24 @@ public class HotelEditFrame extends JFrame {
         deleteButton.setVisible(true);
         add(deleteButton);
     }
-    public void deleteHotelFromDB(String hotelID) throws SQLException {
+
+    private void deleteHotelFromOccupancies(String hotelID){
+
+        String occupancyFile = "data/occupancies.txt";
+        File occupancy = new File(occupancyFile);
+
+        try {
+            List<String> lines = Files.readAllLines(occupancy.toPath());
+            lines.removeIf(line -> line.startsWith(hotelID + ",")); // Remove lines that start with the given string
+
+            Files.write(occupancy.toPath(), lines);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void deleteHotelFromDB(String hotelID) throws SQLException {
         // Delete from DB
         PreparedStatement pst = null;
         Connection connection = null;

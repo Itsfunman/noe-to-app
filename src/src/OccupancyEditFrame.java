@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.event.*;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -22,13 +23,17 @@ public class OccupancyEditFrame extends JFrame {
     private CustomTableModel tableModel;
     private String fileName;
 
-    private String [] columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+    //These values are initially set to -1 since no hotelID or partpos can have this value
+    private int hotelID = -1;
+    private int partpos = -1;
+
+    private String[] columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
             "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
-    public OccupancyEditFrame(String title){
+    public OccupancyEditFrame(String title) {
         super(title);
 
-        setSize(800,500);
+        setSize(800, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setLayout(null);
@@ -56,18 +61,31 @@ public class OccupancyEditFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if (fileName != null && !fileName.equals(null)){
-                    saveData(fileName, fetchData(fileName));
+                //Format: id,rooms,usedrooms,beds,usedbeds,year,month
+
+                if (hotelID != -1 && partpos != -1) {
+                    //saveData(fetchData(hotelID, partpos), partpos);
                 }
+
                 String selectedHotelName = (String) hotelChoice.getSelectedItem();
                 Hotel selectedHotel = hotelMap.get(selectedHotelName);
-                fileName = generateFileName(selectedHotel, occupancyTypeChoice.getSelectedItem());
-                InitHotelOccupancyTable(fileName);
+                int hotelID = selectedHotel.getHotelID();
+
+                int partpos;
+
+                if (occupancyTypeChoice.getSelectedIndex() == 0) {
+                    partpos = 4;
+                } else {
+                    partpos = 2;
+                }
+
+                InitHotelOccupancyTable(hotelID, partpos);
+
             }
         });
     }
 
-    private void InitOccupancyTypeChoice(){
+    private void InitOccupancyTypeChoice() {
         occupancyTypeChoice = new JComboBox<>();
         occupancyTypeChoice.setBounds(260, getHeight() - 70, 130, 20);
 
@@ -80,49 +98,39 @@ public class OccupancyEditFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if (!fileName.equals(null)){
-                    saveData(fileName, fetchData(fileName));
+                //Format: id,rooms,usedrooms,beds,usedbeds,year,month
+
+                if (hotelID != -1 && partpos != -1) {
+                    //saveData(fetchData(hotelID, partpos), partpos);
                 }
+
+
                 String selectedHotelName = (String) hotelChoice.getSelectedItem();
                 Hotel selectedHotel = hotelMap.get(selectedHotelName);
-                fileName = generateFileName(selectedHotel, occupancyTypeChoice.getSelectedItem());
-                InitHotelOccupancyTable(fileName);
+                hotelID = selectedHotel.getHotelID();
+
+                if (occupancyTypeChoice.getSelectedIndex() == 0) {
+                    partpos = 4;
+                } else {
+                    partpos = 2;
+                }
+
+                InitHotelOccupancyTable(hotelID, partpos);
 
             }
         });
     }
 
-    private String generateFileName(Hotel hotel, Object occupancyType){
+    private void InitHotelOccupancyTable(int hotelID, int partpos) {
 
-        String occupancyTypeString;
-        // Use a more reliable method to check occupancy type
-        if (occupancyType.equals("Bed Occupancy")) {
-            occupancyTypeString = "BedOccupancy";
-        } else {
-            occupancyTypeString = "RoomOccupancy";
-        }
-
-        String newFileName = hotel.getHotelName() + occupancyTypeString + ".txt";
-
-        return newFileName;
-    }
-
-    private void InitHotelOccupancyTable(String fileName) {
-
-        String[][] data = fetchData(fileName);
+        String[][] data = fetchData(hotelID, partpos);
         // Check if there are fewer rows than years
-        if (data.length - 1 < getNumberOfYears()) {
-
-            addRowsToCoverYears(fileName, data.length - 1);
-            data = fetchData(fileName);
-
-        }
 
         if (customTable != null) {
             remove(customTable); // Remove the existing table
         }
 
-        saveTableData();
+        //saveTableData();
 
         customTable = new CustomTable(data, columnNames);
         customTable.setBounds(10, 50, 770, 350);
@@ -133,28 +141,29 @@ public class OccupancyEditFrame extends JFrame {
                 int row = e.getFirstRow();
                 int column = e.getColumn();
 
-                String [][] tableData = customTable.getTableModel().getData();
+                String[][] tableData = customTable.getTableModel().getData();
                 if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
                     String newValue = tableData[row][column];
-                    editRow(fileName, row, column, newValue);
+                    editRow(row, column, newValue);
                 }
             }
         });
 
         add(customTable);
 
-        tableModel = new CustomTableModel(data, "data/" + fileName, columnNames);
+        tableModel = new CustomTableModel(data, "data/occupancies.txt", columnNames);
+        customTable.updateData(data);
 
         revalidate();
         repaint();
     }
 
-    private void editRow(String fileName, int rowIndex, int columnIndex, String newValue) {
-        String[][] data = fetchData(fileName);
+    private void editRow(int rowIndex, int columnIndex, String newValue) {
+        String[][] data = fetchData(hotelID, partpos);
 
         if (rowIndex >= 0 && rowIndex < data.length && columnIndex >= 0 && columnIndex < data[rowIndex].length) {
             data[rowIndex][columnIndex] = newValue;
-            saveData(fileName, data);
+            //saveData(data, partpos);
         } else {
             System.out.println("Invalid row index or column index.");
         }
@@ -164,12 +173,6 @@ public class OccupancyEditFrame extends JFrame {
         if (tableModel != null) {
             tableModel.saveData();
         }
-    }
-
-    private int getNumberOfYears() {
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        int startYear = 2000; // Starting year
-        return currentYear - startYear + 1;
     }
 
     private void InitToolbar() {
@@ -189,32 +192,48 @@ public class OccupancyEditFrame extends JFrame {
         });
     }
 
-    private String[][] fetchData(String fileName) {
+    private String[][] fetchData(int hotelID, int partpos) {
         String[][] data;
 
-        try (FileReader fileReader = new FileReader("data/" + fileName);
+        // Determine the current year
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        try (FileReader fileReader = new FileReader("data/occupancies.txt");
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 
-            ArrayList<String[]> dataList = new ArrayList<>();
+            // Initialize the data array with the appropriate dimensions
+            data = new String[currentYear - 2014 + 1][13];
 
             String line;
-            int year = 2000; // Starting year
-
             while ((line = bufferedReader.readLine()) != null) {
                 String[] values = line.split(",");
 
                 // Skip invalid lines or lines with insufficient values
-                if (values.length != 13) {
+                if (values.length != 7) {
                     continue;
                 }
 
-                dataList.add(values);
-                year++;
+                int lineHotelID = Integer.parseInt(values[0]);
+
+                System.out.println("lineHotelID: "+ lineHotelID);
+                System.out.println("hotelID: "+ hotelID);
+
+                // Check if the line matches the given hotelID
+                if (lineHotelID == hotelID) {
+                    System.out.println("Fired");
+                    int lineYear = Integer.parseInt(values[5]);
+                    int lineMonth = Integer.parseInt(values[6]);
+                    int columnIndex = lineYear - 2014; // Calculate the column index based on the year
+                    int rowIndex = lineMonth; // Use month as the row index (1-12)
+
+                    // Update the appropriate value based on partpos
+                    if (partpos == 2) { // usedRooms
+                        data[columnIndex][rowIndex] = values[2];
+                    } else if (partpos == 4) { // usedBeds
+                        data[columnIndex][rowIndex] = values[4];
+                    }
+                }
             }
-
-            data = new String[dataList.size()][13];
-            dataList.toArray(data);
-
         } catch (IOException e) {
             e.printStackTrace();
             data = new String[0][13]; // Empty array for new file
@@ -223,43 +242,49 @@ public class OccupancyEditFrame extends JFrame {
         return data;
     }
 
-    private void saveData(String fileName, String[][] data) {
 
-        try (FileWriter fileWriter = new FileWriter("data/" + fileName);
-             BufferedWriter writer = new BufferedWriter(fileWriter)){
-            // user does not exist in file, so add to file
-            for (String[] row : data)
-            {
-                String line = "";
-                for (String value : row) {
-                    line = line + value + ",";
-                }
-                //System.out.println(line);
-                writer.write(line);
-                writer.newLine();
+
+    private void saveData(String[][] data, int partpos) {
+        try (FileReader fileReader = new FileReader("data/occupancies.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader);
+             FileWriter fileWriter = new FileWriter("data/occupancies.txt", false);
+             BufferedWriter writer = new BufferedWriter(fileWriter)) {
+
+            ArrayList<String> lines = new ArrayList<>();
+            String line;
+
+            // Read the existing data and store it in the 'lines' list
+            while ((line = bufferedReader.readLine()) != null) {
+                lines.add(line);
             }
 
+            // Update the specific lines for the given hotelID and partpos
+            for (String[] row : data) {
+                int rowIndex = Integer.parseInt(row[1]);
+                int columnIndex = Integer.parseInt(row[2]);
+
+                if (rowIndex >= 0 && rowIndex < lines.size()) {
+                    String[] values = lines.get(rowIndex).split(",");
+                    if (columnIndex >= 0 && columnIndex < values.length) {
+                        if (partpos == 2) { // Update usedRooms
+                            values[columnIndex] = row[0];
+                        } else if (partpos == 4) { // Update usedBeds
+                            values[columnIndex + 1] = row[0];
+                        }
+                        lines.set(rowIndex, String.join(",", values));
+                    }
+                }
+            }
+
+            // Write the updated data back to the file
+            for (String updatedLine : lines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void addRowsToCoverYears(String fileName, int currentRowCount) {
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        String[][] data = fetchData(fileName);
-
-        for (int year = currentRowCount + 2001; year <= currentYear; year++) {
-            String[] newRow = new String[13];
-            newRow[0] = String.valueOf(year);
-
-            Arrays.fill(newRow, 1, newRow.length, "0"); // Fill elements from index 1 to end with "0"
-
-            data = Arrays.copyOf(data, data.length + 1);
-            data[data.length - 1] = newRow;
-        }
-
-        saveData(fileName, data);
     }
 
 }

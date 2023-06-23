@@ -7,6 +7,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Objects;
 
+/*
+
+As senior user of NOE-TO
+I want to get a summary about the transactional data on the screen
+I can analyze the number of room occupancy and bed occupancy per month
+Selection shall be possible for one hotel and/or year and/or category (all hotels higher or equal) and/or month
+
+ */
+
 public class OccupancyFrame extends JFrame {
 
     private OccupancyTable occupancyTable;

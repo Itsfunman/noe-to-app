@@ -1,8 +1,11 @@
 package src;
 
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
 
 public class Hotel {
 
@@ -53,10 +56,9 @@ public class Hotel {
             if (!inList) {
                 idNotAssigned = false;
                 this.hotelID = x;
+                hotelIDs.add(this.hotelID); // Add the new ID to the list
             }
         }
-
-        hotelIDs.add(this.hotelID);
 
         this.hotelName = hotelName.replaceAll("^\"|\"$", "");
         this.hotelName = this.hotelName.replaceAll("/", "");
@@ -82,10 +84,13 @@ public class Hotel {
         this.spa = Boolean.parseBoolean(spa);
         this.fitness = Boolean.parseBoolean(fitness);
 
-
-        createBedOccupancyFile(this.hotelName);
-        createRoomOccupancyFile(this.hotelName);
-
+        if (!hotelExists){
+            addToFile(this);
+            this.hotelExists = true;
+        }
+        //createBedOccupancyFile(this.hotelName);
+        //createRoomOccupancyFile(this.hotelName);
+        fillOccupancyFile();
 
         //Add rest with try catch blocks;
     }
@@ -122,9 +127,10 @@ public class Hotel {
         this.fitness = Boolean.parseBoolean(fitness);
 
 
-        createBedOccupancyFile(this.hotelName);
-        createRoomOccupancyFile(this.hotelName);
-
+        //createBedOccupancyFile(this.hotelName);
+        //createRoomOccupancyFile(this.hotelName);
+        fillOccupancyFile();
+        System.out.println(this.hotelID);
 
         //Add rest with try catch blocks;
     }
@@ -155,12 +161,14 @@ public class Hotel {
         this.roomNumber = Integer.parseInt(roomNumber);
         this.bedNumber = Integer.parseInt(bedNumber);
 
-        createBedOccupancyFile(this.hotelName);
-        createRoomOccupancyFile(this.hotelName);
+        //createBedOccupancyFile(this.hotelName);
+        //createRoomOccupancyFile(this.hotelName);
+        fillOccupancyFile();
+        System.out.println(this.hotelID);
 
         if (!hotelExists){
             addToFile(this);
-            hotelExists = true;
+            this.hotelExists = true;
         }
     }
 
@@ -288,16 +296,115 @@ public class Hotel {
                 line = bufferedReader.readLine();
             }
 
-            // user does not exist in file, so add to file
             writer.write(this.toStringSimple() + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public void fillOccupancyFile() {
+        String hotelFile = "data/hotelData.txt";
+        String occupancyFile = "data/occupancies.txt";
+        File hotels = new File(hotelFile);
+        File occupancy = new File(occupancyFile);
+
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        int lastHotelID = getLastHotelID(hotels);
+        if (lastHotelID == -1) {
+            System.out.println("No hotels found. Data generation stopped.");
+            return;
+        }
+
+
+        // Check if any data exists for the last hotelID
+        if (yearExists(occupancy, lastHotelID)) {
+            System.out.println("Data already exists for the last hotel ID. Skipping data generation.");
+            return;
+        }
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(occupancy, true))) {
+            IntStream.rangeClosed(2014, currentYear)
+                    .parallel() // Perform parallel processing
+                    .forEach(year -> {
+                        // Check if the year exists for the last hotelID
+                        if (!yearExists(occupancy, year, lastHotelID)) {
+                            IntStream.rangeClosed(1, 12)
+                                    .forEach(month -> {
+                                        String newLine = lastHotelID + "," + this.roomNumber + "," + 0 + "," +
+                                                this.bedNumber + "," + 0 + "," + year + "," + month;
+                                        writer.println(newLine);
+                                    });
+                        }
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int getLastHotelID(File hotelsFile) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(hotelsFile))) {
+            String line;
+            String lastLine = null;
+            while ((line = reader.readLine()) != null) {
+                lastLine = line;
+            }
+            if (lastLine != null) {
+                String[] parts = lastLine.split(",");
+                if (parts.length >= 1) {
+                    return Integer.parseInt(parts[0].trim());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    private boolean yearExists(File occupancyFile, int hotelID) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(occupancyFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 7) {
+                    int existingHotelID = Integer.parseInt(parts[0].trim());
+                    if (existingHotelID == hotelID) {
+                        return true;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean yearExists(File occupancyFile, int year, int hotelID) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(occupancyFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 7)
+                {
+                    int existingYear = Integer.parseInt(parts[5].trim());
+                    int existingHotelID = Integer.parseInt(parts[0].trim());
+                    if (existingYear == year && existingHotelID == hotelID) {
+                        return true;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    /*
     public void createBedOccupancyFile(String hotelName) {
 
-        String name = "data/" + hotelName + "BedOccupancy.txt";
+        String name = "oldData/" + hotelName + "BedOccupancy.txt";
         File file = new File(name);
 
         if (!file.exists()) {
@@ -327,7 +434,7 @@ public class Hotel {
 
     public void createRoomOccupancyFile(String hotelName) {
 
-        String name = "data/" + hotelName + "RoomOccupancy.txt";
+        String name = "oldData/" + hotelName + "RoomOccupancy.txt";
         File file = new File(name);
 
         if (!file.exists()) {
@@ -354,7 +461,7 @@ public class Hotel {
 
         }
     }
-
+    */
 
 }
 

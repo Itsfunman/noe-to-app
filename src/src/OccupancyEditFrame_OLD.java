@@ -318,7 +318,7 @@ public class OccupancyEditFrame_OLD extends JFrame {
         } else {
             mode = "RoomOccupancy";
         }
-        String fileName = "data/" + getCurrentHotel() + mode + ".txt";
+        String fileName = "oldData/" + getCurrentHotel() + mode + ".txt";
 
         System.out.println(fileName + getEditedRowIndex());
         // Update the hotel information in the hotelData.txt file
@@ -341,7 +341,7 @@ public class OccupancyEditFrame_OLD extends JFrame {
         setEditedRowIndex(0);
 
         String mode = getCurrentMode() == 0 ? "BedOccupancy" : "RoomOccupancy";
-        String fileName = "data/" + getCurrentHotel() + mode + ".txt";
+        String fileName = "oldData/" + getCurrentHotel() + mode + ".txt";
         String[] lineContent = new String[12];
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
