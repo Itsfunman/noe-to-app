@@ -1,0 +1,3 @@
+Hotel Sonnenblick	*****	30.0	60.0	Karl Sonnenblick	Karl Sonnenblick	Sonnensteinstraße 123	Sonndorf	4234.0	1.3414141E7	false	false	true	true	
+	
+	

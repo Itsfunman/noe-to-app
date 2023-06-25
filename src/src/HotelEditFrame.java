@@ -1,6 +1,12 @@
 package src;
 
+
 import lombok.SneakyThrows;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -25,6 +31,7 @@ public class HotelEditFrame extends JFrame {
     private CustomTable customTable;
     private JButton addButton;
     private JButton deleteButton;
+    private JButton excelButton;
 
     // private String fileName = "data/hotelData.txt";
 
@@ -48,14 +55,150 @@ public class HotelEditFrame extends JFrame {
         initToolbar();
         initCustomTable();
         initAddButton();
+        InitHotelFromExcelButton();
         initDeleteButton();
 
         setVisible(true);
     }
 
+    private void InitHotelFromExcelButton(){
+
+        excelButton = new JButton("IMPORTIEREN");
+        excelButton.setBounds((getWidth()/2) - 65, 420, 130, 20);
+        excelButton.setVisible(true);
+        add(excelButton);
+
+        excelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // Open a dialog box to get input from the user for each column
+                JPanel inputPanel = new JPanel();
+                inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
+                //Updated version
+                // Create checkboxes for GDPR confirmation
+                JCheckBox gdprCheckBox = new JCheckBox("Ich bestätige die GDPR zur Kenntnis genommen zu haben");
+
+                // Add checkboxes to the input panel
+                inputPanel.add(gdprCheckBox);
+
+                // Show the input dialog
+                int result = JOptionPane.showConfirmDialog(null, inputPanel, "Eingabe", JOptionPane.OK_CANCEL_OPTION);
+
+                if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
+                    // User confirmed GDPR processing, proceed with adding the hotel
+                    String inputFilePath = JOptionPane.showInputDialog("Geben Sie den Pfad zu Ihrer Datei ein");
+                    String targetFilePath = "data/importData.txt";
+
+                    inputFilePath = inputFilePath.replaceAll("\"", "");
+
+                    try {
+                        // Load the input Excel file
+                        FileInputStream inputStream = new FileInputStream(inputFilePath);
+                        Workbook workbook = new XSSFWorkbook(inputStream);
+                        Sheet sheet = workbook.getSheetAt(0);
+
+                        // Read the contents of the Excel file
+                        StringBuilder inputText = new StringBuilder();
+                        for (Row row : sheet) {
+                            for (Cell cell : row) {
+                                inputText.append(cell).append("\t");
+                            }
+                            inputText.append("\n");
+                        }
+
+                        // Write the input text to the target file
+                        FileWriter writer = new FileWriter(targetFilePath);
+                        writer.write(inputText.toString());
+                        writer.close();
+
+                        System.out.println("Data from the Excel file has been copied to the target file successfully.");
+
+                        workbook.close();
+                        inputStream.close();
+                    } catch (IOException iae) {
+                        iae.printStackTrace();
+                    }
+
+                    try {
+                        // Read the contents of the target file
+                        BufferedReader reader = new BufferedReader(new FileReader(targetFilePath));
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            // Split the row by tabs ('\t') into an array
+                            String[] rowData = line.split("\t");
+
+                            // Create a new array to store the parsed data
+                            String[] parsedData = new String[14];
+
+                            // Iterate over the rowData array and convert the appropriate values to integers
+                            for (int i = 0; i < rowData.length; i++) {
+                                if (rowData[i] != null) {
+                                    if (i == 2 || i == 3 || i == 8 || i == 9) {
+                                        // Convert the numeric values to integers
+                                        int intValue = (int) Double.parseDouble(rowData[i]);
+                                        parsedData[i] = String.valueOf(intValue);
+                                    } else {
+                                        // Copy other non-null values as strings
+                                        parsedData[i] = rowData[i];
+                                    }
+                                }
+                            }
+
+                            String newString = "";
+                            for (int i = 0; i < parsedData.length; i++){
+                                if (parsedData[i] != null){
+                                    if (i == 0){
+                                        newString = newString + parsedData[i];
+                                    } else {
+                                        newString = newString + "," + parsedData[i];
+                                    }
+                                }
+                            }
+
+                            rowData = newString.split(",");
+
+                            // Create a new array with length 15
+                            String[] newRowData = new String[15];
+
+                            // Leave the first element empty for later assignment
+                            newRowData[0] = "";
+
+                            // Copy the elements from newString to newRowData starting from index 1
+                            System.arraycopy(rowData, 0, newRowData, 1, rowData.length);
+
+                            Hotel hotel = new Hotel(newRowData[1], newRowData[2], newRowData[3], newRowData[4], newRowData[5], newRowData[6], newRowData[7],
+                                    newRowData[8], newRowData[9], newRowData[10], newRowData[11], newRowData[12], newRowData[13], newRowData[14]);
+
+                            newRowData[0] = String.valueOf(hotel.getHotelID());
+
+                            // Add the new row to the table
+                            customTable.getTableModel().addRow(newRowData);
+
+                            // Save the updated data to the file
+                            customTable.getTableModel().saveData();
+
+                            addHotelToDB(newRowData);
+
+                        }
+
+                        reader.close();
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+
+
+                }
+            }
+        });
+
+    }
+
     private void initDeleteButton() {
         deleteButton = new JButton("LÖSCHEN");
-        deleteButton.setBounds(335, 440, 130, 20);
+        deleteButton.setBounds((getWidth()/2) + 75, 420, 130, 20);
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
@@ -163,7 +306,7 @@ public class HotelEditFrame extends JFrame {
 
     private void initAddButton() {
         addButton = new JButton("HINZUFÜGEN");
-        addButton.setBounds(175, 440, 130, 20);
+        addButton.setBounds((getWidth()/2) - 205, 420, 130, 20);
         //updated version from Pia Zimmermann
         addButton.addActionListener(new ActionListener() {
             @SneakyThrows

@@ -1,11 +1,5 @@
 package src;
 
-
-import javax.activation.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,10 +8,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.Properties;
 
 public class ExportFrame extends JFrame {
@@ -146,23 +137,24 @@ public class ExportFrame extends JFrame {
 
     private void sendMail(){
 
+        System.out.println("An email would have been sent if the proccess was still supported!\nSadly google " +
+                "canceled our support!");
+        /*
         String recipientEmail = exportTarget.getText();
         String subject = "NOE-TO Export";
         String body = "Sehr geehrte Damen und Herren! \nIm Anhang finden Sie die von Ihnen exportierte Datei. \n\n" +
                 "Mit freundlichen Grüßen\nIhr NOE-TO Team";
 
-        String senderEmail = "noeto.application@gmail.com";
-        String senderPassword = "NOETOAPP123";
-
+        String senderEmail = "noeto.app@gmail.com";
+        String senderPassword = "NOETOAPP";
         String smtpHost = "smtp.gmail.com";
-        int smtpPort = 465;
+        int smtpPort = 587;
 
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", smtpHost);
         properties.put("mail.smtp.port", smtpPort);
-        properties.put("mail.smtp.ssl.enable", "true");
 
         Session session = Session.getInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -209,6 +201,7 @@ public class ExportFrame extends JFrame {
             System.out.println("Failed to send email: " + e.getMessage());
         }
 
+        */
     }
 
     private void InitExportTargetField(){

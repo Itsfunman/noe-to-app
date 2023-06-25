@@ -1,10 +1,8 @@
 package src;
 
-import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 public class Hotel {
@@ -131,8 +129,8 @@ public class Hotel {
 
         //createBedOccupancyFile(this.hotelName);
         //createRoomOccupancyFile(this.hotelName);
-        fillOccupancyFile();
-        System.out.println(this.hotelID);
+        //fillOccupancyFile();
+        //System.out.println(this.hotelID);
 
         //Add rest with try catch blocks;
     }
@@ -165,11 +163,12 @@ public class Hotel {
 
         //createBedOccupancyFile(this.hotelName);
         //createRoomOccupancyFile(this.hotelName);
-        fillOccupancyFile();
-        System.out.println(this.hotelID);
+        //fillOccupancyFile();
+        //System.out.println(this.hotelID);
 
         if (!hotelExists){
             addToFile(this);
+            addToOccupancyFile();
             this.hotelExists = true;
         }
     }
@@ -331,6 +330,7 @@ public class Hotel {
     }
 
 
+    //Relict from when legacy Data was added
     private void fillOccupancyFile() {
         String hotelFile = "data/hotelData.txt";
         String occupancyFile = "data/occupancies.txt";
@@ -371,6 +371,8 @@ public class Hotel {
             e.printStackTrace();
         }
     }
+
+
 
     private int getLastHotelID(File hotelsFile) {
         try (BufferedReader reader = new BufferedReader(new FileReader(hotelsFile))) {

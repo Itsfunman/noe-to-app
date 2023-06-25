@@ -2,6 +2,8 @@ package src;
 
 import javax.swing.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CapacityTable extends JScrollPane {
 
@@ -117,35 +119,40 @@ public class CapacityTable extends JScrollPane {
         this.tableModel = tableModel;
     }
 
-    private  void loadHotels() {
+    private void loadHotels() {
         try {
-             File file = new File("data/hotelData.txt");
-             BufferedReader br = new BufferedReader(new FileReader(file));
+            File file = new File("data/hotelData.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(new FileInputStream(file))));
 
-             String st;
-             while ((st = br.readLine()) != null) {
-                 String[] hotelData = st.split(",");
+            String st;
+            List<Hotel> newHotels = new ArrayList<>();
 
-                 if (hotelData.length == 15) {
-                     Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3], hotelData[4],
-                             hotelData[5], hotelData[6], hotelData[7], hotelData[8], hotelData[9], hotelData[10],
-                             hotelData[11], hotelData[12], hotelData[13], hotelData[14]);
+            while ((st = br.readLine()) != null) {
+                String[] hotelData = st.split(",");
 
-                     if (!Hotel.hotels.contains(hotel)){
-                         Hotel.hotels.add(hotel);
-                     }
+                if (hotelData.length == 15) {
+                    Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3], hotelData[4],
+                            hotelData[5], hotelData[6], hotelData[7], hotelData[8], hotelData[9], hotelData[10],
+                            hotelData[11], hotelData[12], hotelData[13], hotelData[14]);
 
-                 } else {
-                     // Handle the case where the hotelData array doesn't have enough elements
-                     System.out.println("Invalid hotel data: " + st);
-                 }
-             }
-             br.close();
+                    newHotels.add(hotel);
+                } else {
+                    // Handle the case where the hotelData array doesn't have enough elements
+                    System.out.println("Invalid hotel data: " + st);
+                }
+            }
+            br.close();
+
+            // Update the hotels list in a synchronized block
+            synchronized (Hotel.hotels) {
+                Hotel.hotels.addAll(newHotels);
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
+
+
 
     public static String[][] getData() {
         return data;
