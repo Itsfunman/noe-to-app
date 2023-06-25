@@ -41,6 +41,10 @@ public class HotelEditFrame extends JFrame {
         setLayout(null);
         setLocationRelativeTo(null);
 
+        //Set custom Icon
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
+        setIconImage(icon.getImage());
+
         initToolbar();
         initCustomTable();
         initAddButton();
@@ -50,7 +54,7 @@ public class HotelEditFrame extends JFrame {
     }
 
     private void initDeleteButton() {
-        deleteButton = new JButton("DELETE HOTEL");
+        deleteButton = new JButton("LÖSCHEN");
         deleteButton.setBounds(335, 440, 130, 20);
 
         deleteButton.addActionListener(new ActionListener() {
@@ -59,9 +63,9 @@ public class HotelEditFrame extends JFrame {
                 int selectedRow = customTable.getSelectedRow();
                 if (selectedRow != -1) {
                     // Show a confirmation dialog with a checkbox
-                    JCheckBox checkBox = new JCheckBox("Are you sure?");
+                    JCheckBox checkBox = new JCheckBox("Wollen Sie dieses Hotel löschen?");
                     Object[] message = {checkBox};
-                    int option = JOptionPane.showConfirmDialog(null, message, "Confirmation", JOptionPane.OK_CANCEL_OPTION);
+                    int option = JOptionPane.showConfirmDialog(null, message, "Bestätigung", JOptionPane.OK_CANCEL_OPTION);
 
                     if (option == JOptionPane.OK_OPTION && checkBox.isSelected()) {
                         // Retrieve the hotel ID from the selected row
@@ -82,7 +86,7 @@ public class HotelEditFrame extends JFrame {
                         customTable.getTableModel().saveData();
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "No row selected.");
+                    JOptionPane.showMessageDialog(null, "Keine Reihe ausgewählt");
                 }
             }
         });
@@ -158,7 +162,7 @@ public class HotelEditFrame extends JFrame {
     }
 
     private void initAddButton() {
-        addButton = new JButton("ADD HOTEL");
+        addButton = new JButton("HINZUFÜGEN");
         addButton.setBounds(175, 440, 130, 20);
         //updated version from Pia Zimmermann
         addButton.addActionListener(new ActionListener() {
@@ -171,19 +175,19 @@ public class HotelEditFrame extends JFrame {
                 inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
                 //Updated version
                 // Create checkboxes for GDPR confirmation
-                JCheckBox gdprCheckBox = new JCheckBox("I confirm that I have processed the data according to GDPR");
+                JCheckBox gdprCheckBox = new JCheckBox("Ich bestätige die GDPR zur Kenntnis genommen zu haben");
 
                 // Add checkboxes to the input panel
                 inputPanel.add(gdprCheckBox);
 
                 // Show the input dialog
-                int result = JOptionPane.showConfirmDialog(null, inputPanel, "Enter Hotel Details", JOptionPane.OK_CANCEL_OPTION);
+                int result = JOptionPane.showConfirmDialog(null, inputPanel, "Eingabe", JOptionPane.OK_CANCEL_OPTION);
 
                 if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
                     // User confirmed GDPR processing, proceed with adding the hotel
                     for (String columnName : Arrays.copyOfRange(columnNames, 1, columnNames.length)) {
 
-                        String input = JOptionPane.showInputDialog("Enter value for " + columnName);
+                        String input = JOptionPane.showInputDialog("Geben Sie den Wert für " + columnName + " ein");
 
                         rowData[Arrays.asList(columnNames).indexOf(columnName)] = input;
 
@@ -242,7 +246,7 @@ public class HotelEditFrame extends JFrame {
         pst.executeUpdate();
 
         {
-            JOptionPane.showMessageDialog(null, "GDPR confirmation is required to add a hotel.");
+            JOptionPane.showMessageDialog(null, "GDPR Zustimmung ist benötigt um ein Hotel hinzuzufügen!");
         }
     }
 

@@ -10,7 +10,6 @@ public class CapacityFrame extends JFrame {
 
     private CapacityTable capacityTable;
     private Toolbar toolbar;
-    //private JButton testButton = new JButton("Test");
 
     public CapacityFrame(String title) {
         super(title);
@@ -21,6 +20,10 @@ public class CapacityFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+
+        //Set custom Icon
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
+        setIconImage(icon.getImage());
 
         InitToolbar();
         InitCapacityTable();
@@ -58,26 +61,5 @@ public class CapacityFrame extends JFrame {
 
     }
 
-
-    /*
-    private void InitTestButton(){
-
-        //Defines component and adds it to the frame
-        testButton.setSize(100,20);
-        testButton.setVisible(true);
-        add(testButton);
-
-        //Adds a component listener with instructions that define the button location in a way, that makes it always
-        //appear in the center, even when the user resizes the frame
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int x = getWidth()/2 - testButton.getWidth()/2;
-                int y = getHeight()/2 - testButton.getHeight()/2;
-                testButton.setLocation(x,y);
-            }
-        });
-    }
-    */
 
 }

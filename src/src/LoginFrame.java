@@ -12,14 +12,20 @@ public class LoginFrame extends JFrame {
     private JButton loginButton = new JButton("LOGIN");
     private JLabel nameTag = new JLabel("USER");
     private JTextField nameField = new JTextField("User");
-    private JLabel passwordTag = new JLabel("PASSWORD");
+    private JLabel passwordTag = new JLabel("PASSWORT");
     private JPasswordField passwordField = new JPasswordField("Password");
-    private JButton registerButton = new JButton("REGISTER");
+    private JButton registerButton = new JButton("REGISTRIEREN");
+
+    public static String currentUserName;
 
     public LoginFrame(String title) {
         super(title);
 
         setLayout(null);
+
+        //Set custom Icon
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
+        setIconImage(icon.getImage());
 
         nameFieldInit();
         passwordFieldInit();
@@ -35,9 +41,6 @@ public class LoginFrame extends JFrame {
         ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
         Image img = icon.getImage();
 
-        //Dimension size = getSize();
-        //int width = size.width/4;
-        //int height = size.height/4;
         Image newImg = img.getScaledInstance(440, 200, Image.SCALE_SMOOTH );
 
         ImageIcon newIcon = new ImageIcon(newImg);
@@ -56,8 +59,8 @@ public class LoginFrame extends JFrame {
     };
 
     private void nameFieldInit(){
-        nameTag.setBounds((getWidth() - nameTag.getWidth())/2 - 45, (getHeight() - nameTag.getHeight()) / 2 - 30, 100, 20 );
-        nameField.setSize(100,20);
+        nameTag.setBounds((getWidth() - nameTag.getWidth())/2 - 75, (getHeight() - nameTag.getHeight()) / 2 - 30, 100, 20 );
+        nameField.setSize(150,20);
 
         add(nameField);
         add(nameTag);
@@ -75,7 +78,7 @@ public class LoginFrame extends JFrame {
 
     private void passwordFieldInit(){
         passwordTag.setBounds((getWidth() - passwordTag.getWidth())/2 - 80, (getHeight() - passwordTag.getHeight()) / 2, 100, 20 );
-        passwordField.setSize(100,20);
+        passwordField.setSize(150,20);
         passwordField.setVisible(true);
 
         add(passwordField);
@@ -93,7 +96,7 @@ public class LoginFrame extends JFrame {
     }
 
     private void loginButtonInit(){
-        loginButton.setSize(100, 20);
+        loginButton.setSize(150, 20);
         loginButton.setVisible(true);
 
         add(loginButton);
@@ -123,7 +126,7 @@ public class LoginFrame extends JFrame {
     }
 
     private void registerButtonInit(){
-        registerButton.setSize(100, 20);
+        registerButton.setSize(150, 20);
         registerButton.setVisible(true);
 
         add(registerButton);
@@ -177,4 +180,5 @@ public class LoginFrame extends JFrame {
 
 
     }
+
 }

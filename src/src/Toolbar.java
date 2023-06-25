@@ -12,6 +12,7 @@ public class Toolbar extends JToolBar {
     private JButton goOccupancyButton;
     private JButton goHotelEditButton;
     private JButton goOccupancyEditButton;
+    private JButton goExportButton;
     private JFrame frame;
 
     public Toolbar(JFrame frame) {
@@ -19,32 +20,36 @@ public class Toolbar extends JToolBar {
 
         this.frame = frame;
 
-        setLocation(0,0);
+        setLocation(66,0);
         setLayout(new FlowLayout());
         setVisible(true);
-        setSize(frame.getWidth(), 30);
+        setSize(frame.getWidth() - 66, 30);
 
+        //Add elements from left to right
         InitLogo();
         InitGoCapacityButton();
         InitGoOccupancyButton();
         InitGoHotelEditButton();
         InitGoOccupancyEditButton();
+        InitGoExportButton();
 
 
     }
 
     private void InitLogo() {
-        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
-        Image img = icon.getImage();
-        Image newImg = img.getScaledInstance(66, 30, Image.SCALE_SMOOTH);
-        ImageIcon newIcon = new ImageIcon(newImg);
-        logo = new JLabel(newIcon);
-        logo.setVisible(true);
-        add(logo);
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg"); // Select image from files
+        Image img = icon.getImage(); // Assign icon to image instance
+        Image newImg = img.getScaledInstance(66, 30, Image.SCALE_SMOOTH); // Scale image
+        ImageIcon newIcon = new ImageIcon(newImg); // Assign scaled image to icon
+        logo = new JLabel(newIcon); // Create JLabel using ImageIcon
+        logo.setBounds(0, 0, 66, 30); // Set position and size manually
+        logo.setVisible(true); // Set visible
+        this.frame.add(logo); // Add logo to frame
     }
 
+
     private void InitGoOccupancyEditButton(){
-        goOccupancyEditButton = new JButton("EDIT OCCUPANCY");
+        goOccupancyEditButton = new JButton("BELEGUNG BEARBEITEN");
         goOccupancyEditButton.setVisible(true);
 
         add(goOccupancyEditButton);
@@ -62,7 +67,7 @@ public class Toolbar extends JToolBar {
     }
 
     private void InitGoHotelEditButton() {
-        goHotelEditButton = new JButton("EDIT HOTELS");
+        goHotelEditButton = new JButton("HOTELS BEARBEITEN");
         goHotelEditButton.setVisible(true);
 
         add(goHotelEditButton);
@@ -81,7 +86,7 @@ public class Toolbar extends JToolBar {
 
     private void InitGoCapacityButton(){
 
-        goCapacityButton = new JButton("CAPACITY");
+        goCapacityButton = new JButton("KAPAZITÄT");
         goCapacityButton.setVisible(true);
 
         add(goCapacityButton);
@@ -101,7 +106,7 @@ public class Toolbar extends JToolBar {
 
     private void InitGoOccupancyButton(){
 
-        goOccupancyButton = new JButton("OCCUPANCY");
+        goOccupancyButton = new JButton("BELEGUNG");
         goOccupancyButton.setVisible(true);
 
         add(goOccupancyButton);
@@ -117,5 +122,23 @@ public class Toolbar extends JToolBar {
         });
     }
 
+    private void InitGoExportButton(){
+
+        goExportButton = new JButton("EXPORTIEREN");
+        goExportButton.setVisible(true);
+
+        add(goExportButton);
+
+        goExportButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(frame instanceof JFrame){
+                    frame.dispose();
+                }
+                frame = new ExportFrame("NOE-TO");
+            }
+        });
+
+    }
 }
 

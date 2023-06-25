@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public class RegisterFrame extends JFrame {
 
-    private JButton returnButton = new JButton("Return");
-    private JButton createButton = new JButton("Create");
+    private JButton returnButton = new JButton("ZURÜCK");
+    private JButton createButton = new JButton("ERSTELLEN");
     private JTextField nameField = new JTextField("Enter Username");
     private JPasswordField passwordField1 = new JPasswordField("Password");
     private JPasswordField passwordField2 = new JPasswordField("Password");
@@ -27,6 +27,10 @@ public class RegisterFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        //Set custom Icon
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
+        setIconImage(icon.getImage());
+
         initNameField();
         initPasswordField1();
         initPasswordField2();
@@ -36,7 +40,7 @@ public class RegisterFrame extends JFrame {
     }
 
     private void initNameField(){
-        nameField.setSize(100,20);
+        nameField.setSize(150,20);
         nameField.setVisible(true);
 
         add(nameField);
@@ -52,7 +56,7 @@ public class RegisterFrame extends JFrame {
     }
 
     private void initPasswordField1(){
-        passwordField1.setSize(100,20);
+        passwordField1.setSize(150,20);
         passwordField1.setVisible(true);
 
         add(passwordField1);
@@ -68,7 +72,7 @@ public class RegisterFrame extends JFrame {
     }
 
     private void initPasswordField2(){
-        passwordField2.setSize(100,20);
+        passwordField2.setSize(150,20);
         passwordField2.setVisible(true);
 
         add(passwordField2);
@@ -84,7 +88,7 @@ public class RegisterFrame extends JFrame {
     }
 
     private void initCreateButton(){
-        createButton.setSize(100, 20);
+        createButton.setSize(150, 20);
         createButton.setVisible(true);
 
         add(createButton);
@@ -139,7 +143,7 @@ public class RegisterFrame extends JFrame {
     }
 
     private void initReturnButton(){
-        returnButton.setSize(100, 20);
+        returnButton.setSize(150, 20);
         returnButton.setVisible(true);
 
         add(returnButton);

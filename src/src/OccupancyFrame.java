@@ -1,6 +1,7 @@
 package src;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -24,7 +25,7 @@ Selection shall be possible for one hotel and/or year and/or category (all hotel
 
 public class OccupancyFrame extends JFrame {
 
-    String [] columnNames = new String[]{"JAHR/MONAT", "ANZAHL", "RÄUME", "BENUTZT", "BETTEN", "BENUTZT"};
+    String [] columnNames = {"JAHR/MONAT", "ANZAHL", "ZIMMER", "BENUTZT", "BETTEN", "BENUTZT"};
 
     private Toolbar toolbar;
 
@@ -45,6 +46,8 @@ public class OccupancyFrame extends JFrame {
 
     private JComboBox <String> hotelComboBox;
     private JLabel hotelLabel;
+
+    private JButton applyButton2;
 
     private JComboBox <Integer> startYearBox;
     private JComboBox <Integer> endYearBox;
@@ -78,6 +81,10 @@ public class OccupancyFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+
+        //Set custom Icon
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
+        setIconImage(icon.getImage());
 
         InitToolbar();
         InitMultiHotelCheckBox();
@@ -130,9 +137,18 @@ public class OccupancyFrame extends JFrame {
     private void InitMultiChoice(){
 
         if (hotelComboBox != null){
-            hotelComboBox.setVisible(false);
-            hotelLabel.setVisible(false);
+            remove(startYearBox);
+            remove(endYearBox);
+            remove(yearLabel);
 
+            remove(startMonthBox);
+            remove(endMonthBox);
+            remove(monthLabel);
+
+            remove(hotelComboBox);
+            remove(hotelLabel);
+
+            remove(applyButton2);
         }
 
         repaint();
@@ -146,7 +162,7 @@ public class OccupancyFrame extends JFrame {
 
     private void InitHotelChoice(){
 
-        if (startYearBox != null){
+        if (minCategoryBox != null){
             remove(startYearBox);
             remove(endYearBox);
             remove(yearLabel);
@@ -185,11 +201,11 @@ public class OccupancyFrame extends JFrame {
     }
     private void InitApplyButton2(){
 
-        applyButton = new JButton("APPLY");
-        applyButton.setBounds((getWidth()/2) - 45, 350, 90, 20);
-        add(applyButton);
+        applyButton2 = new JButton("BESTÄTIGEN");
+        applyButton2.setBounds((getWidth()/2) - 60, 350, 120, 20);
+        add(applyButton2);
 
-        applyButton.addActionListener(new ActionListener() {
+        applyButton2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -204,8 +220,8 @@ public class OccupancyFrame extends JFrame {
                 try {
                     if (startYear < endYear) {
                         InitSingleOccupancyTable(startYear, endYear, startMonth, endMonth, hotelID);
-                    } else if (startYear == endYear && startMonth <= endMonth && minCategory.length() <= maxCategory.length()){
-                        InitMultiOccupancyTable(startYear, endYear, startMonth, endMonth, minCategory, maxCategory);
+                    } else if (startYear == endYear && startMonth <= endMonth){
+                        InitSingleOccupancyTable(startYear, endYear, startMonth, endMonth, hotelID);
                     } else{
                         throw new IllegalArgumentException("Invalid value size!");
                     }
@@ -278,8 +294,8 @@ public class OccupancyFrame extends JFrame {
 
     private void InitApplyButton(){
 
-        applyButton = new JButton("APPLY");
-        applyButton.setBounds((getWidth()/2) - 45, 350, 90, 20);
+        applyButton = new JButton("BESTÄTIGEN");
+        applyButton.setBounds((getWidth()/2) - 60, 350, 120, 20);
         add(applyButton);
 
         applyButton.addActionListener(new ActionListener() {
@@ -433,18 +449,18 @@ public class OccupancyFrame extends JFrame {
         }
 
 
-        int monthCount = startMonth - 1;
+        int monthCount = startMonth;
         int yearCount = startYear;
         //Initialize the rest
         for (int i = 0; i < rowNumber; i++){
 
             //Initialize Date
-            if (monthCount % 12 == 0){
-                yearCount++;
-                monthCount = 0;
-            }
+            if (monthCount % 13 == 0){
 
-            monthCount++;
+                yearCount++;
+                monthCount = 1;
+
+            }
 
             workData[i][0] = yearCount + "/" + monthCount;
 
@@ -456,6 +472,9 @@ public class OccupancyFrame extends JFrame {
 
             //Initialize bed number
             workData[i][4] = String.valueOf(otherValues[1]);
+
+
+            monthCount++;
         }
 
         return workData;
@@ -581,18 +600,16 @@ public class OccupancyFrame extends JFrame {
         }
 
 
-        int monthCount = startMonth - 1;
+        int monthCount = startMonth;
         int yearCount = startYear;
         //Initialize the rest
         for (int i = 0; i < rowNumber; i++){
 
             //Initialize Date
-            if (monthCount % 12 == 0){
+            if (monthCount % 13 == 0){
                 yearCount++;
-                monthCount = 0;
+                monthCount = 1;
             }
-
-            monthCount++;
 
             workData[i][0] = yearCount + "/" + monthCount;
 
@@ -604,6 +621,8 @@ public class OccupancyFrame extends JFrame {
 
             //Initialize bed number
             workData[i][4] = String.valueOf(otherValues[1]);
+
+            monthCount++;
         }
 
         return workData;
@@ -614,13 +633,9 @@ public class OccupancyFrame extends JFrame {
 
         int rowCount = 0;
 
-        int lowMonth = 12 - startMonth + 1;
-        int highMonth = endMonth;
-
         int lowYear = startYear - 2014;
         int highYear = endYear - 2014;
         int yearDiff = highYear - lowYear;
-
 
         if (yearDiff == 0){
 
@@ -716,4 +731,7 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    public static String[][] getSelectedOccupancyData() {
+        return selectedOccupancyData;
+    }
 }

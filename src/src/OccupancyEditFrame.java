@@ -41,6 +41,10 @@ public class OccupancyEditFrame extends JFrame {
         setLayout(null);
         setLocationRelativeTo(null);
 
+        //Set custom Icon
+        ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
+        setIconImage(icon.getImage());
+
         InitToolbar();
         InitHotelChoice();
         InitOccupancyTypeChoice();

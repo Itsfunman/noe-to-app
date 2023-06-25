@@ -9,9 +9,10 @@ public class CapacityTable extends JScrollPane {
     private TableModel tableModel;
     private int totalCount;
 
-    private String[] columnNames = {"Kategorie", "Betriebe", "Zimmer", "Betten", "Ø Zimmer", "Ø Betten"};
+    private String[] columnNames = {"KATEGORIE", "BETRIEBE", "ZIMMER", "BETTEN", "Ø ZIMMER", "Ø BETTEN"};
+
     //Enter hotel information here
-    Object[][] data = new Object[6][6];
+    public static String[][] data = new String[6][6];
 
 
     public CapacityTable() {
@@ -28,7 +29,7 @@ public class CapacityTable extends JScrollPane {
         // clear the data array
         for (int i = 1; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
-                data[i][j] = 0;
+                data[i][j] = String.valueOf(0);
             }
         }
 
@@ -44,14 +45,14 @@ public class CapacityTable extends JScrollPane {
 
         // fill the data array with new data
         for (int i = 0; i < data.length - 1; i++) {
-            data[i][0] = 5 - i;
+            data[i][0] = String.valueOf(5 - i);
 
             int[] betriebInfo = getBetriebInfo(5 - i);
-            data[i][1] = betriebInfo[0];
-            data[i][2] = betriebInfo[1];
-            data[i][3] = betriebInfo[2];
-            data[i][4] = betriebInfo[3];
-            data[i][5] = betriebInfo[4];
+            data[i][1] = String.valueOf(betriebInfo[0]);
+            data[i][2] = String.valueOf(betriebInfo[1]);
+            data[i][3] = String.valueOf(betriebInfo[2]);
+            data[i][4] = String.valueOf(betriebInfo[3]);
+            data[i][5] = String.valueOf(betriebInfo[4]);
         }
 
         data[5][0] = "Total";
@@ -59,15 +60,15 @@ public class CapacityTable extends JScrollPane {
         for (int i = 1; i < 4; i++) {
             int count = 0;
             for (int k = 0; k < data.length - 1; k++) {
-                count += (Integer) data[k][i];
+                count += Integer.parseInt(data[k][i]);
                 totalCount++;
             }
-            data[5][i] = count;
+            data[5][i] = String.valueOf(count);
         }
 
-        if ((Integer) data[5][1] > 0) {
-            data[5][4] = (Integer) data[5][2] / (Integer) data[5][1];
-            data[5][5] = (Integer) data[5][3] / (Integer) data[5][1];
+        if ( Integer.parseInt(data[5][1]) > 0) {
+            data[5][4] = String.valueOf(Integer.parseInt(data[5][2]) / Integer.parseInt(data[5][1]));
+            data[5][5] = String.valueOf(Integer.parseInt(data[5][3]) / Integer.parseInt(data[5][1]));
         }
 
 
@@ -145,6 +146,11 @@ public class CapacityTable extends JScrollPane {
         }
 
     }
+
+    public static String[][] getData() {
+        return data;
+    }
+
 
 
 }
