@@ -37,8 +37,8 @@ public class HotelEditFrame extends JFrame {
 
     private String fileName = "data/hotelData.txt";
 
-    private String[] columnNames = {"ID", "Name", "Kategorie", "Anzahl Zimmer", "Anzahl Betten", "BesitzerIn", "Kontakt", "Adresse",
-            "Stadt", "PLZ", "Telefonnummer", "Familien", "Hunde", "Spa", "Fitness"};
+    private String[] columnNames = {"ID", "Name", "Catagory", "Amount Rooms", "Amount Beds", "Owner", "Contact", "Adress",
+            "City", "Zip Code", "Phonenumber", "Family", "Dog", "Spa", "Fitness"};
 
     public HotelEditFrame(String title) {
         super(title);
@@ -63,7 +63,7 @@ public class HotelEditFrame extends JFrame {
 
     private void InitHotelFromExcelButton(){
 
-        excelButton = new JButton("IMPORTIEREN");
+        excelButton = new JButton("IMPORT");
         excelButton.setBounds((getWidth()/2) - 65, 420, 130, 20);
         excelButton.setVisible(true);
         add(excelButton);
@@ -77,17 +77,17 @@ public class HotelEditFrame extends JFrame {
                 inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
                 //Updated version
                 // Create checkboxes for GDPR confirmation
-                JCheckBox gdprCheckBox = new JCheckBox("Ich bestätige die GDPR zur Kenntnis genommen zu haben");
+                JCheckBox gdprCheckBox = new JCheckBox("I have taken note of the GDPR");
 
                 // Add checkboxes to the input panel
                 inputPanel.add(gdprCheckBox);
 
                 // Show the input dialog
-                int result = JOptionPane.showConfirmDialog(null, inputPanel, "Eingabe", JOptionPane.OK_CANCEL_OPTION);
+                int result = JOptionPane.showConfirmDialog(null, inputPanel, "Input", JOptionPane.OK_CANCEL_OPTION);
 
                 if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
                     // User confirmed GDPR processing, proceed with adding the hotel
-                    String inputFilePath = JOptionPane.showInputDialog("Geben Sie den Pfad zu Ihrer Datei ein");
+                    String inputFilePath = JOptionPane.showInputDialog("Route");
                     String targetFilePath = "data/importData.txt";
 
                     inputFilePath = inputFilePath.replaceAll("\"", "");
@@ -197,7 +197,7 @@ public class HotelEditFrame extends JFrame {
     }
 
     private void initDeleteButton() {
-        deleteButton = new JButton("LÖSCHEN");
+        deleteButton = new JButton("DELETE");
         deleteButton.setBounds((getWidth()/2) + 75, 420, 130, 20);
 
         deleteButton.addActionListener(new ActionListener() {
@@ -206,9 +206,9 @@ public class HotelEditFrame extends JFrame {
                 int selectedRow = customTable.getSelectedRow();
                 if (selectedRow != -1) {
                     // Show a confirmation dialog with a checkbox
-                    JCheckBox checkBox = new JCheckBox("Wollen Sie dieses Hotel löschen?");
+                    JCheckBox checkBox = new JCheckBox("Do you want to delete this hotel?");
                     Object[] message = {checkBox};
-                    int option = JOptionPane.showConfirmDialog(null, message, "Bestätigung", JOptionPane.OK_CANCEL_OPTION);
+                    int option = JOptionPane.showConfirmDialog(null, message, "Confirm", JOptionPane.OK_CANCEL_OPTION);
 
                     if (option == JOptionPane.OK_OPTION && checkBox.isSelected()) {
                         // Retrieve the hotel ID from the selected row
@@ -229,7 +229,7 @@ public class HotelEditFrame extends JFrame {
                         customTable.getTableModel().saveData();
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Keine Reihe ausgewählt");
+                    JOptionPane.showMessageDialog(null, "Now Row selected");
                 }
             }
         });
@@ -305,7 +305,7 @@ public class HotelEditFrame extends JFrame {
     }
 
     private void initAddButton() {
-        addButton = new JButton("HINZUFÜGEN");
+        addButton = new JButton("ADD");
         addButton.setBounds((getWidth()/2) - 205, 420, 130, 20);
         //updated version from Pia Zimmermann
         addButton.addActionListener(new ActionListener() {
@@ -318,19 +318,19 @@ public class HotelEditFrame extends JFrame {
                 inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
                 //Updated version
                 // Create checkboxes for GDPR confirmation
-                JCheckBox gdprCheckBox = new JCheckBox("Ich bestätige die GDPR zur Kenntnis genommen zu haben");
+                JCheckBox gdprCheckBox = new JCheckBox("I have taken note of the GDPR");
 
                 // Add checkboxes to the input panel
                 inputPanel.add(gdprCheckBox);
 
                 // Show the input dialog
-                int result = JOptionPane.showConfirmDialog(null, inputPanel, "Eingabe", JOptionPane.OK_CANCEL_OPTION);
+                int result = JOptionPane.showConfirmDialog(null, inputPanel, "Input", JOptionPane.OK_CANCEL_OPTION);
 
                 if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
                     // User confirmed GDPR processing, proceed with adding the hotel
                     for (String columnName : Arrays.copyOfRange(columnNames, 1, columnNames.length)) {
 
-                        String input = JOptionPane.showInputDialog("Geben Sie den Wert für " + columnName + " ein");
+                        String input = JOptionPane.showInputDialog("Give a value for " + columnName);
 
                         rowData[Arrays.asList(columnNames).indexOf(columnName)] = input;
 
@@ -389,7 +389,7 @@ public class HotelEditFrame extends JFrame {
         pst.executeUpdate();
 
         {
-            JOptionPane.showMessageDialog(null, "GDPR Zustimmung ist benötigt um ein Hotel hinzuzufügen!");
+            JOptionPane.showMessageDialog(null, "GDPR consent is required to add a hotel!");
         }
     }
 

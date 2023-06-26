@@ -73,7 +73,7 @@ public class ExportFrame extends JFrame {
     }
 
     private void InitExportButton(){
-        exportButton = new JButton("EXPORTIEREN");
+        exportButton = new JButton("EXPORT");
         exportButton.setBounds(getWidth()/2 - 80,350,160,20);
         add(exportButton);
 
@@ -112,7 +112,7 @@ public class ExportFrame extends JFrame {
         String targetFolderName = exportTarget.getText();
 
         Path sourcePath = Paths.get(oldFileName);
-        Path targetFolderPath = Paths.get(targetFolderName);
+        Path targetFolderPath = Paths.get(targetFolderName.replaceAll("\"",""));
 
         // Create the target folder if it doesn't exist
         if (!Files.exists(targetFolderPath)) {
@@ -209,7 +209,7 @@ public class ExportFrame extends JFrame {
         exportTarget.setBounds(getWidth()/2 - 220,325,440,20);
         add(exportTarget);
 
-        exportLabel = new JLabel("GEBEN SIE DEN PFAD ZUM ZIELORDNER BITTE HIER EIN:");
+        exportLabel = new JLabel("Route:");
         exportLabel.setBounds(getWidth()/2 - 180,300,360,20);
         add(exportLabel);
 

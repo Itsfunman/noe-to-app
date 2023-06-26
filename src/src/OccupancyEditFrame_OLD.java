@@ -27,7 +27,7 @@ public class OccupancyEditFrame_OLD extends JFrame {
     private JToolBar toolbar;
 
     private final JLabel [] labels = new JLabel[3];
-    private final String [] labelNames = {"Jahr:", "Hotel:", "Mode:"};
+    private final String [] labelNames = {"Year:", "Hotel:", "Mode:"};
 
     private JComboBox<String> hotelChoice;
     private Hotel [] hotelOptions;

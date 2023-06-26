@@ -11,7 +11,7 @@ public class CapacityTable extends JScrollPane {
     private TableModel tableModel;
     private int totalCount;
 
-    private String[] columnNames = {"KATEGORIE", "BETRIEBE", "ZIMMER", "BETTEN", "Ø ZIMMER", "Ø BETTEN"};
+    private String[] columnNames = {"CATAGORY", "ESTABLISHMENTS", "ROOMS", "BEDS", "Ø ROOMS", "Ø BEDS"};
 
     //Enter hotel information here
     public static String[][] data = new String[6][6];

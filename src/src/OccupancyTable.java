@@ -7,7 +7,7 @@ public class OccupancyTable extends JScrollPane {
     private JTable table;
     private TableModel tableModel;
 
-    private String [] columnNames = {"Kategorie", "Betriebe", "Zimmer", "Betten", "Ø Zimmer", "Ø Betten"};
+    private String [] columnNames = {"Categorie", "Hotels", "Rooms", "Beds", "Ø Rooms", "Ø Beds"};
     //Enter hotel information here
     Object[][] data = {
             {"*****", "row1col2", "row1col3", "row1col4", "row1col5", "row1col6"},
