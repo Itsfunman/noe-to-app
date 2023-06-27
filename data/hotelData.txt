@@ -2,7 +2,7 @@
 55,Hotel garni Steinfeld,***,79,100,Niederhametner Kilian-Noel,Klopstech-Wieter Sakine,Nikolaus-August-Otto-Straße 4,Wiener,2700,3563381,false,false,false,false
 353,Land- und Seminarpension Gamerith,*,54,131,Tichauer Annamária,Mowinckel Luta,Mottingeramt 41,Mottingeramt,3532,2375369,false,false,false,false
 332,Haus der Pferde,***,34,7,Socjnoha Armella,Koriska Lilli-Valerie,Langschwarza 46,Schrems,3944,4938109,false,false,false,false
-667,Bauernhof Ablass,*,7,26,Tejcka Satya,Schenkirs Narmin,Hochreit 5,Göstling,3345,4364678,false,false,false,false
+667,Bauernhof Ablass,*,7,26,Tejcka Satya,Schenkirs Narmin,Hochreit 5,Göstling,3345,4364678,tfalse,false,false,false
 36,Hotel Schrannenhof,****,25,38,Dejmek Rigon,Hurtin Ashna,Niedermarkt 17-19,Klosterneuburg,3400,3343992,false,false,false,false
 682,Genießerpension Dopler - Zur schönen Au,**,41,149,Edler von Liebenberg Atenea,Kesl Szofia,Maierhöfnerstraße 6,Bad,2853,1540081,false,false,false,false
 654,Urlaub am Bauernhof,**,16,63,Jorky Katharina-Antonia,Harthum Edona,41 Konradsheim,Waidhofen,3340,0312786,false,false,false,false
@@ -407,7 +407,7 @@
 191,Pension Haus Böhm,*,6,12,Sojka Job,De Crignis Eckhart,Badgasse 52,Gumpoldskirchen,2352,2283079,false,false,false,false
 268,Sinsamreith,*,20,5,de Levasori della Mo Jiří,Galritschek Noel-Jeremy,Lassing 4,Grossegg,3345,7829780,false,false,false,false
 451,Hotel Restaurant Goldener Anker,***,74,329,Preidel Naina,Korad Hannah-Pauline,Donaulände 27,Hainburg,2410,9954582,false,false,false,false
-76,Hotel Vösenhuber,***,1,1,Damischek Franz-Christoph,Robasch Ville,Hauptstrasse 20,Ernsthofen,4432,0152269,false,false,false,false
+76,Hotel Vösenhuber,***,1,2,Damischek Franz-Christoph,Robasch Ville,Hauptstrasse 20,Ernsthofen,4432,0152269,false,false,false,false
 64,Winzerhof Familie Bogner,**,30,87,Derndarsky Nina-Barbara,Edler von Hönigsberg Imed,Obere Hauptstraße 24,Rohrendorf,3495,3057002,false,false,false,false
 577,Hotel Althof Retz,****,25,99,Dresher Caia,Hawlenu Victoria-Marina,Althofgasse 14,Retz,2070,8163531,false,false,false,false
 158,Genießerhof Haimer,****,36,15,Vollmar Ria,Schicko Marcus-Constantine,Körnergasse 14,Poysdorf,2170,3447849,false,false,false,false
@@ -686,4 +686,4 @@
 447,Schlaffass - Schlafen im Holzfass,**,20,141,Pietka Olivia-Chelsea,Krojer Seila,Dumba Park 1,Tattendorf,2523,6726807,false,false,false,false
 297,Dorfwirtshaus Rauch,*,59,73,Lezak Celio,Ploub Mehvan,Eschabruck 11,Eschabruck,3533,8635887,false,false,false,false
 47,Hotel Müller,**,11,42,Maria Müller,Thomas Mair,Virstrasse 12,Maisberg,2341,2147483647,true,true,false,false
-58,Hotel Sonnenblick,*****,30,60,Karl Sonnenblick,Karl Sonnenblick,Sonnensteinstraße 123,Sonndorf,4234,13414141,false,false,true,true
+58,Hotel Sonnenblick,***,30,60,Karl Sonnenblick,Karl Sonnenblick,Sonnensteinstraße 123,Sonndorf,4234,13414141,false,false,true,true

@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Class used for the logo and the toolbar
+ */
 public class Toolbar extends JToolBar {
 
     private JLabel logo;
@@ -15,6 +18,10 @@ public class Toolbar extends JToolBar {
     private JButton goExportButton;
     private JFrame frame;
 
+    /**
+     * Initializes the toolbar in the given frame
+     * @param frame
+     */
     public Toolbar(JFrame frame) {
         super();
 
@@ -36,6 +43,9 @@ public class Toolbar extends JToolBar {
 
     }
 
+    /**
+     * Draws the logo
+     */
     private void InitLogo() {
         ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg"); // Select image from files
         Image img = icon.getImage(); // Assign icon to image instance
@@ -47,7 +57,9 @@ public class Toolbar extends JToolBar {
         this.frame.add(logo); // Add logo to frame
     }
 
-
+    /**
+     * Adds the Occupancy Edit chpice
+     */
     private void InitGoOccupancyEditButton(){
         goOccupancyEditButton = new JButton("BELEGUNG BEARBEITEN");
         goOccupancyEditButton.setVisible(true);
@@ -66,6 +78,9 @@ public class Toolbar extends JToolBar {
         });
     }
 
+    /**
+     * Adds the Hotel Edit choice
+     */
     private void InitGoHotelEditButton() {
         goHotelEditButton = new JButton("HOTELS BEARBEITEN");
         goHotelEditButton.setVisible(true);
@@ -84,6 +99,9 @@ public class Toolbar extends JToolBar {
         });
     }
 
+    /**
+     * Adds the capacity choice
+     */
     private void InitGoCapacityButton(){
 
         goCapacityButton = new JButton("KAPAZITÄT");
@@ -104,6 +122,9 @@ public class Toolbar extends JToolBar {
 
     }
 
+    /**
+     * Adds the occupancy choice
+     */
     private void InitGoOccupancyButton(){
 
         goOccupancyButton = new JButton("BELEGUNG");
@@ -122,6 +143,9 @@ public class Toolbar extends JToolBar {
         });
     }
 
+    /**
+     * Adds the export choice
+     */
     private void InitGoExportButton(){
 
         goExportButton = new JButton("EXPORTIEREN");

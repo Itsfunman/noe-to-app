@@ -8,6 +8,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Optional;
 
+/**
+ * Initializes the frame for users to register
+ */
 public class RegisterFrame extends JFrame {
 
     private JButton returnButton = new JButton("ZURÜCK");
@@ -16,6 +19,10 @@ public class RegisterFrame extends JFrame {
     private JPasswordField passwordField1 = new JPasswordField("Password");
     private JPasswordField passwordField2 = new JPasswordField("Password");
 
+    /**
+     * Creates the frame
+     * @param title
+     */
     public RegisterFrame(String title) {
         super(title);
 
@@ -39,6 +46,9 @@ public class RegisterFrame extends JFrame {
 
     }
 
+    /**
+     * Initializes the field to enter new data
+     */
     private void initNameField(){
         nameField.setSize(150,20);
         nameField.setVisible(true);
@@ -55,6 +65,9 @@ public class RegisterFrame extends JFrame {
         });
     }
 
+    /**
+     * First password field
+     */
     private void initPasswordField1(){
         passwordField1.setSize(150,20);
         passwordField1.setVisible(true);
@@ -71,6 +84,9 @@ public class RegisterFrame extends JFrame {
         });
     }
 
+    /**
+     * Second password field
+     */
     private void initPasswordField2(){
         passwordField2.setSize(150,20);
         passwordField2.setVisible(true);

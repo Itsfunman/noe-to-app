@@ -5,23 +5,44 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * A custom table model that extends AbstractTableModel and provides functionality for saving data to a file,
+ * adding and removing rows, and managing table data and column names.
+ */
 public class CustomTableModel extends AbstractTableModel {
 
     private String[][] data;
     private String[] columnNames;
     private String fileName;
 
-    public CustomTableModel(String[][] data, String fileName, String [] columnNames) {
+    /**
+     * Constructs a CustomTableModel with the provided data, file name, and column names.
+     *
+     * @param data        The initial data for the table.
+     * @param fileName    The name of the file to save the data.
+     * @param columnNames The column names for the table.
+     */
+    public CustomTableModel(String[][] data, String fileName, String[] columnNames) {
         this.data = data;
         this.columnNames = columnNames;
         this.fileName = fileName;
     }
 
-    public CustomTableModel(String[][] data, String [] columnNames) {
+    /**
+     * Constructs a CustomTableModel with the provided data and column names.
+     *
+     * @param data        The initial data for the table.
+     * @param columnNames The column names for the table.
+     */
+    public CustomTableModel(String[][] data, String[] columnNames) {
         this.data = data;
         this.columnNames = columnNames;
     }
 
+    /**
+     * Saves the data in the table to a file.
+     * The file name is specified during construction.
+     */
     public void saveData() {
         try (FileWriter fileWriter = new FileWriter(fileName);
              BufferedWriter writer = new BufferedWriter(fileWriter)) {
@@ -74,32 +95,66 @@ public class CustomTableModel extends AbstractTableModel {
         fireTableCellUpdated(row, col);
     }
 
+    /**
+     * Sets the data in the table model to the provided new data.
+     *
+     * @param newData The new data for the table.
+     */
     public void setData(String[][] newData) {
         this.data = newData;
         fireTableDataChanged();
     }
 
-
+    /**
+     * Returns the current data in the table model.
+     *
+     * @return The current data.
+     */
     public String[][] getData() {
         return this.data;
     }
 
+    /**
+     * Returns the column names of the table model.
+     *
+     * @return The column names.
+     */
     public String[] getColumnNames() {
         return columnNames;
     }
 
+    /**
+     * Sets the column names of the table model.
+     *
+     * @param columnNames The column names to set.
+     */
     public void setColumnNames(String[] columnNames) {
         this.columnNames = columnNames;
     }
 
+    /**
+     * Returns the file name for saving the table data.
+     *
+     * @return The file name.
+     */
     public String getFileName() {
         return fileName;
     }
 
+    /**
+     * Sets the file name for saving the table data.
+     *
+     * @param fileName The file name to set.
+     */
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
+    /**
+     * Adds a new row with the provided rowData to the table.
+     *
+     * @param rowData The data for the new row.
+     */
     public void addRow(String[] rowData) {
         // Create a new data array with increased size
         String[][] newData = new String[data.length + 1][getColumnCount()];
@@ -118,6 +173,11 @@ public class CustomTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    /**
+     * Removes the row at the specified index from the table.
+     *
+     * @param row The index of the row to remove.
+     */
     public void removeRow(int row) {
         // Create a new data array with reduced size
         String[][] newData = new String[data.length - 1][getColumnCount()];
@@ -136,4 +196,3 @@ public class CustomTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 }
-

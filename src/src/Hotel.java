@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.stream.IntStream;
 
+
+/**
+ * The Hotel class represents a hotel and provides methods to manage hotel information and occupancy data.
+ */
 public class Hotel {
 
     public static ArrayList<Hotel> hotels = new ArrayList();
@@ -33,7 +37,24 @@ public class Hotel {
 
     private boolean hotelExists = false;
 
-
+    /**
+     * Constructs a Hotel object with the provided information.
+     *
+     * @param hotelName                the name of the hotel
+     * @param category                 the category of the hotel
+     * @param roomNumber               the number of rooms in the hotel
+     * @param bedNumber                the number of beds in the hotel
+     * @param hotelOwner               the owner of the hotel
+     * @param hotelContactInformation  the contact information of the hotel
+     * @param address                  the address of the hotel
+     * @param city                     the city where the hotel is located
+     * @param cityCode                 the code of the city where the hotel is located
+     * @param phoneNumber              the phone number of the hotel
+     * @param family                   indicates if the hotel is family-friendly
+     * @param dog                      indicates if the hotel allows dogs
+     * @param spa                      indicates if the hotel has a spa
+     * @param fitness                  indicates if the hotel has a fitness center
+     */
     public Hotel(String hotelName, String category, String roomNumber, String bedNumber, String hotelOwner,
                  String hotelContactInformation, String address, String city, String cityCode, String phoneNumber,
                  String family, String dog, String spa, String fitness) {
@@ -95,6 +116,25 @@ public class Hotel {
         //Add rest with try catch blocks;
     }
 
+    /**
+     * Constructs a Hotel object with the provided information, including the hotel ID.
+     *
+     * @param id                       the ID of the hotel
+     * @param hotelName                the name of the hotel
+     * @param category                 the category of the hotel
+     * @param roomNumber               the number of rooms in the hotel
+     * @param bedNumber                the number of beds in the hotel
+     * @param hotelOwner               the owner of the hotel
+     * @param hotelContactInformation  the contact information of the hotel
+     * @param address                  the address of the hotel
+     * @param city                     the city where the hotel is located
+     * @param cityCode                 the code of the city where the hotel is located
+     * @param phoneNumber              the phone number of the hotel
+     * @param family                   indicates if the hotel is family-friendly
+     * @param dog                      indicates if the hotel allows dogs
+     * @param spa                      indicates if the hotel has a spa
+     * @param fitness                  indicates if the hotel has a fitness center
+     */
     public Hotel(String id, String hotelName, String category, String roomNumber, String bedNumber, String hotelOwner,
                  String hotelContactInformation, String address, String city, String cityCode, String phoneNumber,
                  String family, String dog, String spa, String fitness) {
@@ -135,37 +175,51 @@ public class Hotel {
         //Add rest with try catch blocks;
     }
 
+    /**
+     * Constructs a Hotel object with the provided information.
+     *
+     * @param id                     the hotel ID
+     * @param hotelName              the hotel name
+     * @param category               the hotel category
+     * @param roomNumber             the number of rooms in the hotel
+     * @param bedNumber              the number of beds in each room
+     * @param hotelOwner             the hotel owner
+     * @param hotelContactInformation the contact information for the hotel
+     * @param address                the address of the hotel
+     * @param city                   the city where the hotel is located
+     * @param cityCode               the code of the city where the hotel is located
+     * @param phoneNumber            the phone number of the hotel
+     */
     public Hotel(String id, String hotelName, String category,
                  String roomNumber, String bedNumber, String hotelOwner,
                  String hotelContactInformation, String address, String city, String cityCode, String phoneNumber) {
 
+        // Parse and assign the hotel ID
         this.hotelID = Integer.parseInt(id);
         hotelIDs.add(this.hotelID);
 
+        // Remove quotes from the category, hotel name, owner, contact information, address, city, city code, and phone number
         this.category = category.replaceAll("\"", "");
-
         this.hotelName = hotelName.replaceAll("\"", "");
         this.hotelName = this.hotelName.replaceAll("/", "");
-
         this.hotelOwner = hotelOwner.replaceAll("\"", "");
         this.hotelContactInformation = hotelContactInformation.replaceAll("\"", "");
         this.address = address.replaceAll("\"", "");
         this.city = city.replaceAll("\"", "");
         this.cityCode = cityCode.replaceAll("\"", "");
         this.phoneNumber = phoneNumber.replaceAll("\"", "");
+
+        // Set additional features to false
         this.family = false;
         this.dog = false;
         this.spa = false;
         this.fitness = false;
 
+        // Parse room number and bed number
         this.roomNumber = Integer.parseInt(roomNumber);
         this.bedNumber = Integer.parseInt(bedNumber);
 
-        //createBedOccupancyFile(this.hotelName);
-        //createRoomOccupancyFile(this.hotelName);
-        //fillOccupancyFile();
-        //System.out.println(this.hotelID);
-
+        // Add the hotel to the file and update the occupancy file if the hotel doesn't already exist
         if (!hotelExists){
             addToFile(this);
             addToOccupancyFile();
@@ -173,21 +227,38 @@ public class Hotel {
         }
     }
 
+    /**
+     * Constructs a Hotel object with the provided category, number of rooms, and number of beds.
+     *
+     * @param category   the hotel category
+     * @param noRooms    the number of rooms in the hotel
+     * @param noBeds     the number of beds in each room
+     */
     public Hotel(String category, int noRooms, int noBeds) {
         this.category = createCategory(Integer.parseInt(category));
         this.roomNumber = noRooms;
-        this.bedNumber= noBeds;
+        this.bedNumber = noBeds;
     }
 
+    /**
+     * Returns a simplified string representation of the Hotel object.
+     *
+     * @return a string representation of the Hotel object
+     */
     public String toStringSimple() {
         return hotelID + "," + hotelName + "," + category + "," + roomNumber + "," + bedNumber + "," + hotelOwner +
                 "," + hotelContactInformation + "," + address + "," + city + "," + cityCode + "," + phoneNumber +
                 "," + family + "," + dog + "," + spa + "," + fitness;
     }
 
+    /**
+     * Creates a category string based on the given category value.
+     *
+     * @param c the category value
+     * @return the category string representation
+     */
     private String createCategory(int c){
-
-        //StringBuilder allows us to create Strings much easier
+        // StringBuilder allows us to create Strings much easier
         StringBuilder category = new StringBuilder();
 
         for (int i = 0; i <= c; c++){
@@ -197,94 +268,56 @@ public class Hotel {
         return category.toString();
     }
 
+    /**
+     * Returns the hotel ID.
+     *
+     * @return the hotel ID
+     */
     public int getHotelID() {
         return hotelID;
     }
 
-    public void setHotelID(int hotelID) {
-        this.hotelID = hotelID;
-    }
-
+    /**
+     * Returns the hotel name.
+     *
+     * @return the hotel name
+     */
     public String getHotelName() {
         return hotelName;
     }
 
-    public void setHotelName(String hotelName) {
-        this.hotelName = hotelName;
-    }
-
+    /**
+     * Returns the hotel category.
+     *
+     * @return the hotel category
+     */
     public String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
+    /**
+     * Returns the number of rooms in the hotel.
+     *
+     * @return the number of rooms
+     */
     public int getRoomNumber() {
         return roomNumber;
     }
 
-    public void setRoomNumber(int roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-
+    /**
+     * Returns the number of beds in each room.
+     *
+     * @return the number of beds
+     */
     public int getBedNumber() {
         return bedNumber;
     }
 
-    public void setBedNumber(int bedNumber) {
-        this.bedNumber = bedNumber;
-    }
-
-    public String getHotelOwner() {
-        return hotelOwner;
-    }
-
-    public void setHotelOwner(String hotelOwner) {
-        this.hotelOwner = hotelOwner;
-    }
-
-    public String getHotelContactInformation() {
-        return hotelContactInformation;
-    }
-
-    public void setHotelContactInformation(String hotelContactInformation) {
-        this.hotelContactInformation = hotelContactInformation;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getCityCode() {
-        return cityCode;
-    }
-
-    public void setCityCode(String cityCode) {
-        this.cityCode = cityCode;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
+    /**
+     * Adds the hotel to the file.
+     *
+     * @param hotel the hotel to add
+     */
     public void addToFile(Hotel hotel) {
         String filePath = "data/hotelData.txt";
         try (FileReader fileReader = new FileReader(filePath);
@@ -303,6 +336,9 @@ public class Hotel {
         }
     }
 
+    /**
+     * Adds the hotel to the occupancy file.
+     */
     private void addToOccupancyFile() {
         String occupancyFile = "data/occupancies.txt";
         File occupancy = new File(occupancyFile);
@@ -328,9 +364,9 @@ public class Hotel {
             System.out.println("Failed to add data to the occupancy file.");
         }
     }
-
-
-    //Relict from when legacy Data was added
+    /**
+     * Fills the occupancy file with data for each year and month for the last hotel ID.
+     */
     private void fillOccupancyFile() {
         String hotelFile = "data/hotelData.txt";
         String occupancyFile = "data/occupancies.txt";
@@ -345,7 +381,6 @@ public class Hotel {
             System.out.println("No hotels found. Data generation stopped.");
             return;
         }
-
 
         // Check if any data exists for the last hotelID
         if (yearExists(occupancy, lastHotelID)) {
@@ -372,8 +407,12 @@ public class Hotel {
         }
     }
 
-
-
+    /**
+     * Retrieves the last hotel ID from the hotel data file.
+     *
+     * @param hotelsFile the hotel data file
+     * @return the last hotel ID
+     */
     private int getLastHotelID(File hotelsFile) {
         try (BufferedReader reader = new BufferedReader(new FileReader(hotelsFile))) {
             String line;
@@ -393,6 +432,13 @@ public class Hotel {
         return -1;
     }
 
+    /**
+     * Checks if the occupancy file contains data for a specific hotel ID.
+     *
+     * @param occupancyFile the occupancy file
+     * @param hotelID       the hotel ID
+     * @return true if the occupancy file contains data for the hotel ID, false otherwise
+     */
     private boolean yearExists(File occupancyFile, int hotelID) {
         try (BufferedReader reader = new BufferedReader(new FileReader(occupancyFile))) {
             String line;
@@ -411,13 +457,20 @@ public class Hotel {
         return false;
     }
 
+    /**
+     * Checks if the occupancy file contains data for a specific year and hotel ID.
+     *
+     * @param occupancyFile the occupancy file
+     * @param year          the year
+     * @param hotelID       the hotel ID
+     * @return true if the occupancy file contains data for the year and hotel ID, false otherwise
+     */
     private boolean yearExists(File occupancyFile, int year, int hotelID) {
         try (BufferedReader reader = new BufferedReader(new FileReader(occupancyFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 7)
-                {
+                if (parts.length >= 7) {
                     int existingYear = Integer.parseInt(parts[5].trim());
                     int existingHotelID = Integer.parseInt(parts[0].trim());
                     if (existingYear == year && existingHotelID == hotelID) {
@@ -430,7 +483,6 @@ public class Hotel {
         }
         return false;
     }
-
 
 }
 

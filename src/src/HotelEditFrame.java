@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The HotelEditFrame class represents a JFrame for editing hotel data.
+ */
 public class HotelEditFrame extends JFrame {
 
     private JToolBar toolbar;
@@ -32,6 +35,9 @@ public class HotelEditFrame extends JFrame {
     private JButton addButton;
     private JButton deleteButton;
     private JButton excelButton;
+    private JButton updateButton;
+
+    private CustomTableModel customTableModel;
 
     // private String fileName = "data/hotelData.txt";
 
@@ -40,6 +46,11 @@ public class HotelEditFrame extends JFrame {
     private String[] columnNames = {"ID", "Name", "Kategorie", "Anzahl Zimmer", "Anzahl Betten", "BesitzerIn", "Kontakt", "Adresse",
             "Stadt", "PLZ", "Telefonnummer", "Familien", "Hunde", "Spa", "Fitness"};
 
+    /**
+     * Constructs a HotelEditFrame object with the specified title.
+     *
+     * @param title the title of the frame
+     */
     public HotelEditFrame(String title) {
         super(title);
 
@@ -61,6 +72,9 @@ public class HotelEditFrame extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Initializes the "IMPORTIEREN" button for importing hotel data from an Excel file.
+     */
     private void InitHotelFromExcelButton(){
 
         excelButton = new JButton("IMPORTIEREN");
@@ -196,6 +210,46 @@ public class HotelEditFrame extends JFrame {
 
     }
 
+    /**
+     * Updates hotel in DB
+     * @param rowIndex
+     * @param rowData
+     */
+    public void updateHotelInDB(int rowIndex, String[] rowData) {
+        // Get the hotel ID from the rowData array, assuming it's in the first column
+        int hotelID = Integer.parseInt(rowData[0]);
+
+        // Update the hotel in the database using a PreparedStatement
+        try {
+            Connection connection = DBConnection.getConnection();
+            PreparedStatement pst = connection.prepareStatement("UPDATE dbo.hotel SET hotelname = ?, kategorie = ?, roomNumber = ?, bedNumber = ?, owner = ?, contact = ?, adress = ?, city = ?, plz = ?, tel = ?, family = ?, animals = ?, spa = ?, fitness = ? WHERE hotelid = ?");
+            pst.setString(1, rowData[1]);
+            pst.setString(2, rowData[2]);
+            pst.setInt(3, Integer.parseInt(rowData[3]));
+            pst.setInt(4, Integer.parseInt(rowData[4]));
+            pst.setString(5, rowData[5]);
+            pst.setString(6, rowData[6]);
+            pst.setString(7, rowData[7]);
+            pst.setString(8, rowData[8]);
+            pst.setInt(9, Integer.parseInt(rowData[9]));
+            pst.setLong(10, Long.parseLong(rowData[10]));
+            pst.setString(11, rowData[11]);
+            pst.setString(12, rowData[12]);
+            pst.setString(13, rowData[13]);
+            pst.setString(14, rowData[14]);
+            pst.setInt(15, hotelID);
+
+            pst.executeUpdate();
+            pst.close();
+            connection.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Initializes the "DELETE" button for importing hotel data from an Excel file.
+     */
     private void initDeleteButton() {
         deleteButton = new JButton("LÖSCHEN");
         deleteButton.setBounds((getWidth()/2) + 75, 420, 130, 20);
@@ -238,6 +292,9 @@ public class HotelEditFrame extends JFrame {
         add(deleteButton);
     }
 
+    /**
+     * Deletes hotels from occupanceis when they are removed
+     */
     private void deleteHotelFromOccupancies(String hotelID) {
         String occupancyFile = "data/occupancies.txt";
         File occupancy = new File(occupancyFile);
@@ -285,6 +342,9 @@ public class HotelEditFrame extends JFrame {
         }
     }
 
+    /**
+     * Deletes hotels from the database
+     */
     private void deleteHotelFromDB(String hotelID) throws SQLException {
         // Delete from DB
         PreparedStatement pst = null;
@@ -304,6 +364,9 @@ public class HotelEditFrame extends JFrame {
         pst.executeUpdate();
     }
 
+    /**
+     * Initializes the add button to add new hotels
+     */
     private void initAddButton() {
         addButton = new JButton("HINZUFÜGEN");
         addButton.setBounds((getWidth()/2) - 205, 420, 130, 20);
@@ -353,6 +416,11 @@ public class HotelEditFrame extends JFrame {
         add(addButton);
     }
 
+    /**
+     * Adds hotel to database
+     * @param rowData
+     * @throws SQLException
+     */
     public void addHotelToDB(String[] rowData) throws SQLException {
 
         //add to DB
@@ -393,7 +461,9 @@ public class HotelEditFrame extends JFrame {
         }
     }
 
-
+    /**
+     * Initializes toolbar to allow switching between hotels
+     */
     private void initToolbar () {
             toolbar = new Toolbar(this);
             toolbar.setVisible(true);
@@ -408,95 +478,124 @@ public class HotelEditFrame extends JFrame {
                     toolbar.setSize(getWidth(), 30);
                 }
             });
+    }
+
+    /**
+     * Initializes the custom table for displaying hotel data.
+     */
+    private void editRow (String fileName,int rowIndex, int columnIndex, String newValue){
+        ArrayList<String[]> data = fetchData(fileName);
+
+        if (rowIndex >= 0 && rowIndex < data.size() && columnIndex >= 0 && columnIndex < data.get(rowIndex).length) {
+            data.get(rowIndex)[columnIndex] = newValue;
+            saveData(fileName, data);
+        } else {
+            System.out.println("Invalid row index or column index.");
         }
+    }
 
+    /**
+     * saves Data when changes are made
+     * @param fileName
+     * @param data
+     */
+    private void saveData (String fileName, ArrayList < String[]>data){
 
-        private void editRow (String fileName,int rowIndex, int columnIndex, String newValue){
-            ArrayList<String[]> data = fetchData(fileName);
-
-            if (rowIndex >= 0 && rowIndex < data.size() && columnIndex >= 0 && columnIndex < data.get(rowIndex).length) {
-                data.get(rowIndex)[columnIndex] = newValue;
-                saveData(fileName, data);
-            } else {
-                System.out.println("Invalid row index or column index.");
-            }
-        }
-
-        private void saveData (String fileName, ArrayList < String[]>data){
-
-            try (FileWriter fileWriter = new FileWriter(fileName);
-                 BufferedWriter writer = new BufferedWriter(fileWriter)) {
-                // user does not exist in file, so add to file
-                for (String[] row : data) {
-                    String line = "";
-                    for (String value : row) {
-                        line = line + value + ",";
-                    }
-                    //System.out.println(line);
-                    writer.write(line);
-                    writer.newLine();
+        try (FileWriter fileWriter = new FileWriter(fileName);
+             BufferedWriter writer = new BufferedWriter(fileWriter)) {
+            // user does not exist in file, so add to file
+            for (String[] row : data) {
+                String line = "";
+                for (String value : row) {
+                    line = line + value + ",";
                 }
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
+                //System.out.println(line);
+                writer.write(line);
+                writer.newLine();
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Initializes the CustomTable instance
+     */
+    private void initCustomTable () {
+        ArrayList<String[]> dataList = fetchData(fileName);
+        int rowCount = dataList.size();
+        int columnCount = columnNames.length;
+
+        String[][] data = new String[rowCount][columnCount];
+        for (int i = 0; i < rowCount; i++) {
+            data[i] = dataList.get(i);
         }
 
-        private void initCustomTable () {
-            ArrayList<String[]> dataList = fetchData(fileName);
-            int rowCount = dataList.size();
-            int columnCount = columnNames.length;
+        customTableModel = new CustomTableModel(data, fileName, columnNames);
+        customTable = new CustomTable(customTableModel);
+        customTable.setBounds(10, 50, 770, 350);
 
-            String[][] data = new String[rowCount][columnCount];
-            for (int i = 0; i < rowCount; i++) {
-                data[i] = dataList.get(i);
-            }
 
-            CustomTableModel customTableModel = new CustomTableModel(data, fileName, columnNames);
-            customTable = new CustomTable(customTableModel);
-            customTable.setBounds(10, 50, 770, 350);
+        customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                int row = e.getFirstRow();
+                int column = e.getColumn();
+                if (row >= 0 && column >= 0) {
+                    JPanel inputPanel = new JPanel();
+                    inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
 
-            customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
-                @Override
-                public void tableChanged(TableModelEvent e) {
-                    int row = e.getFirstRow();
-                    int column = e.getColumn();
-                    if (row >= 0 && column >= 0) {
+                    JCheckBox gdprCheckBox = new JCheckBox("I have taken note of the GDPR");
+
+                    inputPanel.add(gdprCheckBox);
+
+                    int result = JOptionPane.showConfirmDialog(null, inputPanel, "Input", JOptionPane.OK_CANCEL_OPTION);
+
+                    if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
                         Object updatedValue = customTableModel.getValueAt(row, column);
                         // Perform any necessary actions with the updated value
 
                         customTableModel.saveData(); // Save the updated data to the file
-                    }
-                }
-            });
-
-            add(customTable);
-        }
-
-        private ArrayList<String[]> fetchData (String fileName){
-            ArrayList<String[]> dataList = new ArrayList<>();
-
-            try (FileReader fileReader = new FileReader(fileName);
-                 BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    String[] values = line.split(",");
-
-                    // Skip invalid lines or lines with insufficient values
-                    if (values.length != columnNames.length) {
-                        continue;
+                        String [] changedData = customTableModel.getData()[row];
+                        updateHotelInDB(row, changedData);
                     }
 
-                    dataList.add(values);
+                }
+            }
+        });
+
+
+        add(customTable);
+    }
+
+    /**
+     * gets data from hotelData.txt
+     * @param fileName
+     * @return
+     */
+    private ArrayList<String[]> fetchData (String fileName){
+        ArrayList<String[]> dataList = new ArrayList<>();
+
+        try (FileReader fileReader = new FileReader(fileName);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] values = line.split(",");
+
+                // Skip invalid lines or lines with insufficient values
+                if (values.length != columnNames.length) {
+                    continue;
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                dataList.add(values);
             }
 
-            return dataList;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+        return dataList;
     }
+
+}

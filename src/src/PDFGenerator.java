@@ -15,6 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Generates a pdf based on capacity and occupancy choice
+ */
 public class PDFGenerator {
 
     //Fonts are static so that they can be referenced everywhere
@@ -27,6 +30,11 @@ public class PDFGenerator {
     String [] capacityNames = {"KATEGORIE", "BETRIEBE", "ZIMMER", "BETTEN", "Ø ZIMMER", "Ø BETTEN"};
     String [] occupancyNames = {"JAHR/MONAT", "ANZAHL", "ZIMMER", "BENUTZT", "BETTEN", "BENUTZT"};
 
+    /**
+     * Initializes the PDFGenerator
+     * @param capacity
+     * @param occupancy
+     */
     public PDFGenerator(String [][] capacity, String [][] occupancy){
 
         try {
@@ -51,6 +59,12 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Initializes the cover pages
+     * @param document
+     * @param pdDocumentInformation
+     * @throws IOException
+     */
     private void InitPageONE(PDDocument document, PDDocumentInformation pdDocumentInformation) throws IOException {
         //Add page
         PDPage page = new PDPage();
@@ -64,6 +78,13 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Initializes the other pages
+     * @param document
+     * @param capacity
+     * @param occupancy
+     * @throws IOException
+     */
     private void InitPages(PDDocument document, String[][] capacity, String[][] occupancy) throws IOException {
         // Add page
 
@@ -117,6 +138,13 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Extra method for last page because it is formatted differently
+     * @param occupancy
+     * @param currentPage
+     * @param totalPagesNeeded
+     * @return
+     */
     private String [][] lastPage(String [][] occupancy, int currentPage, int totalPagesNeeded){
 
         int startIndex = (currentPage * 30) - (3*30);
@@ -136,6 +164,13 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Gets the occupancy data for the page
+     * @param occupancy
+     * @param currentPage
+     * @param totalPagesNeeded
+     * @return
+     */
     private String [][] getPartData(String [][] occupancy, int currentPage, int totalPagesNeeded){
 
         int startIndex = (currentPage * 30) - (3*30);
@@ -153,6 +188,13 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Draws the text for the cover page
+     * @param document
+     * @param page
+     * @param pdDocumentInformation
+     * @throws IOException
+     */
     private void InitHeader(PDDocument document, PDPage page, PDDocumentInformation pdDocumentInformation) throws IOException {
         //Set Document Information:
 
@@ -192,6 +234,13 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Draws the page numbers
+     * @param document
+     * @param page
+     * @param pageNumber
+     * @throws IOException
+     */
     private void InitPageNumber(PDDocument document, PDPage page, int pageNumber) throws IOException {
 
         //New content stream for page number
@@ -206,6 +255,15 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Draws the table
+     * @param document
+     * @param page
+     * @param tableData
+     * @param columnNames
+     * @param header
+     * @throws IOException
+     */
     private void InitTable(PDDocument document, PDPage page, String [][] tableData, String [] columnNames, String header)
             throws IOException {
 
@@ -242,6 +300,15 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Draws the cells on the page
+     * @param content
+     * @param index
+     * @param y
+     * @param x
+     * @param tableStream
+     * @throws IOException
+     */
     private void drawCell(String content, int index, int y, int x, PDPageContentStream tableStream) throws IOException {
 
         tableStream.beginText();
@@ -257,18 +324,31 @@ public class PDFGenerator {
 
     }
 
+    /**
+     * Gets tje current date for the cover page
+     * @return
+     */
     private static Date getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
         Date currentDate = calendar.getTime();
         return currentDate;
     }
 
+    /**
+     * Checks filenames for invalid characters and removes them
+     * @param fileName
+     * @return
+     */
     private static String cleanFileName(String fileName) {
         String invalidCharsRegex = "[<>:\"/\\\\|?*]";
         String replacement = "_";
         return fileName.replaceAll(invalidCharsRegex, replacement);
     }
 
+    /**
+     * returns the filename
+     * @return
+     */
     public String getFileName() {
         return fileName;
     }

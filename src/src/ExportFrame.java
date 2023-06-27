@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.Properties;
 
+/**
+ * The ExportFrame class represents a JFrame for exporting data.
+ */
 public class ExportFrame extends JFrame {
 
     private Toolbar toolbar;
@@ -20,94 +23,87 @@ public class ExportFrame extends JFrame {
     private JLabel exportLabel;
     private PDFGenerator pdfGenerator;
 
-    public ExportFrame(String title){
+    /**
+     * Creates a new ExportFrame instance with the specified title.
+     *
+     * @param title The title of the frame.
+     */
+    public ExportFrame(String title) {
         super(title);
 
         setLayout(null);
 
-        setSize(800,500);
+        setSize(800, 500);
         setResizable(true);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        //Set custom Icon
+        // Set custom Icon
         ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
         setIconImage(icon.getImage());
 
-        InitToolbar();
-        InitNoetoLabel();
-        InitExportButton();
-        InitExportTargetField();
-
+        initToolbar();
+        initNoetoLabel();
+        initExportButton();
+        initExportTargetField();
     }
 
-    private void InitToolbar(){
+    private void initToolbar() {
         toolbar = new Toolbar(this);
         toolbar.setVisible(true);
-        toolbar.setLocation(0,0);
+        toolbar.setLocation(0, 0);
 
         add(toolbar);
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-
                 toolbar.setSize(getWidth(), 30);
-
             }
         });
     }
 
-    private void InitNoetoLabel(){
+    private void initNoetoLabel() {
         ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
         Image img = icon.getImage();
 
-        Image newImg = img.getScaledInstance(510, 150, Image.SCALE_SMOOTH );
+        Image newImg = img.getScaledInstance(510, 150, Image.SCALE_SMOOTH);
 
         ImageIcon newIcon = new ImageIcon(newImg);
         JLabel label = new JLabel(newIcon);
-        label.setBounds(getWidth()/2 - 255,100, newIcon.getIconWidth(), newIcon.getIconHeight());
+        label.setBounds(getWidth() / 2 - 255, 100, newIcon.getIconWidth(), newIcon.getIconHeight());
         add(label);
-
     }
 
-    private void InitExportButton(){
+    private void initExportButton() {
         exportButton = new JButton("EXPORTIEREN");
-        exportButton.setBounds(getWidth()/2 - 80,350,160,20);
+        exportButton.setBounds(getWidth() / 2 - 80, 350, 160, 20);
         add(exportButton);
 
         exportButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 try {
-                    if (CapacityTable.getData() != null && OccupancyFrame.getSelectedOccupancyData() != null){
+                    if (CapacityTable.getData() != null && OccupancyFrame.getSelectedOccupancyData() != null) {
                         pdfGenerator = new PDFGenerator(CapacityTable.getData(), OccupancyFrame.getSelectedOccupancyData());
                     } else {
                         throw new IllegalArgumentException("BITTE WÄHLE ERST WERTE");
                     }
-                } catch (IllegalArgumentException iae){
+                } catch (IllegalArgumentException iae) {
                     iae.printStackTrace();
                 }
 
-
-                if (exportTarget.getText().contains("@")){
-
+                if (exportTarget.getText().contains("@")) {
                     sendMail();
-
                 } else {
-
                     saveFile();
-
                 }
-
             }
         });
     }
 
-    private void saveFile(){
-
+    private void saveFile() {
         String oldFileName = pdfGenerator.getFileName();
         String targetFolderName = exportTarget.getText();
 
@@ -132,13 +128,12 @@ public class ExportFrame extends JFrame {
         } catch (IOException e) {
             System.out.println("Failed to save the file to the target folder: " + e.getMessage());
         }
-
     }
 
-    private void sendMail(){
-
-        System.out.println("An email would have been sent if the proccess was still supported!\nSadly google " +
+    private void sendMail() {
+        System.out.println("An email would have been sent if the process was still supported!\nSadly, Google " +
                 "canceled our support!");
+
         /*
         String recipientEmail = exportTarget.getText();
         String subject = "NOE-TO Export";
@@ -200,19 +195,16 @@ public class ExportFrame extends JFrame {
         } catch (MessagingException e) {
             System.out.println("Failed to send email: " + e.getMessage());
         }
-
         */
     }
 
-    private void InitExportTargetField(){
+    private void initExportTargetField() {
         exportTarget = new JTextField();
-        exportTarget.setBounds(getWidth()/2 - 220,325,440,20);
+        exportTarget.setBounds(getWidth() / 2 - 220, 325, 440, 20);
         add(exportTarget);
 
         exportLabel = new JLabel("GEBEN SIE DEN PFAD ZUM ZIELORDNER BITTE HIER EIN:");
-        exportLabel.setBounds(getWidth()/2 - 180,300,360,20);
+        exportLabel.setBounds(getWidth() / 2 - 180, 300, 360, 20);
         add(exportLabel);
-
     }
-
 }

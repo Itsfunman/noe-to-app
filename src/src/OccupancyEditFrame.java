@@ -14,7 +14,9 @@ import java.io.*;
 import java.util.Arrays;
 
 
-
+/**
+ * Class used for editing occupancy data
+ */
 public class OccupancyEditFrame extends JFrame {
 
     private JToolBar toolbar;
@@ -32,6 +34,10 @@ public class OccupancyEditFrame extends JFrame {
     private String[] columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
             "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
+    /**
+     * Initializes the OccupancyEditFrame
+     * @param title
+     */
     public OccupancyEditFrame(String title) {
         super(title);
 
@@ -50,6 +56,9 @@ public class OccupancyEditFrame extends JFrame {
         InitOccupancyTypeChoice();
     }
 
+    /**
+     * Initializes a dropbox used to select hotels
+     */
     private void InitHotelChoice() {
         hotelChoice = new JComboBox<>();
         hotelChoice.setBounds(410, getHeight() - 70, 130, 20);
@@ -92,6 +101,9 @@ public class OccupancyEditFrame extends JFrame {
         });
     }
 
+    /**
+     * Initializes the occupancy type choice
+     */
     private void InitOccupancyTypeChoice() {
         occupancyTypeChoice = new JComboBox<>();
         occupancyTypeChoice.setBounds(260, getHeight() - 70, 130, 20);
@@ -128,6 +140,11 @@ public class OccupancyEditFrame extends JFrame {
         });
     }
 
+    /**
+     * Initializes the occupancy data based on the user selection
+     * @param hotelID
+     * @param partpos
+     */
     private void InitHotelOccupancyTable(int hotelID, int partpos) {
 
         String[][] data = fetchData(hotelID, partpos);
@@ -166,6 +183,13 @@ public class OccupancyEditFrame extends JFrame {
         repaint();
     }
 
+    /**
+     * Allows editing of rows in the table
+     * @param rowIndex
+     * @param columnIndex
+     * @param newValue
+     * @param partpos
+     */
     private void editRow(int rowIndex, int columnIndex, String newValue, int partpos) {
 
         String[][] data = fetchData(hotelID, partpos);
@@ -179,12 +203,9 @@ public class OccupancyEditFrame extends JFrame {
         }
     }
 
-    private void saveTableData() {
-        if (tableModel != null) {
-            tableModel.saveData();
-        }
-    }
-
+    /**
+     * Initializes the toolbar
+     */
     private void InitToolbar() {
 
         toolbar = new Toolbar(this);
@@ -202,6 +223,12 @@ public class OccupancyEditFrame extends JFrame {
         });
     }
 
+    /**
+     * Gets data from file for the selected hotel
+     * @param hotelID
+     * @param partpos
+     * @return
+     */
     private String[][] fetchData(int hotelID, int partpos) {
         String[][] data;
 
@@ -252,8 +279,11 @@ public class OccupancyEditFrame extends JFrame {
         return data;
     }
 
-
-
+    /**
+     * Saves data from the table to the file
+     * @param data
+     * @param partpos
+     */
     private void saveData(String[][] data, int partpos) {
         try (FileReader fileReader = new FileReader("data/occupancies.txt");
              BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -343,8 +373,6 @@ public class OccupancyEditFrame extends JFrame {
             }
         }
     }
-
-
 
 }
 

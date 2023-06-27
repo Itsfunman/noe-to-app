@@ -5,6 +5,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a scrollable table for displaying capacity information.
+ * It contains a JTable and manages the data displayed in the table.
+ */
 public class CapacityTable extends JScrollPane {
 
     private JTable table;
@@ -13,22 +17,26 @@ public class CapacityTable extends JScrollPane {
 
     private String[] columnNames = {"KATEGORIE", "BETRIEBE", "ZIMMER", "BETTEN", "Ø ZIMMER", "Ø BETTEN"};
 
-    //Enter hotel information here
+    // Enter hotel information here
     public static String[][] data = new String[6][6];
 
 
+    /**
+     * Constructs a CapacityTable.
+     * Initializes the layout, sets up the viewport view, and fills the table with data.
+     */
     public CapacityTable() {
-
         refillData();
 
         setLayout(new ScrollPaneLayout());
-
         setViewportView(table);
-
     }
 
+    /**
+     * Refills the data array and updates the table.
+     */
     private void refillData() {
-        // clear the data array
+        // Clear the data array
         for (int i = 1; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
                 data[i][j] = String.valueOf(0);
@@ -43,9 +51,11 @@ public class CapacityTable extends JScrollPane {
         setViewportView(table);
     }
 
+    /**
+     * Fills the data array with new data based on hotel information.
+     */
     private void fillData() {
-
-        // fill the data array with new data
+        // Fill the data array with new data
         for (int i = 0; i < data.length - 1; i++) {
             data[i][0] = String.valueOf(5 - i);
 
@@ -68,14 +78,18 @@ public class CapacityTable extends JScrollPane {
             data[5][i] = String.valueOf(count);
         }
 
-        if ( Integer.parseInt(data[5][1]) > 0) {
+        if (Integer.parseInt(data[5][1]) > 0) {
             data[5][4] = String.valueOf(Integer.parseInt(data[5][2]) / Integer.parseInt(data[5][1]));
             data[5][5] = String.valueOf(Integer.parseInt(data[5][3]) / Integer.parseInt(data[5][1]));
         }
-
-
     }
 
+    /**
+     * Retrieves the information about a particular category of hotels.
+     *
+     * @param kat the category of hotels
+     * @return an array containing the number of businesses, rooms, beds, average rooms per business, and average beds per business
+     */
     private int[] getBetriebInfo(int kat) {
         int[] betriebInfo = new int[5];
         for (int i = 0; i < betriebInfo.length; i++) {
@@ -102,23 +116,9 @@ public class CapacityTable extends JScrollPane {
         return betriebInfo;
     }
 
-
-    public JTable getTable() {
-        return table;
-    }
-
-    public void setTable(JTable table) {
-        this.table = table;
-    }
-
-    public TableModel getTableModel() {
-        return tableModel;
-    }
-
-    public void setTableModel(TableModel tableModel) {
-        this.tableModel = tableModel;
-    }
-
+    /**
+     * Loads hotel information from a file.
+     */
     private void loadHotels() {
         try {
             File file = new File("data/hotelData.txt");
@@ -152,12 +152,48 @@ public class CapacityTable extends JScrollPane {
         }
     }
 
+    /**
+     * Retrieves the JTable used in the CapacityTable.
+     *
+     * @return the JTable
+     */
+    public JTable getTable() {
+        return table;
+    }
 
+    /**
+     * Sets the JTable used in the CapacityTable.
+     *
+     * @param table the JTable
+     */
+    public void setTable(JTable table) {
+        this.table = table;
+    }
 
+    /**
+     * Retrieves the TableModel used in the CapacityTable.
+     *
+     * @return the TableModel
+     */
+    public TableModel getTableModel() {
+        return tableModel;
+    }
+
+    /**
+     * Sets the TableModel used in the CapacityTable.
+     *
+     * @param tableModel the TableModel
+     */
+    public void setTableModel(TableModel tableModel) {
+        this.tableModel = tableModel;
+    }
+
+    /**
+     * Retrieves the data array used in the CapacityTable.
+     *
+     * @return the data array
+     */
     public static String[][] getData() {
         return data;
     }
-
-
-
 }

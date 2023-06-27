@@ -23,6 +23,9 @@ Selection shall be possible for one hotel and/or year and/or category (all hotel
 
  */
 
+/**
+ * Class for the occupancy overview frame
+ */
 public class OccupancyFrame extends JFrame {
 
     String [] columnNames = {"JAHR/MONAT", "ANZAHL", "ZIMMER", "BENUTZT", "BETTEN", "BENUTZT"};
@@ -72,6 +75,10 @@ public class OccupancyFrame extends JFrame {
 
     private String [] categories = new String[5];
 
+    /**
+     * Initializes the OccupancyFrame
+     * @param title
+     */
     public OccupancyFrame(String title){
         super(title);
 
@@ -91,6 +98,9 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Initializes the toolbar
+     */
     private void InitToolbar() {
         toolbar = new Toolbar(this);
         toolbar.setVisible(true);
@@ -108,6 +118,9 @@ public class OccupancyFrame extends JFrame {
         });
     }
 
+    /**
+     * Allows mode selection
+     */
     private void InitMultiHotelCheckBox(){
 
         multiHotel = new JCheckBox();
@@ -134,6 +147,9 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * initializes the boxes needed when working with multiple hotels
+     */
     private void InitMultiChoice(){
 
         if (hotelComboBox != null){
@@ -160,6 +176,9 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Initializes the single hotel choice mode
+     */
     private void InitHotelChoice(){
 
         if (minCategoryBox != null){
@@ -199,6 +218,10 @@ public class OccupancyFrame extends JFrame {
         InitApplyButton2();
 
     }
+
+    /**
+     * Initializes applyButton2 for single hotel choice
+     */
     private void InitApplyButton2(){
 
         applyButton2 = new JButton("BESTÄTIGEN");
@@ -234,6 +257,9 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Initializes the year choice
+     */
     private void InitYearChoice(){
 
         for (int i = 2014; i <= currentYear; i++){
@@ -254,6 +280,9 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Initializes the month choice
+     */
     private void InitMonthChoice(){
 
         for (int i = 1; i <= months.length; i++){
@@ -274,6 +303,9 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Initializes the category choice for multi hotel mode
+     */
     private void InitCategoryChoice(){
 
         categories = new String[]{"*", "**", "***", "****", "*****"};
@@ -292,6 +324,9 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Initializes the apply button for multi hotel mode
+     */
     private void InitApplyButton(){
 
         applyButton = new JButton("BESTÄTIGEN");
@@ -328,6 +363,14 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Initializes the single hotel table based on user choice
+     * @param startYear
+     * @param endYear
+     * @param startMonth
+     * @param endMonth
+     * @param hotelID
+     */
     private void InitSingleOccupancyTable(int startYear, int endYear, int startMonth, int endMonth, int hotelID){
 
         if (occupancyTable != null){
@@ -349,6 +392,15 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Fetches the data for single hotel choice
+     * @param startYear
+     * @param endYear
+     * @param startMonth
+     * @param endMonth
+     * @param hotelID
+     * @return
+     */
     private String [][] fetchSingleHotelData(int startYear, int endYear, int startMonth, int endMonth, int hotelID){
 
         int rowNumber = getRowCount(startYear, endYear, startMonth, endMonth);
@@ -480,6 +532,15 @@ public class OccupancyFrame extends JFrame {
         return workData;
     }
 
+    /**
+     * Initializes the mult hotel table
+     * @param startYear
+     * @param endYear
+     * @param startMonth
+     * @param endMonth
+     * @param minCategory
+     * @param maxCategory
+     */
     private void InitMultiOccupancyTable(int startYear, int endYear, int startMonth, int endMonth, String minCategory, String maxCategory){
 
         if (occupancyTable != null){
@@ -501,6 +562,16 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Fetches the data for multi hotel
+     * @param startYear
+     * @param endYear
+     * @param startMonth
+     * @param endMonth
+     * @param minCategory
+     * @param maxCategory
+     * @return
+     */
     private String [][] fetchMultiHotelData(int startYear, int endYear, int startMonth, int endMonth, String minCategory, String maxCategory){
 
         int rowNumber = getRowCount(startYear, endYear, startMonth, endMonth);
@@ -629,6 +700,14 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * returns the number of rows needed
+     * @param startYear
+     * @param endYear
+     * @param startMonth
+     * @param endMonth
+     * @return
+     */
     private int getRowCount(int startYear, int endYear, int startMonth, int endMonth){
 
         int rowCount = 0;
@@ -660,6 +739,12 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * Gets an ArrayList with the hotels
+     * @param minCategory
+     * @param maxCategory
+     * @return
+     */
     private ArrayList<Integer> getHotelIDs(String minCategory, String maxCategory){
 
         ArrayList<Integer> hotelIDs = new ArrayList<>();
@@ -695,6 +780,11 @@ public class OccupancyFrame extends JFrame {
         return hotelIDs;
     }
 
+    /**
+     * returns the values for total room and bed number
+     * @param hotelIDs
+     * @return
+     */
     private int [] otherValues(ArrayList<Integer> hotelIDs){
 
         int [] otherValues = new int[]{0,0};
@@ -731,6 +821,10 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+    /**
+     * returns the last selected occupancy data for export
+     * @return
+     */
     public static String[][] getSelectedOccupancyData() {
         return selectedOccupancyData;
     }

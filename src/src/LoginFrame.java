@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+/**
+ * Represents the Login Interface
+ */
 public class LoginFrame extends JFrame {
 
     private JButton loginButton = new JButton("LOGIN");
@@ -18,6 +21,10 @@ public class LoginFrame extends JFrame {
 
     public static String currentUserName;
 
+    /**
+     * Method to create a LoginFrame
+     * @param title
+     */
     public LoginFrame(String title) {
         super(title);
 
@@ -37,6 +44,9 @@ public class LoginFrame extends JFrame {
 
     }
 
+    /**
+     * Adds the logo on the screen
+     */
     private void addLogo(){
         ImageIcon icon = new ImageIcon("assets/NOETOLogo.jpg");
         Image img = icon.getImage();
@@ -58,6 +68,9 @@ public class LoginFrame extends JFrame {
         });
     };
 
+    /**
+     * initializes the nameField
+     */
     private void nameFieldInit(){
         nameTag.setBounds((getWidth() - nameTag.getWidth())/2 - 75, (getHeight() - nameTag.getHeight()) / 2 - 30, 100, 20 );
         nameField.setSize(150,20);
@@ -76,6 +89,9 @@ public class LoginFrame extends JFrame {
         });
     }
 
+    /**
+     * Initializes the password field
+     */
     private void passwordFieldInit(){
         passwordTag.setBounds((getWidth() - passwordTag.getWidth())/2 - 80, (getHeight() - passwordTag.getHeight()) / 2, 100, 20 );
         passwordField.setSize(150,20);
@@ -95,6 +111,9 @@ public class LoginFrame extends JFrame {
         });
     }
 
+    /**
+     * Initializes the LoginButton that calls calls the method used to confirm login data
+     */
     private void loginButtonInit(){
         loginButton.setSize(150, 20);
         loginButton.setVisible(true);
@@ -125,6 +144,9 @@ public class LoginFrame extends JFrame {
         });
     }
 
+    /**
+     * Initializes the register button which leads to the RegisterFrame
+     */
     private void registerButtonInit(){
         registerButton.setSize(150, 20);
         registerButton.setVisible(true);
@@ -151,6 +173,10 @@ public class LoginFrame extends JFrame {
         });
     }
 
+    /**
+     * Checks whether the password is correct
+     * @return boolean
+     */
     private boolean checkInput(){
 
         for (String s : LoginHandler.getLoginData().keySet()){
@@ -169,6 +195,9 @@ public class LoginFrame extends JFrame {
         return false;
     }
 
+    /**
+     * initializes the main program
+     */
     private void confirmInput(){
         System.out.println("Valid input!");
         setVisible(false);

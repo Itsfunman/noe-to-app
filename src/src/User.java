@@ -5,6 +5,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Class used for User management
+ */
+
 public class User {
 
     //Currently, the file only saves name and password, this can be changed by modifying the FileReader and FileWriter
@@ -12,6 +16,11 @@ public class User {
     private String password;
     private boolean hasAdminRights;
 
+    /**
+     * Initializes the User
+     * @param name
+     * @param password
+     */
     public User(String name, String password) {
         this.name = name;
         this.password = password;
@@ -24,6 +33,11 @@ public class User {
 
     }
 
+    /**
+     * Adds the user to the loginData file
+     * @param name
+     * @param password
+     */
     private void addToFile(String name, String password) {
         String filePath = "data/loginData.txt";
         try (FileReader fileReader = new FileReader(filePath);
@@ -47,27 +61,4 @@ public class User {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isHasAdminRights() {
-        return hasAdminRights;
-    }
-
-    public void setHasAdminRights(boolean hasAdminRights) {
-        this.hasAdminRights = hasAdminRights;
-    }
 }

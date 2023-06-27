@@ -5,10 +5,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Main method of the program
+ */
 public class Main {
 
     private static boolean dataLoaded = false;
 
+    /**
+     * initializes loginFrame
+     * @param args
+     * @throws IOException
+     * @throws UnsupportedLookAndFeelException
+     */
     public static void main(String [] args) throws IOException, UnsupportedLookAndFeelException {
 
         //UIManager.setLookAndFeel(new FlatLightLaf());
@@ -32,6 +41,10 @@ public class Main {
 
     }
 
+    /**
+     * Loads existing loginData
+     * @throws IOException
+     */
     public static void loadData() throws IOException {
 
         FileReader fileReader = new FileReader("data/loginData.txt");
