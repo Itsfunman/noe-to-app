@@ -61,7 +61,7 @@ public class Toolbar extends JToolBar {
      * Adds the Occupancy Edit chpice
      */
     private void InitGoOccupancyEditButton(){
-        goOccupancyEditButton = new JButton("BELEGUNG BEARBEITEN");
+        goOccupancyEditButton = new JButton("OCCUPANCYC EDIT");
         goOccupancyEditButton.setVisible(true);
 
         add(goOccupancyEditButton);
@@ -82,7 +82,7 @@ public class Toolbar extends JToolBar {
      * Adds the Hotel Edit choice
      */
     private void InitGoHotelEditButton() {
-        goHotelEditButton = new JButton("HOTELS BEARBEITEN");
+        goHotelEditButton = new JButton("HOTELS EDIT");
         goHotelEditButton.setVisible(true);
 
         add(goHotelEditButton);
@@ -104,7 +104,7 @@ public class Toolbar extends JToolBar {
      */
     private void InitGoCapacityButton(){
 
-        goCapacityButton = new JButton("KAPAZITÄT");
+        goCapacityButton = new JButton("CAPACITY");
         goCapacityButton.setVisible(true);
 
         add(goCapacityButton);
@@ -127,7 +127,7 @@ public class Toolbar extends JToolBar {
      */
     private void InitGoOccupancyButton(){
 
-        goOccupancyButton = new JButton("BELEGUNG");
+        goOccupancyButton = new JButton("OCCUPANCY");
         goOccupancyButton.setVisible(true);
 
         add(goOccupancyButton);
@@ -148,7 +148,7 @@ public class Toolbar extends JToolBar {
      */
     private void InitGoExportButton(){
 
-        goExportButton = new JButton("EXPORTIEREN");
+        goExportButton = new JButton("EXPORT");
         goExportButton.setVisible(true);
 
         add(goExportButton);

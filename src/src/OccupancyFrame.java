@@ -28,7 +28,7 @@ Selection shall be possible for one hotel and/or year and/or category (all hotel
  */
 public class OccupancyFrame extends JFrame {
 
-    String [] columnNames = {"JAHR/MONAT", "ANZAHL", "ZIMMER", "BENUTZT", "BETTEN", "BENUTZT"};
+    String [] columnNames = {"YEAR/MONTH", "AMOUNT", "ROOMS", "USED", "BEDS", "USED"};
 
     private Toolbar toolbar;
 
@@ -224,7 +224,7 @@ public class OccupancyFrame extends JFrame {
      */
     private void InitApplyButton2(){
 
-        applyButton2 = new JButton("BESTÄTIGEN");
+        applyButton2 = new JButton("CONFIRM");
         applyButton2.setBounds((getWidth()/2) - 60, 350, 120, 20);
         add(applyButton2);
 
@@ -274,7 +274,7 @@ public class OccupancyFrame extends JFrame {
         endYearBox.setBounds((getWidth()/2) + 15, 275, 100,20);
         add(endYearBox);
 
-        yearLabel = new JLabel("BIS");
+        yearLabel = new JLabel("TO");
         yearLabel.setBounds((getWidth()/2) - 10, 275, 20,20);
         add(yearLabel);
 
@@ -297,7 +297,7 @@ public class OccupancyFrame extends JFrame {
         endMonthBox.setBounds((getWidth()/2) + 15, 300, 100,20);
         add(endMonthBox);
 
-        monthLabel = new JLabel("BIS");
+        monthLabel = new JLabel("TO");
         monthLabel.setBounds((getWidth()/2) - 10, 300, 20,20);
         add(monthLabel);
 
@@ -318,7 +318,7 @@ public class OccupancyFrame extends JFrame {
         maxCategoryBox.setBounds((getWidth()/2) + 15, 325, 100,20);
         add(maxCategoryBox);
 
-        categoryLabel = new JLabel("BIS");
+        categoryLabel = new JLabel("TO");
         categoryLabel.setBounds((getWidth()/2) - 10, 325, 20,20);
         add(categoryLabel);
 
@@ -329,7 +329,7 @@ public class OccupancyFrame extends JFrame {
      */
     private void InitApplyButton(){
 
-        applyButton = new JButton("BESTÄTIGEN");
+        applyButton = new JButton("CONFIRM");
         applyButton.setBounds((getWidth()/2) - 60, 350, 120, 20);
         add(applyButton);
 

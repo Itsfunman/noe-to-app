@@ -31,7 +31,7 @@ public class OccupancyEditFrame extends JFrame {
     private int hotelID = -1;
     private int partpos = -1;
 
-    private String[] columnNames = new String[]{"JAHR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+    private String[] columnNames = new String[]{"YEAR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
             "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
     /**
@@ -108,8 +108,8 @@ public class OccupancyEditFrame extends JFrame {
         occupancyTypeChoice = new JComboBox<>();
         occupancyTypeChoice.setBounds(260, getHeight() - 70, 130, 20);
 
-        occupancyTypeChoice.addItem("Bettbelegung");
-        occupancyTypeChoice.addItem("Raumbelegung");
+        occupancyTypeChoice.addItem("bed occupancy");
+        occupancyTypeChoice.addItem("room occupancy");
 
         add(occupancyTypeChoice);
 

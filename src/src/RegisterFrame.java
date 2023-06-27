@@ -13,8 +13,8 @@ import java.util.Optional;
  */
 public class RegisterFrame extends JFrame {
 
-    private JButton returnButton = new JButton("ZURÜCK");
-    private JButton createButton = new JButton("ERSTELLEN");
+    private JButton returnButton = new JButton("BACK");
+    private JButton createButton = new JButton("CREATE");
     private JTextField nameField = new JTextField("Enter Username");
     private JPasswordField passwordField1 = new JPasswordField("Password");
     private JPasswordField passwordField2 = new JPasswordField("Password");
