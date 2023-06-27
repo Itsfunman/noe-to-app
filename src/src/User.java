@@ -4,6 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import static src.DBConnection.getConnection;
 
 /**
  * Class used for User management
@@ -29,7 +34,7 @@ public class User {
         LoginHandler.addUser(this.name, this.password);
 
         addToFile(this.name, this.password);
-
+        addUserToDB(this.name, this.password);
 
     }
 
@@ -57,6 +62,17 @@ public class User {
             // user does not exist in file, so add to file
             writer.write(name + "," + password + "\n");
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addUserToDB(String name, String password) {
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO userdata (name, password) VALUES (?, ?)")) {
+            statement.setString(1, name);
+            statement.setString(2, password);
+            statement.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

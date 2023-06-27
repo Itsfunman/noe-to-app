@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.Properties;
 
+/**
+ * Frame used for the interface to export PDF
+ */
 public class ExportFrame extends JFrame {
 
     private Toolbar toolbar;
