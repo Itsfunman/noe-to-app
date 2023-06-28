@@ -536,13 +536,16 @@ public class HotelEditFrame extends JFrame {
         customTable = new CustomTable(customTableModel);
         customTable.setBounds(10, 50, 770, 350);
 
-
+        //Like ButtonListener but with tables
         customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
+                //Gets cell
                 int row = e.getFirstRow();
                 int column = e.getColumn();
+                //Checks whether selection is valid
                 if (row >= 0 && column >= 0) {
+                    //Implements check box
                     JPanel inputPanel = new JPanel();
                     inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
 
@@ -552,13 +555,13 @@ public class HotelEditFrame extends JFrame {
 
                     int result = JOptionPane.showConfirmDialog(null, inputPanel, "Input", JOptionPane.OK_CANCEL_OPTION);
 
+                    //If ok is selected data gets saved to file and database
                     if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
-                        Object updatedValue = customTableModel.getValueAt(row, column);
-                        // Perform any necessary actions with the updated value
 
                         customTableModel.saveData(); // Save the updated data to the file
-                        String [] changedData = customTableModel.getData()[row];
-                        updateHotelInDB(row, changedData);
+                        String [] changedData = customTableModel.getData()[row]; //Gets String with changed data
+                        updateHotelInDB(row, changedData); //Saves data to database
+
                     }
 
                 }
