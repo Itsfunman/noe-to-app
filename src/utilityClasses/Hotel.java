@@ -4,11 +4,13 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.stream.IntStream;
-
-
+import lombok.*;
 /**
  * The Hotel class represents a hotel and provides methods to manage hotel information and occupancy data.
  */
+
+@Getter
+@Setter
 public class Hotel {
 
     public static ArrayList<Hotel> hotels = new ArrayList();
@@ -266,51 +268,6 @@ public class Hotel {
         }
 
         return category.toString();
-    }
-
-    /**
-     * Returns the hotel ID.
-     *
-     * @return the hotel ID
-     */
-    public int getHotelID() {
-        return hotelID;
-    }
-
-    /**
-     * Returns the hotel name.
-     *
-     * @return the hotel name
-     */
-    public String getHotelName() {
-        return hotelName;
-    }
-
-    /**
-     * Returns the hotel category.
-     *
-     * @return the hotel category
-     */
-    public String getCategory() {
-        return category;
-    }
-
-    /**
-     * Returns the number of rooms in the hotel.
-     *
-     * @return the number of rooms
-     */
-    public int getRoomNumber() {
-        return roomNumber;
-    }
-
-    /**
-     * Returns the number of beds in each room.
-     *
-     * @return the number of beds
-     */
-    public int getBedNumber() {
-        return bedNumber;
     }
 
     /**
