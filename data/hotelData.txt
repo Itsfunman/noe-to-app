@@ -1,4 +1,3 @@
-145,Konditorei Müssauer,*,12,15,Gröbler Trinity,Götzfried Himat,Böhmgasse 19,Waidhofen,3830,2882571,false,false,false,false
 55,Hotel garni Steinfeld,***,79,100,Niederhametner Kilian-Noel,Klopstech-Wieter Sakine,Nikolaus-August-Otto-Straße 4,Wiener,2700,3563381,false,false,false,false
 353,Land- und Seminarpension Gamerith,*,54,131,Tichauer Annamária,Mowinckel Luta,Mottingeramt 41,Mottingeramt,3532,2375369,false,false,false,false
 332,Haus der Pferde,***,34,7,Socjnoha Armella,Koriska Lilli-Valerie,Langschwarza 46,Schrems,3944,4938109,false,false,false,false
@@ -672,18 +671,16 @@
 229,Romantik Hotel Goldener Stern,****,13,75,Papausek Snejana,Handelberger Shpètim,Stadtplatz 15,Gmünd,3950,3909012,false,false,false,false
 538,Gasthof Hinterleithner,**,6,34,Moschkowitz Shanna,von Redern Mya,Weinserstraße 95,Persenbeug,3681,2272618,false,false,false,false
 31,Jagdhof Hotel,****,10,8,Plamansky Eldar,Klic Sampo,Weitental 34,Lackenhof,3295,4058322,false,false,false,false
-61,Lifestyle Hotel Leithana,****,35,36,Diringer Dior,Kvet Melissa-Alexandra,Parkbadstraße 6,Bruck,2460,6184403,false,false,false,false
+61,Lifestyle Hotel Leithana,***,35,36,Diringer Dior,Kvet Melissa-Alexandra,Parkbadstraße 6,Bruck,2460,6184403,false,false,false,false
 333,Alter Winzerkeller,**,5,32,Hansalin Levana,Babler Zahida,Roßplatz 1,Kirchberg,3470,7187124,false,false,false,false
 156,Grafenegg Cottages,**,26,77,Eyrl Mareta,Kukenberger Amelia-Katarina,Schloss Grafenegg,Grafenegg,3485,7205558,false,false,false,false
 588,Biohof Teufel,*,61,157,Garab Ramon,Kment Jacquline,Graben 1,Lunz,3293,7476978,false,false,false,false
 645,Hotel Gasthof Seeland,***,69,311,Itzcovitz Anna-Aurora,Krebecek Blakely,114 Goldegger Straße,St.,3100,6931919,false,false,false,false
-214,Hotel Restaurant Öhlknechthof,****,24,10,Schulhof de Dombovár Merina,von Schimmelpfennig Cabiv,Prager Straße 3-5,Horn,3580,9053830,false,false,false,false
-235,Villen,*,55,147,Ledvits Loris,Lischko Roopjot,Passtraße 12,Semmering,2680,7287621,false,false,false,false
 472,Belvedere,***,25,65,Tomasowitz Sharon-Talissa,Gierl Buğra,Hochstraße 6,Semmering,2680,2040902,false,false,false,false
 475,Vendégház Türnitzben,*,7,10,Melicher Laiza,Fekete Alije,Unterer Markt 2.,Türnitz,3184,3113166,false,false,false,false
 442,Motel Baden,***,2,11,Saib Claire,Leisser Jolien-Summer,Haidhofstraße 2 / Schützengasse 36,Baden,2500,3707201,false,false,false,false
 635,Gwörthwirt,**,2,11,Ruchinger Szonja,Silinger Thalia,Gwörth 3,Kasten,3072,0610245,false,false,false,false
 447,Schlaffass - Schlafen im Holzfass,**,20,141,Pietka Olivia-Chelsea,Krojer Seila,Dumba Park 1,Tattendorf,2523,6726807,false,false,false,false
 297,Dorfwirtshaus Rauch,*,59,73,Lezak Celio,Ploub Mehvan,Eschabruck 11,Eschabruck,3533,8635887,false,false,false,false
-47,Hotel Müller,**,11,42,Maria Müller,Thomas Mair,Virstrasse 12,Maisberg,2341,2147483647,true,true,false,false
-58,Hotel Sonnenblick,*****,30,60,Karl Sonnenblick,Karl Sonnenblick,Sonnensteinstraße 123,Sonndorf,4234,13414141,false,false,true,true
+58,hdfjb,***,23,233,gsf,dgadg,fsfdggd,dgdf,2345,34455,fgjghb,fadgf,false,true
+100,Hotel Neustern,*****,12,24,Markus Meier,Susanne Mitterlehner,Brahmgasse 23,Mühlheim,3424,143515315,false,false,true,true

@@ -1,4 +1,4 @@
-package src;
+package tables;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;

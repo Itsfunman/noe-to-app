@@ -1,4 +1,6 @@
-package src;
+package tables;
+
+import utilityClasses.Hotel;
 
 import javax.swing.*;
 import java.io.*;

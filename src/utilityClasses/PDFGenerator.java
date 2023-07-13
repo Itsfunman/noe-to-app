@@ -1,4 +1,4 @@
-package src;
+package utilityClasses;
 
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -27,8 +27,8 @@ public class PDFGenerator {
 
     private String fileName;
 
-    String [] capacityNames = {"KATEGORIE", "BETRIEBE", "ZIMMER", "BETTEN", "Ø ZIMMER", "Ø BETTEN"};
-    String [] occupancyNames = {"JAHR/MONAT", "ANZAHL", "ZIMMER", "BENUTZT", "BETTEN", "BENUTZT"};
+    String [] capacityNames = {"CATEGORY", "HOTELS", "ROOMS", "BEDS", "Ø ROOMS", "Ø BEDS"};
+    String [] occupancyNames = {"YEAR/MONTH", "HOTELS", "ROOMS", "USED", "BEDS", "USED"};
 
     /**
      * Initializes the PDFGenerator
@@ -108,7 +108,7 @@ public class PDFGenerator {
                 document.addPage(page);
 
                 InitPageNumber(document, page, pages);
-                InitTable(document, page, capacity, capacityNames, "KAPAZITÄTEN");
+                InitTable(document, page, capacity, capacityNames, "CAPACITY");
 
             } else {
 
@@ -127,7 +127,7 @@ public class PDFGenerator {
                     partData = occupancy;
                 }
 
-                InitTable(document, page, partData, occupancyNames, "BELEGUNG");
+                InitTable(document, page, partData, occupancyNames, "OCCUPANCY");
 
             }
 

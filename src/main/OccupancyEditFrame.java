@@ -1,4 +1,8 @@
-package src;
+package main;
+
+import utilityClasses.Hotel;
+import tables.CustomTable;
+import tables.CustomTableModel;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -6,12 +10,9 @@ import javax.swing.event.TableModelListener;
 import java.awt.event.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.io.*;
-import java.util.Arrays;
 
 
 /**
@@ -108,8 +109,8 @@ public class OccupancyEditFrame extends JFrame {
         occupancyTypeChoice = new JComboBox<>();
         occupancyTypeChoice.setBounds(260, getHeight() - 70, 130, 20);
 
-        occupancyTypeChoice.addItem("bed occupancy");
-        occupancyTypeChoice.addItem("room occupancy");
+        occupancyTypeChoice.addItem("Bed Occupancy");
+        occupancyTypeChoice.addItem("Room Occupancy");
 
         add(occupancyTypeChoice);
 

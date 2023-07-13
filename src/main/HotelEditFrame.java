@@ -1,12 +1,16 @@
-package src;
+package main;
 
 
+import sqlStuff.DBConnection;
+import utilityClasses.Hotel;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import tables.CustomTable;
+import tables.CustomTableModel;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -23,7 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * The HotelEditFrame class represents a JFrame for editing hotel data.
@@ -281,9 +284,9 @@ public class HotelEditFrame extends JFrame {
 
                         // Save the updated data to the file
                         customTable.getTableModel().saveData();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No Row selected");
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Now Row selected");
                 }
             }
         });
@@ -398,6 +401,7 @@ public class HotelEditFrame extends JFrame {
                         rowData[Arrays.asList(columnNames).indexOf(columnName)] = input;
 
                     }
+
                     Hotel hotel = new Hotel(rowData[1], rowData[2], rowData[3], rowData[4], rowData[5], rowData[6], rowData[7],
                             rowData[8], rowData[9], rowData[10], rowData[11], rowData[12], rowData[13], rowData[14]);
 

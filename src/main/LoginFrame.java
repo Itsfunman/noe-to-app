@@ -1,4 +1,6 @@
-package src;
+package main;
+
+import sqlStuff.LoginHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +20,7 @@ public class LoginFrame extends JFrame {
     private JLabel passwordTag = new JLabel("PASSWORD");
     private JPasswordField passwordField = new JPasswordField("Password");
     private JButton registerButton = new JButton("REGISTRATION");
+    private LoginHandler loginHandler = new LoginHandler();
 
     public static String currentUserName;
 
@@ -40,10 +43,14 @@ public class LoginFrame extends JFrame {
         registerButtonInit();
         addLogo();
 
-
+        InitLoginHandler();
 
     }
 
+    private void InitLoginHandler(){
+        loginHandler = new LoginHandler();
+
+    }
     /**
      * Adds the logo on the screen
      */
@@ -123,7 +130,7 @@ public class LoginFrame extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                if (checkInput()){
+                if (loginHandler.checkUserData(nameField.getText(), String.valueOf(passwordField.getPassword()))){
 
                     confirmInput();
 
@@ -173,27 +180,6 @@ public class LoginFrame extends JFrame {
         });
     }
 
-    /**
-     * Checks whether the password is correct
-     * @return boolean
-     */
-    private boolean checkInput(){
-
-        for (String s : LoginHandler.getLoginData().keySet()){
-            if (nameField.getText().equals(s)){
-
-                String p = new String(passwordField.getPassword());
-                if (p.equals(LoginHandler.getLoginData().get(s))){
-                    return true;
-                } else if (!p.equals(LoginHandler.getLoginData().get(s))){
-                    System.out.println("Wrong Password!");
-                    return false;
-                }
-
-            }
-        }
-        return false;
-    }
 
     /**
      * initializes the main program

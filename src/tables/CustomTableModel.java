@@ -1,4 +1,4 @@
-package src;
+package tables;
 
 import javax.swing.table.AbstractTableModel;
 import java.io.BufferedWriter;

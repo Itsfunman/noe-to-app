@@ -1,12 +1,13 @@
-package src;
+package main;
+
+import sqlStuff.LoginHandler;
+import utilityClasses.User;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Optional;
 
 /**
  * Initializes the frame for users to register
@@ -15,9 +16,12 @@ public class RegisterFrame extends JFrame {
 
     private JButton returnButton = new JButton("BACK");
     private JButton createButton = new JButton("CREATE");
-    private JTextField nameField = new JTextField("Enter Username");
-    private JPasswordField passwordField1 = new JPasswordField("Password");
-    private JPasswordField passwordField2 = new JPasswordField("Password");
+    private JTextField nameField = new JTextField();
+    private JPasswordField passwordField1 = new JPasswordField();
+    private JPasswordField passwordField2 = new JPasswordField();
+    private JLabel userLabel;
+    private JLabel passwordLabel1;
+    private JLabel passwordLabel2;
 
     /**
      * Creates the frame
@@ -53,14 +57,22 @@ public class RegisterFrame extends JFrame {
         nameField.setSize(150,20);
         nameField.setVisible(true);
 
+        userLabel = new JLabel("USER");
+        userLabel.setSize(150,20);
+        userLabel.setVisible(true);
+
         add(nameField);
+        add(userLabel);
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 int x = ((getWidth() - nameField.getWidth()) / 2);
-                int y = ((getHeight() - nameField.getHeight()) / 2) - 60;
+                int y = ((getHeight() - nameField.getHeight()) / 2) - 100;
                 nameField.setLocation(x, y);
+                int x2 = ((getWidth() - userLabel.getWidth()) / 2);
+                int y2 = ((getHeight() - userLabel.getHeight()) / 2) - 120;
+                userLabel.setLocation(x2, y2);
             }
         });
     }
@@ -72,14 +84,22 @@ public class RegisterFrame extends JFrame {
         passwordField1.setSize(150,20);
         passwordField1.setVisible(true);
 
+        passwordLabel1 = new JLabel("PASSWORD");
+        passwordLabel1.setSize(150,20);
+        passwordLabel1.setVisible(true);
+
         add(passwordField1);
+        add(passwordLabel1);
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 int x = ((getWidth() - passwordField1.getWidth()) / 2);
-                int y = ((getHeight() - passwordField1.getHeight()) / 2) - 30;
+                int y = ((getHeight() - passwordField1.getHeight()) / 2) - 50;
                 passwordField1.setLocation(x, y);
+                int x2 = ((getWidth() - passwordLabel1.getWidth()) / 2);
+                int y2 = ((getHeight() - passwordLabel1.getHeight()) / 2) - 70;
+                passwordLabel1.setLocation(x2, y2);
             }
         });
     }
@@ -91,7 +111,12 @@ public class RegisterFrame extends JFrame {
         passwordField2.setSize(150,20);
         passwordField2.setVisible(true);
 
+        passwordLabel2 = new JLabel("REPEAT PASSWORD");
+        passwordLabel2.setSize(150,20);
+        passwordLabel2.setVisible(true);
+
         add(passwordField2);
+        add(passwordLabel2);
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -99,6 +124,9 @@ public class RegisterFrame extends JFrame {
                 int x = ((getWidth() - passwordField2.getWidth()) / 2);
                 int y = ((getHeight() - passwordField2.getHeight()) / 2);
                 passwordField2.setLocation(x, y);
+                int x2 = ((getWidth() - passwordLabel2.getWidth()) / 2);
+                int y2 = ((getHeight() - passwordLabel2.getHeight()) / 2) - 20;
+                passwordLabel2.setLocation(x2, y2);
             }
         });
     }
@@ -123,11 +151,6 @@ public class RegisterFrame extends JFrame {
 
                         throw new IllegalArgumentException("Invalid Input!");
 
-                    }
-                    for (String s : LoginHandler.getLoginData().keySet()){
-                        if (s.equals(nameField.getText())){
-                            throw new IllegalArgumentException("User name already exists");
-                        }
                     }
 
                     // Is fixed

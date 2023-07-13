@@ -1,4 +1,4 @@
-package src;
+package utilityClasses;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -261,7 +261,7 @@ public class Hotel {
         // StringBuilder allows us to create Strings much easier
         StringBuilder category = new StringBuilder();
 
-        for (int i = 0; i <= c; c++){
+        for (int i = 0; i <= c; i++){
             category.append("*");
         }
 
