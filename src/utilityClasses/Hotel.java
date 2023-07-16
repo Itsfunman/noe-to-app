@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.stream.IntStream;
+
+import jakarta.persistence.*;
 import lombok.*;
 /**
  * The Hotel class represents a hotel and provides methods to manage hotel information and occupancy data.
@@ -11,34 +13,69 @@ import lombok.*;
 
 @Getter
 @Setter
+@Entity
+@Table(name = "dbo.hotel")
 public class Hotel {
 
     public static ArrayList<Hotel> hotels = new ArrayList();
 
     //hotelID counter:
     private static int COUNTER = 0;
+
+    @Column(name = "hotelid")
     private int hotelID;
+
 
     public static ArrayList <Integer> hotelIDs = new ArrayList<Integer>();
 
     //Basic information:
+    @Column(name = "kategorie")
     private String category;
+
+    @Column(name = "hotelname")
     private String hotelName;
+
+    @Column(name = "owner")
     private String hotelOwner;
+
+    @Column(name = "contact")
     private String hotelContactInformation;
+
+    @Column(name = "adress")
     private String address;
+
+    @Column
     private String city;
+
+    @Column(name = "plz")
     private String cityCode;
+
+    @Column(name = "tel")
     private String phoneNumber;
+
+    @Column
     private int roomNumber;
+
+    @Column
     private int bedNumber;
+
+    @Column
     private boolean family;
+
+    @Column(name = "animals")
     private boolean dog;
+
+    @Column
     private boolean spa;
+
+    @Column
     private boolean fitness;
 
     private boolean hotelExists = false;
 
+    //Used by hibernate for fetching data
+    public Hotel(){
+    }
     /**
      * Constructs a Hotel object with the provided information.
      *
