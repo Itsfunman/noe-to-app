@@ -2,6 +2,7 @@ package base;
 
 
 
+import sqlStuff.HotelDAO;
 import tableClasses.CustomTable;
 import utilityClasses.Hotel;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 /*
 
@@ -414,7 +416,7 @@ public class OccupancyFrame extends JFrame {
 
         ArrayList<Integer> hotelIDs = new ArrayList<>();
         hotelIDs.add(hotelID);
-        int[] otherValues = otherValues(hotelIDs);
+        int[] otherValues = HotelDAO.otherValues(hotelIDs);
 
 
         //Initialize rooms and beds used
@@ -583,9 +585,9 @@ public class OccupancyFrame extends JFrame {
         //FORMAT:
         //"YEAR/MONTH", "AMOUNT SELECTED", "ROOMS", "USEDROOMS", "BEDS", "USEDBEDS"
 
-        ArrayList<Integer> hotelIDs = getHotelIDs(minCategory, maxCategory);
+        List<Integer> hotelIDs = HotelDAO.getHotelIDs(minCategory, maxCategory);
 
-        int [] otherValues = otherValues(hotelIDs);
+        int [] otherValues = HotelDAO.otherValues(hotelIDs);
 
         //Initialize rooms and beds used
         try (FileReader fileReader = new FileReader("data/occupancies.txt");
@@ -742,87 +744,7 @@ public class OccupancyFrame extends JFrame {
 
     }
 
-    /**
-     * Gets an ArrayList with the hotels
-     * @param minCategory
-     * @param maxCategory
-     * @return
-     */
-    private ArrayList<Integer> getHotelIDs(String minCategory, String maxCategory){
 
-        ArrayList<Integer> hotelIDs = new ArrayList<>();
-
-        int minLength = minCategory.length();
-        int maxLength = maxCategory.length();
-
-        try (FileReader fileReader = new FileReader("data/hotelData.txt");
-             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] values = line.split(",");
-
-                // Skip invalid lines or lines with insufficient values
-                if (values.length != 15) {
-                    continue;
-                }
-
-                //Test whether hotel is of category of interest
-                int catInt = values[2].length();
-
-                if (catInt <= maxLength && catInt >= minLength){
-                    hotelIDs.add(Integer.valueOf(values[0]));
-                }
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            selectedOccupancyData = new String[0][15]; // Empty array for new file
-        }
-
-        return hotelIDs;
-    }
-
-    /**
-     * returns the values for total room and bed number
-     * @param hotelIDs
-     * @return
-     */
-    private int [] otherValues(ArrayList<Integer> hotelIDs){
-
-        int [] otherValues = new int[]{0,0};
-
-        try (FileReader fileReader = new FileReader("data/hotelData.txt");
-             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] values = line.split(",");
-
-                // Skip invalid lines or lines with insufficient values
-                if (values.length != 15) {
-                    continue;
-                }
-
-
-                // Check if the line matches the given hotelID
-                if (hotelIDs.contains(Integer.parseInt(values[0]))) {
-
-                    otherValues[0] += Integer.parseInt(values[3]);
-                    otherValues[1] += Integer.parseInt(values[4]);
-
-                }
-
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            selectedOccupancyData = new String[0][7]; // Empty array for new file
-        }
-
-        return otherValues;
-
-    }
 
     /**
      * returns the last selected occupancy data for export

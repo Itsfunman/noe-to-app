@@ -34,7 +34,7 @@ public class CustomTableModel extends AbstractTableModel {
      * @param data        The initial data for the table.
      * @param columnNames The column names for the table.
      */
-    public CustomTableModel(String[][] data, String[] columnNames) {
+    public CustomTableModel(Object[][] data, String[] columnNames) {
         this.data = data;
         this.columnNames = columnNames;
     }

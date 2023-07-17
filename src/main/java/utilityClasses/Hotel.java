@@ -7,6 +7,7 @@ import java.util.Calendar;
 
 import jakarta.persistence.*;
 import lombok.*;
+import sqlStuff.HotelDAO;
 
 /**
  * The Hotel class represents a hotel and provides methods to manage hotel information and occupancy data.
@@ -21,9 +22,6 @@ public class Hotel {
     public static ArrayList<Hotel> hotels = new ArrayList<>();
 
 
-
-    //hotelID counter:
-    private static int COUNTER = 0;
 
     @Id
     @Column(name = "hotelid")
@@ -75,8 +73,7 @@ public class Hotel {
     @Column
     private boolean fitness;
 
-    @Transient
-    private boolean hotelExists = false;
+
 
     //Used by hibernate for fetching data
     public Hotel(){
@@ -99,29 +96,13 @@ public class Hotel {
      * @param spa                      indicates if the hotel has a spa
      * @param fitness                  indicates if the hotel has a fitness center
      */
-    public Hotel(String hotelName, String category, String roomNumber, String bedNumber, String hotelOwner,
-                 String hotelContactInformation, String address, String city, String cityCode, String phoneNumber,
+    public Hotel(String category, String hotelName, String hotelOwner, String hotelContactInformation, String address,
+                 String city, String cityCode, String phoneNumber, String roomNumber, String bedNumber,
                  String family, String dog, String spa, String fitness) {
 
-        boolean idNotAssigned = true;
-
-        while (idNotAssigned) {
-            int x = COUNTER++;
-            boolean inList = false;
-
-            for (int id : hotelIDs) {
-                if (id == x) {
-                    inList = true;
-                    break;
-                }
-            }
-
-            if (!inList) {
-                idNotAssigned = false;
-                this.hotelID = x;
-                hotelIDs.add(this.hotelID); // Add the new ID to the list
-            }
-        }
+        // Generate the hotelID by incrementing the last value in the hotelID column
+        int lastHotelID = HotelDAO.getLastHotelID();
+        this.hotelID = lastHotelID + 1;
 
         this.hotelName = hotelName.replaceAll("^\"|\"$", "");
         this.hotelName = this.hotelName.replaceAll("/", "");
@@ -147,15 +128,11 @@ public class Hotel {
         this.spa = Boolean.parseBoolean(spa);
         this.fitness = Boolean.parseBoolean(fitness);
 
-        if (!hotelExists){
-            addToFile();
-            this.hotelExists = true;
-        }
+
 
         System.out.println("THIS IS CALLED TO ADD");
         addToOccupancyFile();
 
-        //Add rest with try catch blocks;
     }
 
     /**
@@ -262,9 +239,7 @@ public class Hotel {
         this.bedNumber = Integer.parseInt(bedNumber);
 
         // Add the hotel to the file and update the occupancy file if the hotel doesn't already exist
-        addToFile();
         addToOccupancyFile();
-        this.hotelExists = true;
     }
 
     /**
@@ -306,27 +281,6 @@ public class Hotel {
         }
 
         return category.toString();
-    }
-
-    /**
-     * Adds the hotel to the file.
-     *
-     */
-    public void addToFile() {
-        String filePath = "data/hotelData.txt";
-        try (FileReader fileReader = new FileReader(filePath);
-             BufferedReader bufferedReader = new BufferedReader(fileReader);
-             FileWriter writer = new FileWriter(filePath, true)) {
-
-            String line = bufferedReader.readLine();
-            while (line != null) {
-                line = bufferedReader.readLine();
-            }
-
-            writer.write(this.toStringSimple() + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**

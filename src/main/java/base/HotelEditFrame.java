@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+
 import sqlStuff.DBConnection;
 import sqlStuff.HotelDAO;
 import tableClasses.CustomTable;
@@ -47,14 +48,13 @@ public class HotelEditFrame extends JFrame {
     private JButton excelButton;
     private JButton updateButton;
 
+
     private CustomTableModel customTableModel;
 
-    // private String fileName = "data/hotelData.txt";
+    private String orderField = "hotelid";
 
-    private String fileName = "data/hotelData.txt";
-
-    private String[] columnNames = {"ID", "Name", "Catagory", "Amount Rooms", "Amount Beds", "Owner", "Contact", "Adress",
-            "City", "Zip Code", "Phonenumber", "Family", "Dog", "Spa", "Fitness"};
+    private String[] columnNames = {"ID", "CATEGORY", "HOTELNAME", "OWNER", "CONTACT", "ADDRESS", "CITY", "ZIP CODE",
+            "PHONE", "ROOMS", "BEDS", "FAMILIES", "DOGS", "SPA", "FITNESS"};
 
     /**
      * Constructs a HotelEditFrame object with the specified title.
@@ -194,6 +194,8 @@ public class HotelEditFrame extends JFrame {
                             Hotel hotel = new Hotel(newRowData[1], newRowData[2], newRowData[3], newRowData[4], newRowData[5], newRowData[6], newRowData[7],
                                          newRowData[8], newRowData[9], newRowData[10], newRowData[11], newRowData[12], newRowData[13], newRowData[14]);
 
+                            HotelDAO.saveToDataBase(hotel);
+
                             newRowData[0] = String.valueOf(hotel.getHotelID());
 
                             // Add the new row to the table
@@ -201,8 +203,6 @@ public class HotelEditFrame extends JFrame {
 
                             // Save the updated data to the file
                             customTable.getTableModel().saveData();
-
-                            HotelDAO.addHotelToDB(hotel);
 
                         }
 
@@ -220,32 +220,34 @@ public class HotelEditFrame extends JFrame {
 
     /**
      * Updates hotel in DB
-     * @param rowIndex
      * @param rowData
      */
-    public void updateHotelInDB(int rowIndex, Object[] rowData) {
+    public void updateHotelInDB(Object[] rowData) {
         // Get the hotel ID from the rowData array, assuming it's in the first column
         int hotelID = (int) rowData[0];
 
         // Update the hotel in the database using a PreparedStatement
         try {
             Connection connection = DBConnection.getConnection();
-            PreparedStatement pst = connection.prepareStatement("UPDATE dbo.hotel SET hotelname = ?, kategorie = ?, roomNumber = ?, bedNumber = ?, owner = ?, contact = ?, adress = ?, city = ?, plz = ?, tel = ?, family = ?, animals = ?, spa = ?, fitness = ? WHERE hotelid = ?");
-            pst.setString(1, (String) rowData[1]);
-            pst.setString(2, (String) rowData[2]);
-            pst.setInt(3, (Integer) rowData[3]); // Cast to Integer instead of int
-            pst.setInt(4, (Integer) rowData[4]); // Cast to Integer instead of int
-            pst.setString(5, (String) rowData[5]);
-            pst.setString(6, (String) rowData[6]);
-            pst.setString(7, (String) rowData[7]);
-            pst.setString(8, (String) rowData[8]);
-            pst.setString(9, (String) rowData[9]);
-            pst.setString(10, (String) rowData[10]);
-            pst.setBoolean(11, (Boolean) rowData[11]); // Cast to Boolean instead of boolean
-            pst.setBoolean(12, (Boolean) rowData[12]); // Cast to Boolean instead of boolean
-            pst.setBoolean(13, (Boolean) rowData[13]); // Cast to Boolean instead of boolean
-            pst.setBoolean(14, (Boolean) rowData[14]); // Cast to Boolean instead of boolean
-            pst.setInt(15, hotelID);
+            PreparedStatement pst = connection.prepareStatement("UPDATE dbo.hotel SET hotelname = ?, kategorie = ?, roomNumber = ?, bedNumber = ?, owner = ?," +
+                    " contact = ?, adress = ?, city = ?, plz = ?, tel = ?, family = ?, animals = ?, spa = ?, fitness = ? WHERE hotelid = ?");
+
+            pst.setString(1, (String) rowData[2]);//Name
+            pst.setString(2, (String) rowData[1]);//Kategorie
+            pst.setInt(3, Integer.parseInt(rowData[9].toString()));//RoomNumber
+            pst.setInt(4, Integer.parseInt(rowData[10].toString()));//BedNumber
+            pst.setString(5, (String) rowData[3]);//Owner
+            pst.setString(6, (String) rowData[4]);//Contact
+            pst.setString(7, (String) rowData[5]);//Adress
+            pst.setString(8, (String) rowData[6]);//city
+            pst.setInt(9, Integer.parseInt((String) rowData[7])); //PLZ
+            pst.setInt(10, Integer.parseInt((String) rowData[8])); //TEL
+            pst.setString(11, (String) rowData[11]); //FAMILY
+            pst.setString(12, (String) rowData[12]); //ANIMANLS
+            pst.setString(13, (String) rowData[13]); //SPA
+            pst.setString(14, (String) rowData[14]); //FITNESS
+
+            pst.setInt(15, hotelID);//ID
 
             pst.executeUpdate();
             pst.close();
@@ -254,6 +256,7 @@ public class HotelEditFrame extends JFrame {
             ex.printStackTrace();
         }
     }
+
 
 
     /**
@@ -267,7 +270,7 @@ public class HotelEditFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = customTable.getSelectedRow();
-                if (selectedRow != -1) {
+                if (selectedRow == -1) {
                     // Show a confirmation dialog with a checkbox
                     JCheckBox checkBox = new JCheckBox("Do you want to delete this hotel?");
                     Object[] message = {checkBox};
@@ -278,12 +281,8 @@ public class HotelEditFrame extends JFrame {
                         String hotelID = customTable.getValueAt(selectedRow, 0).toString();
 
                         // Delete the hotel from the database
-                        try {
-                            deleteHotelFromDB(hotelID);
-                            deleteHotelFromOccupancies(hotelID);
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        HotelDAO.deleteHotelFromDB(hotelID);
+                        deleteHotelFromOccupancies(hotelID);
 
                         // Remove the selected row from the table model
                         customTable.getTableModel().removeRow(selectedRow);
@@ -351,27 +350,7 @@ public class HotelEditFrame extends JFrame {
         }
     }
 
-    /**
-     * Deletes hotels from the database
-     */
-    private void deleteHotelFromDB(String hotelID) throws SQLException {
-        // Delete from DB
-        PreparedStatement pst = null;
-        Connection connection = null;
-        try {
-            connection = DBConnection.getConnection();
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
 
-        try {
-            pst = connection.prepareStatement("DELETE FROM dbo.hotel WHERE hotelid = ?");
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-        pst.setInt(1, Integer.parseInt(hotelID));
-        pst.executeUpdate();
-    }
 
     /**
      * Initializes the add button to add new hotels
@@ -411,13 +390,14 @@ public class HotelEditFrame extends JFrame {
                     Hotel hotel = new Hotel(rowData[1], rowData[2], rowData[3], rowData[4], rowData[5], rowData[6], rowData[7],
                             rowData[8], rowData[9], rowData[10], rowData[11], rowData[12], rowData[13], rowData[14]);
 
+                    HotelDAO.saveToDataBase(hotel);
+
                     rowData[0] = String.valueOf(hotel.getHotelID());
                     // Add the new row to the table
                     customTable.getTableModel().addRow(rowData);
                     // Save the updated data to the file
                     customTable.getTableModel().saveData();
 
-                    HotelDAO.addHotelToDB(hotel);
                 }
             }
         });
@@ -544,20 +524,19 @@ public class HotelEditFrame extends JFrame {
      * Initializes the CustomTable instance
      */
     private void initCustomTable () {
-        List<Hotel> dataList = HotelDAO.fetchDataFromDB();
+        List<Hotel> dataList = HotelDAO.fetchHotelsOrderedByField(orderField);
         int rowCount = dataList.size();
         int columnCount = columnNames.length;
 
         Object[][] data = new Object[rowCount][columnCount];
         for (int i = 0; i < rowCount; i++) {
-            Hotel hotel = hotels.get(i);
+            Hotel hotel = dataList.get(i); // Use dataList instead of hotels
             data[i] = hotel.toObjectArray();
         }
 
-        customTableModel = new CustomTableModel(data, fileName, columnNames);
+        customTableModel = new CustomTableModel(data, columnNames);
         customTable = new CustomTable(customTableModel);
         customTable.setBounds(10, 50, 770, 350);
-
         //Like ButtonListener but with tables
         customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
             @Override
@@ -582,7 +561,7 @@ public class HotelEditFrame extends JFrame {
 
                         customTableModel.saveData(); // Save the updated data to the file
                         Object [] changedData = customTableModel.getData()[row]; //Gets String with changed data
-                        updateHotelInDB(row, changedData); //Saves data to database
+                        updateHotelInDB(changedData); //Saves data to database
 
                     }
 
@@ -593,39 +572,6 @@ public class HotelEditFrame extends JFrame {
 
         add(customTable);
     }
-
-    /**
-     * gets data from hotelData.txt
-     * @param fileName
-     * @return
-     */
-    /*
-    private ArrayList<String[]> fetchData (String fileName){
-        ArrayList<String[]> dataList = new ArrayList<>();
-
-        try (FileReader fileReader = new FileReader(fileName);
-             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] values = line.split(",");
-
-                // Skip invalid lines or lines with insufficient values
-                if (values.length != columnNames.length) {
-                    continue;
-                }
-
-                dataList.add(values);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return dataList;
-    }
-
-     */
-
 
 
 }
