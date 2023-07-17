@@ -1,4 +1,4 @@
-package tables;
+package tableClasses;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;

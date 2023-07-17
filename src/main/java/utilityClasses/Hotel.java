@@ -3,10 +3,11 @@ package utilityClasses;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.stream.IntStream;
+
 
 import jakarta.persistence.*;
 import lombok.*;
+
 /**
  * The Hotel class represents a hotel and provides methods to manage hotel information and occupancy data.
  */
@@ -14,19 +15,22 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "dbo.hotel")
+@Table(name = "hotel")
 public class Hotel {
 
-    public static ArrayList<Hotel> hotels = new ArrayList();
+    public static ArrayList<Hotel> hotels = new ArrayList<>();
+
+
 
     //hotelID counter:
     private static int COUNTER = 0;
 
+    @Id
     @Column(name = "hotelid")
     private int hotelID;
 
 
-    public static ArrayList <Integer> hotelIDs = new ArrayList<Integer>();
+    public static ArrayList <Integer> hotelIDs = new ArrayList<>();
 
     //Basic information:
     @Column(name = "kategorie")
@@ -71,6 +75,7 @@ public class Hotel {
     @Column
     private boolean fitness;
 
+    @Transient
     private boolean hotelExists = false;
 
     //Used by hibernate for fetching data
@@ -143,13 +148,11 @@ public class Hotel {
         this.fitness = Boolean.parseBoolean(fitness);
 
         if (!hotelExists){
-            addToFile(this);
+            addToFile();
             this.hotelExists = true;
         }
 
         System.out.println("THIS IS CALLED TO ADD");
-        //createBedOccupancyFile(this.hotelName);
-        //createRoomOccupancyFile(this.hotelName);
         addToOccupancyFile();
 
         //Add rest with try catch blocks;
@@ -259,11 +262,9 @@ public class Hotel {
         this.bedNumber = Integer.parseInt(bedNumber);
 
         // Add the hotel to the file and update the occupancy file if the hotel doesn't already exist
-        if (!hotelExists){
-            addToFile(this);
-            addToOccupancyFile();
-            this.hotelExists = true;
-        }
+        addToFile();
+        addToOccupancyFile();
+        this.hotelExists = true;
     }
 
     /**
@@ -310,9 +311,8 @@ public class Hotel {
     /**
      * Adds the hotel to the file.
      *
-     * @param hotel the hotel to add
      */
-    public void addToFile(Hotel hotel) {
+    public void addToFile() {
         String filePath = "data/hotelData.txt";
         try (FileReader fileReader = new FileReader(filePath);
              BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -320,7 +320,6 @@ public class Hotel {
 
             String line = bufferedReader.readLine();
             while (line != null) {
-                String[] parts = line.split(",");
                 line = bufferedReader.readLine();
             }
 
@@ -358,125 +357,25 @@ public class Hotel {
             System.out.println("Failed to add data to the occupancy file.");
         }
     }
-    /**
-     * Fills the occupancy file with data for each year and month for the last hotel ID.
-     */
-    private void fillOccupancyFile() {
-        String hotelFile = "data/hotelData.txt";
-        String occupancyFile = "data/occupancies.txt";
-        File hotels = new File(hotelFile);
-        File occupancy = new File(occupancyFile);
 
-        Calendar calendar = Calendar.getInstance();
-        int currentYear = calendar.get(Calendar.YEAR);
-
-        int lastHotelID = getLastHotelID(hotels);
-        if (lastHotelID == -1) {
-            System.out.println("No hotels found. Data generation stopped.");
-            return;
-        }
-
-        // Check if any data exists for the last hotelID
-        if (yearExists(occupancy, lastHotelID)) {
-            System.out.println("Data already exists for the last hotel ID. Skipping data generation.");
-            return;
-        }
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter(occupancy, true))) {
-            IntStream.rangeClosed(2014, currentYear)
-                    .parallel() // Perform parallel processing
-                    .forEach(year -> {
-                        // Check if the year exists for the last hotelID
-                        if (!yearExists(occupancy, year, lastHotelID)) {
-                            IntStream.rangeClosed(1, 12)
-                                    .forEach(month -> {
-                                        String newLine = lastHotelID + "," + this.roomNumber + "," + 0 + "," +
-                                                this.bedNumber + "," + 0 + "," + year + "," + month;
-                                        writer.println(newLine);
-                                    });
-                        }
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Object[] toObjectArray() {
+        Object[] dataArray = new Object[15];
+        dataArray[0] = hotelID;
+        dataArray[1] = category;
+        dataArray[2] = hotelName;
+        dataArray[3] = hotelOwner;
+        dataArray[4] = hotelContactInformation;
+        dataArray[5] = address;
+        dataArray[6] = city;
+        dataArray[7] = cityCode;
+        dataArray[8] = phoneNumber;
+        dataArray[9] = roomNumber;
+        dataArray[10] = bedNumber;
+        dataArray[11] = family;
+        dataArray[12] = dog;
+        dataArray[13] = spa;
+        dataArray[14] = fitness;
+        return dataArray;
     }
-
-    /**
-     * Retrieves the last hotel ID from the hotel data file.
-     *
-     * @param hotelsFile the hotel data file
-     * @return the last hotel ID
-     */
-    private int getLastHotelID(File hotelsFile) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(hotelsFile))) {
-            String line;
-            String lastLine = null;
-            while ((line = reader.readLine()) != null) {
-                lastLine = line;
-            }
-            if (lastLine != null) {
-                String[] parts = lastLine.split(",");
-                if (parts.length >= 1) {
-                    return Integer.parseInt(parts[0].trim());
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    /**
-     * Checks if the occupancy file contains data for a specific hotel ID.
-     *
-     * @param occupancyFile the occupancy file
-     * @param hotelID       the hotel ID
-     * @return true if the occupancy file contains data for the hotel ID, false otherwise
-     */
-    private boolean yearExists(File occupancyFile, int hotelID) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(occupancyFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 7) {
-                    int existingHotelID = Integer.parseInt(parts[0].trim());
-                    if (existingHotelID == hotelID) {
-                        return true;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * Checks if the occupancy file contains data for a specific year and hotel ID.
-     *
-     * @param occupancyFile the occupancy file
-     * @param year          the year
-     * @param hotelID       the hotel ID
-     * @return true if the occupancy file contains data for the year and hotel ID, false otherwise
-     */
-    private boolean yearExists(File occupancyFile, int year, int hotelID) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(occupancyFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 7) {
-                    int existingYear = Integer.parseInt(parts[5].trim());
-                    int existingHotelID = Integer.parseInt(parts[0].trim());
-                    if (existingYear == year && existingHotelID == hotelID) {
-                        return true;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
 }
 

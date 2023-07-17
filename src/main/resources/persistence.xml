@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+                                 http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+             version="2.2">
+
+    <persistence-unit name="basePersistence" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Specify the database connection properties -->
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://185.119.119.126:1433;databaseName=SWP_2023_MD_GRUPPE_E;encrypt=true;trustServerCertificate=true"/>
+            <property name="javax.persistence.jdbc.user" value="nikolic"/>
+            <property name="javax.persistence.jdbc.password" value="nikolic"/>
+            <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+        </properties>
+
+        <class>utilityClasses.Hotel</class>
+
+    </persistence-unit>
+
+
+</persistence>

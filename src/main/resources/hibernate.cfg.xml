@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+        <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+        <property name="hibernate.connection.url">jdbc:sqlserver://185.119.119.126:1433;databaseName=SWP_2023_MD_GRUPPE_E;encrypt=true;trustServerCertificate=true</property>
+        <property name="hibernate.connection.username">nikolic</property>
+        <property name="hibernate.connection.password">nikolic</property>
+        <property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
+        <!-- Other Hibernate properties -->
+        <mapping class="utilityClasses.Hotel"/>
+    </session-factory>
+</hibernate-configuration>

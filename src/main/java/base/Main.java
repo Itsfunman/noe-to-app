@@ -1,18 +1,8 @@
-package main;
-
-import utilityClasses.User;
+package base;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static sqlStuff.DBConnection.getConnection;
 
 /**
  * Main method of the program

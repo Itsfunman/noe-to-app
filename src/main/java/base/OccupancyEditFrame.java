@@ -1,8 +1,10 @@
-package main;
+package base;
 
+
+
+import tableClasses.CustomTable;
+import tableClasses.CustomTableModel;
 import utilityClasses.Hotel;
-import tables.CustomTable;
-import tables.CustomTableModel;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -166,9 +168,9 @@ public class OccupancyEditFrame extends JFrame {
                 int row = e.getFirstRow();
                 int column = e.getColumn();
 
-                String[][] tableData = customTable.getTableModel().getData();
+                Object[][] tableData = customTable.getTableModel().getData();
                 if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
-                    String newValue = tableData[row][column];
+                    String newValue = (String) tableData[row][column];
                     System.out.println(partpos);
                     editRow(row, column, newValue, partpos);
                 }

@@ -1,6 +1,7 @@
-package main;
+package base;
 
-import sqlStuff.LoginHandler;
+
+
 import utilityClasses.User;
 
 import javax.swing.*;

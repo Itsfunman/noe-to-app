@@ -1,7 +1,9 @@
-package main;
+package base;
 
+
+
+import tableClasses.CustomTable;
 import utilityClasses.Hotel;
-import tables.CustomTable;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

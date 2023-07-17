@@ -1,7 +1,8 @@
-package main;
+package base;
 
+
+import tableClasses.CapacityTable;
 import utilityClasses.PDFGenerator;
-import tables.CapacityTable;
 
 import javax.swing.*;
 import java.awt.*;

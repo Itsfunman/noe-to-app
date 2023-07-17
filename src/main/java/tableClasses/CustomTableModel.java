@@ -1,4 +1,4 @@
-package tables;
+package tableClasses;
 
 import javax.swing.table.AbstractTableModel;
 import java.io.BufferedWriter;
@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class CustomTableModel extends AbstractTableModel {
 
-    private String[][] data;
+    private Object[][] data;
     private String[] columnNames;
     private String fileName;
 
@@ -22,7 +22,7 @@ public class CustomTableModel extends AbstractTableModel {
      * @param fileName    The name of the file to save the data.
      * @param columnNames The column names for the table.
      */
-    public CustomTableModel(String[][] data, String fileName, String[] columnNames) {
+    public CustomTableModel(Object[][] data, String fileName, String[] columnNames) {
         this.data = data;
         this.columnNames = columnNames;
         this.fileName = fileName;
@@ -47,11 +47,11 @@ public class CustomTableModel extends AbstractTableModel {
         try (FileWriter fileWriter = new FileWriter(fileName);
              BufferedWriter writer = new BufferedWriter(fileWriter)) {
 
-            String[][] currentData = getData(); // Retrieve the current data from the table model
+            Object[][] currentData = getData(); // Retrieve the current data from the table model
 
-            for (String[] row : currentData) {
+            for (Object[] row : currentData) {
                 StringBuilder line = new StringBuilder();
-                for (String value : row) {
+                for (Object value : row) {
                     line.append(value).append(",");
                 }
                 line.deleteCharAt(line.length() - 1); // Remove the trailing comma
@@ -110,7 +110,7 @@ public class CustomTableModel extends AbstractTableModel {
      *
      * @return The current data.
      */
-    public String[][] getData() {
+    public Object[][] getData() {
         return this.data;
     }
 
@@ -157,7 +157,7 @@ public class CustomTableModel extends AbstractTableModel {
      */
     public void addRow(String[] rowData) {
         // Create a new data array with increased size
-        String[][] newData = new String[data.length + 1][getColumnCount()];
+        Object[][] newData = new Object[data.length + 1][getColumnCount()];
         // Copy existing data to the new array
         for (int row = 0; row < data.length; row++) {
             for (int col = 0; col < getColumnCount(); col++) {
@@ -180,7 +180,7 @@ public class CustomTableModel extends AbstractTableModel {
      */
     public void removeRow(int row) {
         // Create a new data array with reduced size
-        String[][] newData = new String[data.length - 1][getColumnCount()];
+        Object[][] newData = new Object[data.length - 1][getColumnCount()];
         // Copy existing data except for the row to be removed
         int newRow = 0;
         for (int oldRow = 0; oldRow < data.length; oldRow++) {

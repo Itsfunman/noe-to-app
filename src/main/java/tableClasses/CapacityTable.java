@@ -1,5 +1,7 @@
-package tables;
+package tableClasses;
 
+
+import sqlStuff.HotelDAO;
 import utilityClasses.Hotel;
 
 import javax.swing.*;
@@ -122,37 +124,14 @@ public class CapacityTable extends JScrollPane {
      * Loads hotel information from a file.
      */
     private void loadHotels() {
-        try {
-            File file = new File("data/hotelData.txt");
-            BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(new FileInputStream(file))));
+        List<Hotel> hotels = HotelDAO.fetchDataFromDB();
 
-            String st;
-            List<Hotel> newHotels = new ArrayList<>();
-
-            while ((st = br.readLine()) != null) {
-                String[] hotelData = st.split(",");
-
-                if (hotelData.length == 15) {
-                    Hotel hotel = new Hotel(hotelData[0], hotelData[1], hotelData[2], hotelData[3], hotelData[4],
-                            hotelData[5], hotelData[6], hotelData[7], hotelData[8], hotelData[9], hotelData[10],
-                            hotelData[11], hotelData[12], hotelData[13], hotelData[14]);
-
-                    newHotels.add(hotel);
-                } else {
-                    // Handle the case where the hotelData array doesn't have enough elements
-                    System.out.println("Invalid hotel data: " + st);
-                }
-            }
-            br.close();
-
-            // Update the hotels list in a synchronized block
-            synchronized (Hotel.hotels) {
-                Hotel.hotels.addAll(newHotels);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        // Update the hotels list in a synchronized block
+        synchronized (Hotel.hotels) {
+            Hotel.hotels.addAll(hotels);
         }
     }
+
 
     /**
      * Retrieves the JTable used in the CapacityTable.

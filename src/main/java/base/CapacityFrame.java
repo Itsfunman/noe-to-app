@@ -1,6 +1,8 @@
-package main;
+package base;
 
-import tables.CapacityTable;
+
+
+import tableClasses.CapacityTable;
 
 import javax.swing.*;
 import java.awt.event.ComponentAdapter;
