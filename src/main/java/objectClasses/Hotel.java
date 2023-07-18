@@ -8,6 +8,7 @@ import java.util.Calendar;
 import jakarta.persistence.*;
 import lombok.*;
 import sqlStuff.HotelDAO;
+import sqlStuff.OccupancyDAO;
 
 /**
  * The Hotel class represents a hotel and provides methods to manage hotel information and occupancy data.
@@ -131,7 +132,7 @@ public class Hotel {
 
 
         System.out.println("THIS IS CALLED TO ADD");
-        addToOccupancyFile();
+        OccupancyDAO.addHotelToOccupancyTable(this);
 
     }
 
@@ -239,7 +240,7 @@ public class Hotel {
         this.bedNumber = Integer.parseInt(bedNumber);
 
         // Add the hotel to the file and update the occupancy file if the hotel doesn't already exist
-        addToOccupancyFile();
+        OccupancyDAO.addHotelToOccupancyTable(this);
     }
 
     /**
@@ -281,35 +282,6 @@ public class Hotel {
         }
 
         return category.toString();
-    }
-
-    /**
-     * Adds the hotel to the occupancy file.
-     */
-    private void addToOccupancyFile() {
-        String occupancyFile = "data/occupancies.txt";
-        File occupancy = new File(occupancyFile);
-
-        Calendar calendar = Calendar.getInstance();
-        int currentYear = calendar.get(Calendar.YEAR);
-
-        try (FileWriter fileWriter = new FileWriter(occupancy, true);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-
-            for (int year = 2014; year <= currentYear; year++) {
-                for (int month = 1; month <= 12; month++) {
-                    String newLine = this.hotelID + "," + this.roomNumber + ",0," + this.bedNumber + ",0," + year + "," + month;
-                    bufferedWriter.write(newLine);
-                    bufferedWriter.newLine();
-                }
-            }
-
-            System.out.println("Data added to the occupancy file.");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to add data to the occupancy file.");
-        }
     }
 
     public Object[] toObjectArray() {

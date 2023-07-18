@@ -136,7 +136,6 @@ public class OccupancyEditFrame extends JFrame {
                     //If ok is selected data gets saved to file and database
                     if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
 
-                        customTableModel.saveData(); // Save the updated data to the file
                         Object [] changedData = customTableModel.getData()[row]; //Gets String with changed data
                         updateOccupancyInDB(changedData); //Saves data to database
 
@@ -148,7 +147,7 @@ public class OccupancyEditFrame extends JFrame {
 
         add(customTable);
 
-        customTableModel = new CustomTableModel(data, "data/occupancies.txt", columnNames);
+        customTableModel = new CustomTableModel(data, columnNames);
         customTable.updateData(data);
 
         revalidate();

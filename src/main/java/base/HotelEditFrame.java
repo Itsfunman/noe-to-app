@@ -3,6 +3,7 @@ package base;
 
 
 import lombok.SneakyThrows;
+import objectClasses.Occupancy;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -12,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import sqlStuff.DBConnection;
 import sqlStuff.HotelDAO;
+import sqlStuff.OccupancyDAO;
 import tableClasses.CustomTable;
 import tableClasses.CustomTableModel;
 import objectClasses.Hotel;
@@ -199,8 +201,6 @@ public class HotelEditFrame extends JFrame {
                             // Add the new row to the table
                             customTable.getTableModel().addRow(newRowData);
 
-                            // Save the updated data to the file
-                            customTable.getTableModel().saveData();
 
                         }
 
@@ -238,12 +238,12 @@ public class HotelEditFrame extends JFrame {
             pst.setString(6, (String) rowData[4]);//Contact
             pst.setString(7, (String) rowData[5]);//Adress
             pst.setString(8, (String) rowData[6]);//city
-            pst.setInt(9, Integer.parseInt((String) rowData[7])); //PLZ
-            pst.setInt(10, Integer.parseInt((String) rowData[8])); //TEL
-            pst.setString(11, (String) rowData[11]); //FAMILY
-            pst.setString(12, (String) rowData[12]); //ANIMANLS
-            pst.setString(13, (String) rowData[13]); //SPA
-            pst.setString(14, (String) rowData[14]); //FITNESS
+            pst.setInt(9, Integer.parseInt(rowData[7].toString())); //PLZ
+            pst.setInt(10, Integer.parseInt(rowData[8].toString())); //TEL
+            pst.setBoolean(11, (rowData[11].equals("true"))); //FAMILY
+            pst.setBoolean(12, (rowData[12].equals("true"))); //ANIMANLS
+            pst.setBoolean(13, (rowData[13].equals("true"))); //SPA
+            pst.setBoolean(14, (rowData[14].equals("true"))); //FITNESS
 
             pst.setInt(15, hotelID);//ID
 
@@ -268,7 +268,7 @@ public class HotelEditFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = customTable.getSelectedRow();
-                if (selectedRow == -1) {
+                if (selectedRow != -1) {
                     // Show a confirmation dialog with a checkbox
                     JCheckBox checkBox = new JCheckBox("Do you want to delete this hotel?");
                     Object[] message = {checkBox};
@@ -280,13 +280,11 @@ public class HotelEditFrame extends JFrame {
 
                         // Delete the hotel from the database
                         HotelDAO.deleteHotelFromDB(hotelID);
-                        deleteHotelFromOccupancies(hotelID);
+                        OccupancyDAO.deleteHotelFromOccupancyTable(hotelID);
 
                         // Remove the selected row from the table model
                         customTable.getTableModel().removeRow(selectedRow);
 
-                        // Save the updated data to the file
-                        customTable.getTableModel().saveData();
                     } else {
                         JOptionPane.showMessageDialog(null, "No Row selected");
                     }
@@ -393,8 +391,6 @@ public class HotelEditFrame extends JFrame {
                     rowData[0] = String.valueOf(hotel.getHotelID());
                     // Add the new row to the table
                     customTable.getTableModel().addRow(rowData);
-                    // Save the updated data to the file
-                    customTable.getTableModel().saveData();
 
                 }
             }
@@ -557,7 +553,6 @@ public class HotelEditFrame extends JFrame {
                     //If ok is selected data gets saved to file and database
                     if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
 
-                        customTableModel.saveData(); // Save the updated data to the file
                         Object [] changedData = customTableModel.getData()[row]; //Gets String with changed data
                         updateHotelInDB(changedData); //Saves data to database
 

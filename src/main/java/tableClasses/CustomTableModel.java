@@ -39,31 +39,6 @@ public class CustomTableModel extends AbstractTableModel {
         this.columnNames = columnNames;
     }
 
-    /**
-     * Saves the data in the table to a file.
-     * The file name is specified during construction.
-     */
-    public void saveData() {
-        try (FileWriter fileWriter = new FileWriter(fileName);
-             BufferedWriter writer = new BufferedWriter(fileWriter)) {
-
-            Object[][] currentData = getData(); // Retrieve the current data from the table model
-
-            for (Object[] row : currentData) {
-                StringBuilder line = new StringBuilder();
-                for (Object value : row) {
-                    line.append(value).append(",");
-                }
-                line.deleteCharAt(line.length() - 1); // Remove the trailing comma
-                writer.write(line.toString());
-                writer.newLine();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public int getRowCount() {
         return data.length;

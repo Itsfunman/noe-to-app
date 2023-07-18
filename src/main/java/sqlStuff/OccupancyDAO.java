@@ -1,12 +1,23 @@
 package sqlStuff;
 
 import jakarta.persistence.PersistenceException;
+import objectClasses.Hotel;
 import objectClasses.Occupancy;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,4 +117,50 @@ public class OccupancyDAO {
         return occupancies;
     }
 
+    public static void addHotelToOccupancyTable(Hotel hotel) {
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        try {
+            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            Session session = sessionFactory.openSession();
+            Transaction transaction = session.beginTransaction();
+
+            for (int year = 2014; year <= currentYear; year++) {
+                for (int month = 1; month <= 12; month++) {
+                    Occupancy occupancy = new Occupancy();
+                    occupancy.setHotelid(hotel.getHotelID());
+                    occupancy.setRoomNumber(hotel.getRoomNumber());
+                    occupancy.setUsedRooms(0);
+                    occupancy.setBedNumber(hotel.getBedNumber());
+                    occupancy.setUsedBeds(0);
+                    occupancy.setYear(year);
+                    occupancy.setMonth(month);
+
+                    session.save(occupancy);
+                }
+            }
+
+            transaction.commit();
+            session.close();
+
+            System.out.println("Data added to the occupancy table.");
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            System.out.println("Failed to add data to the occupancy table.");
+        }
+    }
+
+
+    public static void deleteHotelFromOccupancyTable(String hotelID) {
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement pst = connection.prepareStatement("DELETE FROM dbo.occupancy WHERE hotelid = ?")) {
+            pst.setInt(1, Integer.parseInt(hotelID));
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+    }
 }
