@@ -71,7 +71,7 @@ public class CustomTable extends JScrollPane {
      *
      * @param newData The new data for the table.
      */
-    public void updateData(String[][] newData) {
+    public void updateData(Object[][] newData) {
         tableModel.setData(newData);
         tableModel.fireTableDataChanged(); // Notify the table model about the data change
     }

@@ -14,7 +14,7 @@ import sqlStuff.DBConnection;
 import sqlStuff.HotelDAO;
 import tableClasses.CustomTable;
 import tableClasses.CustomTableModel;
-import utilityClasses.Hotel;
+import objectClasses.Hotel;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -32,8 +32,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static utilityClasses.Hotel.hotels;
 
 
 /**

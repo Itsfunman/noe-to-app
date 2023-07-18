@@ -10,11 +10,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import org.hibernate.query.NativeQuery;
-import utilityClasses.Hotel;
+import objectClasses.Hotel;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

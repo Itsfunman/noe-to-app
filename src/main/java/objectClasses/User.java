@@ -1,4 +1,6 @@
-package utilityClasses;
+package objectClasses;
+
+import jakarta.persistence.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,14 +12,21 @@ import static sqlStuff.DBConnection.getConnection;
 /**
  * Class used for User management
  */
-
+@Entity
+@Table(name="userdata")
+@IdClass(UserId.class)
 public class User {
 
     //Currently, the file only saves name and password, this can be changed by modifying the FileReader and FileWriter
+    @Id
     private String name;
+    @Id
     private String password;
+    @Transient
     private boolean hasAdminRights;
 
+    public User(){
+    }
     /**
      * Initializes the User
      * @param name

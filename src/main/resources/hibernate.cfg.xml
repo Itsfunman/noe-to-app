@@ -12,6 +12,8 @@
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
         <!-- Other Hibernate properties -->
-        <mapping class="utilityClasses.Hotel"/>
+        <mapping class="objectClasses.Hotel"/>
+        <mapping class="objectClasses.User"/>
+        <mapping class="objectClasses.Occupancy"/>
     </session-factory>
 </hibernate-configuration>

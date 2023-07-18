@@ -4,7 +4,7 @@ package base;
 
 import sqlStuff.HotelDAO;
 import tableClasses.CustomTable;
-import utilityClasses.Hotel;
+import objectClasses.Hotel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

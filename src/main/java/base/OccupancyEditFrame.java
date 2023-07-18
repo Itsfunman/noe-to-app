@@ -2,19 +2,24 @@ package base;
 
 
 
+import objectClasses.Occupancy;
+import sqlStuff.DBConnection;
+import sqlStuff.OccupancyDAO;
 import tableClasses.CustomTable;
 import tableClasses.CustomTableModel;
-import utilityClasses.Hotel;
+import objectClasses.Hotel;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.event.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.io.*;
+import java.util.List;
 
 
 /**
@@ -25,17 +30,12 @@ public class OccupancyEditFrame extends JFrame {
     private JToolBar toolbar;
     private CustomTable customTable;
     private JComboBox hotelChoice;
-    private JComboBox occupancyTypeChoice;
     private HashMap<String, Hotel> hotelMap;
-    private CustomTableModel tableModel;
-    private String fileName;
-
+    private CustomTableModel customTableModel;
     //These values are initially set to -1 since no hotelID or partpos can have this value
     private int hotelID = -1;
-    private int partpos = -1;
 
-    private String[] columnNames = new String[]{"YEAR", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+    private String[] columnNames = new String[]{"YEAR", "MONTH", "USED ROOMS", "USED BEDS"};
 
     /**
      * Initializes the OccupancyEditFrame
@@ -56,7 +56,7 @@ public class OccupancyEditFrame extends JFrame {
 
         InitToolbar();
         InitHotelChoice();
-        InitOccupancyTypeChoice();
+
     }
 
     /**
@@ -79,107 +79,76 @@ public class OccupancyEditFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                //Format: id,rooms,usedrooms,beds,usedbeds,year,month
-
-                if (hotelID != -1 && partpos != -1) {
-                    System.out.println("CALLED SAVE");
-                    saveData(fetchData(hotelID, partpos), partpos);
-                }
-
-                String selectedHotelName = (String) hotelChoice.getSelectedItem();
-                Hotel selectedHotel = hotelMap.get(selectedHotelName);
-                int hotelID = selectedHotel.getHotelID();
-
-                int partpos;
-
-                if (occupancyTypeChoice.getSelectedIndex() == 0) {
-                    partpos = 4;
-                } else {
-                    partpos = 2;
-                }
-
-                InitHotelOccupancyTable(hotelID, partpos);
-
-            }
-        });
-    }
-
-    /**
-     * Initializes the occupancy type choice
-     */
-    private void InitOccupancyTypeChoice() {
-        occupancyTypeChoice = new JComboBox<>();
-        occupancyTypeChoice.setBounds(260, getHeight() - 70, 130, 20);
-
-        occupancyTypeChoice.addItem("Bed Occupancy");
-        occupancyTypeChoice.addItem("Room Occupancy");
-
-        add(occupancyTypeChoice);
-
-        occupancyTypeChoice.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                //Format: id,rooms,usedrooms,beds,usedbeds,year,month
-
-                if (hotelID != -1 && partpos != -1) {
-                    saveData(fetchData(hotelID, partpos), partpos);
-                }
-
-
                 String selectedHotelName = (String) hotelChoice.getSelectedItem();
                 Hotel selectedHotel = hotelMap.get(selectedHotelName);
                 hotelID = selectedHotel.getHotelID();
 
-                if (occupancyTypeChoice.getSelectedIndex() == 0) {
-                    partpos = 4;
-                } else {
-                    partpos = 2;
-                }
 
-                InitHotelOccupancyTable(hotelID, partpos);
+                InitHotelOccupancyTable(hotelID);
 
             }
         });
     }
 
+
     /**
      * Initializes the occupancy data based on the user selection
      * @param hotelID
-     * @param partpos
      */
-    private void InitHotelOccupancyTable(int hotelID, int partpos) {
+    private void InitHotelOccupancyTable(int hotelID) {
 
-        String[][] data = fetchData(hotelID, partpos);
-        // Check if there are fewer rows than years
-
+        // Remove the previous table, if it exists
         if (customTable != null) {
-            remove(customTable); // Remove the existing table
+            remove(customTable);
         }
 
-        //saveTableData();
+        List <Occupancy> dataList = OccupancyDAO.fetchOccupancyBasedOnField(hotelID);
+        int rowCount = dataList.size();
+        int columnCount = columnNames.length;
 
-        customTable = new CustomTable(data, columnNames);
+        Object[][] data = new Object[rowCount][columnCount];
+        for (int i = 0; i < rowCount; i++) {
+            Occupancy occupancy = dataList.get(i); // Use dataList instead of hotels
+            data[i] = occupancy.toObjectArray();
+        }
+
+        customTableModel = new CustomTableModel(data, columnNames);
+        customTable = new CustomTable(customTableModel);
         customTable.setBounds(10, 50, 770, 350);
-
         customTable.getTable().getModel().addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
+                //Gets cell
                 int row = e.getFirstRow();
                 int column = e.getColumn();
+                //Checks whether selection is valid
+                if (row >= 0 && column >= 0) {
+                    //Implements check box
+                    JPanel inputPanel = new JPanel();
+                    inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
 
-                Object[][] tableData = customTable.getTableModel().getData();
-                if (row >= 0 && row < tableData.length && column >= 0 && column < tableData[row].length) {
-                    String newValue = (String) tableData[row][column];
-                    System.out.println(partpos);
-                    editRow(row, column, newValue, partpos);
+                    JCheckBox gdprCheckBox = new JCheckBox("I have taken note of the GDPR");
+
+                    inputPanel.add(gdprCheckBox);
+
+                    int result = JOptionPane.showConfirmDialog(null, inputPanel, "Input", JOptionPane.OK_CANCEL_OPTION);
+
+                    //If ok is selected data gets saved to file and database
+                    if (result == JOptionPane.OK_OPTION && gdprCheckBox.isSelected()) {
+
+                        customTableModel.saveData(); // Save the updated data to the file
+                        Object [] changedData = customTableModel.getData()[row]; //Gets String with changed data
+                        updateOccupancyInDB(changedData); //Saves data to database
+
+                    }
+
                 }
             }
         });
 
         add(customTable);
 
-        tableModel = new CustomTableModel(data, "data/occupancies.txt", columnNames);
+        customTableModel = new CustomTableModel(data, "data/occupancies.txt", columnNames);
         customTable.updateData(data);
 
         revalidate();
@@ -187,22 +156,28 @@ public class OccupancyEditFrame extends JFrame {
     }
 
     /**
-     * Allows editing of rows in the table
-     * @param rowIndex
-     * @param columnIndex
-     * @param newValue
-     * @param partpos
+     * Updates hotel in DB
+     * @param rowData
      */
-    private void editRow(int rowIndex, int columnIndex, String newValue, int partpos) {
+    public void updateOccupancyInDB(Object[] rowData) {
 
-        String[][] data = fetchData(hotelID, partpos);
+        // Update the hotel in the database using a PreparedStatement
+        try {
+            Connection connection = DBConnection.getConnection();
+            PreparedStatement pst = connection.prepareStatement("UPDATE dbo.occupancy SET usedRooms = ?, usedBeds = ? WHERE hotelid = ? AND year = ? AND month = ?");
 
-        if (rowIndex >= 0 && rowIndex < data.length && columnIndex >= 0 && columnIndex < data[rowIndex].length) {
-            data[rowIndex][columnIndex] = newValue;
-            saveData(data, partpos);
+            pst.setInt(1, Integer.parseInt(rowData[2].toString()));//RoomNumber
+            pst.setInt(2, Integer.parseInt(rowData[3].toString()));//BedNumber
 
-        } else {
-            System.out.println("Invalid row index or column index.");
+            pst.setInt(3, hotelID);//ID
+            pst.setInt(4, Integer.parseInt(rowData[0].toString()));//Year
+            pst.setInt(5, Integer.parseInt(rowData[1].toString()));//Month
+
+            pst.executeUpdate();
+            pst.close();
+            connection.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -226,156 +201,6 @@ public class OccupancyEditFrame extends JFrame {
         });
     }
 
-    /**
-     * Gets data from file for the selected hotel
-     * @param hotelID
-     * @param partpos
-     * @return
-     */
-    private String[][] fetchData(int hotelID, int partpos) {
-        String[][] data;
-
-        // Determine the current year
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-
-        try (FileReader fileReader = new FileReader("data/occupancies.txt");
-             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-
-            // Initialize the data array with the appropriate dimensions
-            data = new String[currentYear - 2014 + 1][13];
-
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] values = line.split(",");
-
-                // Skip invalid lines or lines with insufficient values
-                if (values.length != 7) {
-                    continue;
-                }
-
-                int lineHotelID = Integer.parseInt(values[0]);
-
-                // Check if the line matches the given hotelID
-                if (lineHotelID == hotelID) {
-
-                    int lineYear = Integer.parseInt(values[5]);
-                    int lineMonth = Integer.parseInt(values[6]);
-                    int columnIndex = lineYear - 2014; // Calculate the column index based on the year
-                    int rowIndex = lineMonth; // Use month as the row index (1-12)
-
-                    // Update the appropriate value based on partpos
-                    if (partpos == 2) { // usedRooms
-                        data[columnIndex][rowIndex] = values[2];
-                    } else if (partpos == 4) { // usedBeds
-                        data[columnIndex][rowIndex] = values[4];
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            data = new String[0][13]; // Empty array for new file
-        }
-
-        for (int i = 0; i < data.length; i++){
-            data[i][0] = String.valueOf(2014 + i);
-        }
-        return data;
-    }
-
-    /**
-     * Saves data from the table to the file
-     * @param data
-     * @param partpos
-     */
-    private void saveData(String[][] data, int partpos) {
-        try (FileReader fileReader = new FileReader("data/occupancies.txt");
-             BufferedReader bufferedReader = new BufferedReader(fileReader);
-             FileWriter fileWriter = new FileWriter("data/occupancies_temp.txt");
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-
-            String line;
-
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] parts = line.split(",");
-
-                String lineHotelID = parts[0];
-                String lineYear = parts[5];
-                String lineMonth = parts[6];
-
-                String selectedHotelName = (String) hotelChoice.getSelectedItem();
-                Hotel selectedHotel = hotelMap.get(selectedHotelName);
-                String valueHotelID = String.valueOf(selectedHotel.getHotelID());
-                String valueYear = String.valueOf(customTable.getSelectedRow() + 2014);
-
-                boolean lineUpdated = false;
-                String newLine = line;
-
-                for (String[] row : data) {
-                    for (int i = 1; i < row.length; i++) {
-                        if (row[i] != null) {
-
-                            String valueMonth = String.valueOf(i);
-
-                            if (lineHotelID.equals(valueHotelID)) {
-
-                                if (lineYear.equals(valueYear)){
-
-                                    if (lineMonth.equals(valueMonth)){
-                                        System.out.println("ID AND YEAR AND MONTH FOUND");
-                                        System.out.println(lineHotelID + " " + lineYear + " " + lineMonth);
-
-                                        if (partpos == 2) {
-                                            System.out.println("PARTPOS 2");
-                                            newLine = parts[0] + "," + parts[1] + "," + row[i] + "," + parts[3] + "," + parts[4] + "," + parts[5] + "," + parts[6];
-                                            lineUpdated = true;
-                                            break;
-                                        } else if (partpos == 4) {
-                                            System.out.println("PARTPOS 4");
-                                            newLine = parts[0] + "," + parts[1] + "," + parts[2] + "," + parts[3] + "," + row[i] + "," + parts[5] + "," + parts[6];
-                                            lineUpdated = true;
-                                            break;
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-                        }
-                    }
-                    if (lineUpdated) {
-                        break;
-                    }
-                }
-
-                bufferedWriter.write(newLine);
-                bufferedWriter.newLine();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Replace the original file with the temporary file
-        File originalFile = new File("data/occupancies.txt");
-        File tempFile = new File("data/occupancies_temp.txt");
-        try {
-            Files.copy(tempFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Data saved successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to save data.");
-        }
-
-        // Delete the temporary file
-        if (tempFile.exists()) {
-            if (tempFile.delete()) {
-                System.out.println("Temporary file deleted.");
-            } else {
-                System.out.println("Failed to delete temporary file.");
-            }
-        }
-    }
 
 }
 

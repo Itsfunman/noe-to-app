@@ -100,7 +100,7 @@ public class CustomTableModel extends AbstractTableModel {
      *
      * @param newData The new data for the table.
      */
-    public void setData(String[][] newData) {
+    public void setData(Object[][] newData) {
         this.data = newData;
         fireTableDataChanged();
     }

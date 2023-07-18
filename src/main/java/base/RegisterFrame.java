@@ -2,7 +2,7 @@ package base;
 
 
 
-import utilityClasses.User;
+import objectClasses.User;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

@@ -16,7 +16,6 @@
             <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
         </properties>
 
-        <class>utilityClasses.Hotel</class>
 
     </persistence-unit>
 

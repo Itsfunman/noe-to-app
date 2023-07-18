@@ -2,11 +2,9 @@ package tableClasses;
 
 
 import sqlStuff.HotelDAO;
-import utilityClasses.Hotel;
+import objectClasses.Hotel;
 
 import javax.swing.*;
-import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
