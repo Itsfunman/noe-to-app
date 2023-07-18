@@ -46,4 +46,27 @@ public class Occupancy {
         dataArray[3] = usedBeds;
         return dataArray;
     }
+
+    public Object[] toSingleObjectOverviewArray() {
+        Object[] dataArray = new Object[6];
+        dataArray[0] = year;
+        dataArray[1] = month;
+        dataArray[2] = roomNumber;
+        dataArray[3] = usedRooms;
+        dataArray[4] = bedNumber;
+        dataArray[5] = usedBeds;
+        return dataArray;
+    }
+
+    public Object[] toMultiObjectOverviewArray(int hotelCount) {
+        Object[] dataArray = new Object[7];
+        dataArray[0] = year;
+        dataArray[1] = month;
+        dataArray[2] = hotelCount;
+        dataArray[3] = roomNumber;
+        dataArray[4] = usedRooms;
+        dataArray[5] = bedNumber;
+        dataArray[6] = usedBeds;
+        return dataArray;
+    }
 }

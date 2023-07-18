@@ -35,7 +35,7 @@ public class PDFGenerator {
      * @param capacity
      * @param occupancy
      */
-    public PDFGenerator(String [][] capacity, String [][] occupancy){
+    public PDFGenerator(String [][] capacity, Object [][] occupancy){
 
         try {
 
@@ -85,7 +85,7 @@ public class PDFGenerator {
      * @param occupancy
      * @throws IOException
      */
-    private void InitPages(PDDocument document, String[][] capacity, String[][] occupancy) throws IOException {
+    private void InitPages(PDDocument document, String[][] capacity, Object[][] occupancy) throws IOException {
         // Add page
 
         int totalPagesNeeded;
@@ -124,7 +124,7 @@ public class PDFGenerator {
                 } else if (pages == totalPagesNeeded && totalPagesNeeded != 3){
                     partData = lastPage(occupancy, pages, totalPagesNeeded);
                 } else {
-                    partData = occupancy;
+                    partData = (String[][]) occupancy;
                 }
 
                 InitTable(document, page, partData, occupancyNames, "OCCUPANCY");
@@ -145,7 +145,7 @@ public class PDFGenerator {
      * @param totalPagesNeeded
      * @return
      */
-    private String [][] lastPage(String [][] occupancy, int currentPage, int totalPagesNeeded){
+    private String [][] lastPage(Object [][] occupancy, int currentPage, int totalPagesNeeded){
 
         int startIndex = (currentPage * 30) - (3*30);
         int endIndex = occupancy.length;
@@ -155,7 +155,7 @@ public class PDFGenerator {
         for (int i = 0; i < endIndex - startIndex; i++){
             for (int j = 0; j < 6; j++){
 
-                partData[i][j] = occupancy[startIndex + i][j];
+                partData[i][j] = (String) occupancy[startIndex + i][j];
             }
         }
 
@@ -171,7 +171,7 @@ public class PDFGenerator {
      * @param totalPagesNeeded
      * @return
      */
-    private String [][] getPartData(String [][] occupancy, int currentPage, int totalPagesNeeded){
+    private String [][] getPartData(Object [][] occupancy, int currentPage, int totalPagesNeeded){
 
         int startIndex = (currentPage * 30) - (3*30);
 
@@ -179,7 +179,7 @@ public class PDFGenerator {
 
         for (int i = 0; i < partData.length; i++){
             for (int j = 0; j < 6; j++){
-                partData[i][j] = occupancy[startIndex + i][j];
+                partData[i][j] = (String) occupancy[startIndex + i][j];
             }
         }
 

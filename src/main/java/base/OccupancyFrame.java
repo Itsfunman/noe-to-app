@@ -2,9 +2,12 @@ package base;
 
 
 
+import objectClasses.Occupancy;
 import sqlStuff.HotelDAO;
+import sqlStuff.OccupancyDAO;
 import tableClasses.CustomTable;
 import objectClasses.Hotel;
+import tableClasses.CustomTableModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -33,13 +36,13 @@ Selection shall be possible for one hotel and/or year and/or category (all hotel
  */
 public class OccupancyFrame extends JFrame {
 
-    String [] columnNames = {"YEAR/MONTH", "AMOUNT", "ROOMS", "USED", "BEDS", "USED"};
-
+    String [] columnNamesMulti = {"YEAR", "MONTH", "AMOUNT", "ROOMS", "USED", "BEDS", "USED"};
+    String [] columnNamesSingle = {"YEAR", "MONTH", "ROOMS", "USED", "BEDS", "USED"};
     private Toolbar toolbar;
 
 
     private CustomTable occupancyTable;
-    public static String[][] selectedOccupancyData;
+    public static Object [][] selectedOccupancyData;
 
     private int startYear;
     private int endYear;
@@ -79,6 +82,9 @@ public class OccupancyFrame extends JFrame {
     private Integer [] months = new Integer[12];
 
     private String [] categories = new String[5];
+
+    private CustomTable customTable;
+    private CustomTableModel customTableModel;
 
     /**
      * Initializes the OccupancyFrame
@@ -378,24 +384,35 @@ public class OccupancyFrame extends JFrame {
      */
     private void InitSingleOccupancyTable(int startYear, int endYear, int startMonth, int endMonth, int hotelID){
 
-        if (occupancyTable != null){
-            remove(occupancyTable);
+        // Remove the previous table, if it exists
+        if (customTable != null) {
+            remove(customTable);
         }
 
-        selectedOccupancyData = fetchSingleHotelData(startYear, endYear, startMonth, endMonth, hotelID);
+        List <Occupancy> dataList = OccupancyDAO.fetchSingleOccupancyOverview(startYear, endYear, startMonth, endMonth, hotelID);
+        int rowCount = dataList.size();
+        int columnCount = columnNamesSingle.length;
 
-        occupancyTable = new CustomTable(selectedOccupancyData, columnNames);
-        occupancyTable.setLocation(100, 60);
-        occupancyTable.setVisible(true);
-        add(occupancyTable);
+        Object[][] data = new Object[rowCount][columnCount];
+        for (int i = 0; i < rowCount; i++) {
+            Occupancy occupancy = dataList.get(i); // Use dataList instead of hotels
+            data[i] = occupancy.toSingleObjectOverviewArray();
+        }
+
+        customTableModel = new CustomTableModel(data, columnNamesSingle);
+        customTable = new CustomTable(customTableModel);
+        customTable.setLocation(100, 60);
+
+        add(customTable);
 
         // Set the width of the JScrollPane to 3/4 of the window width and the height to equal the combined height of
         //the rows times 1.5 (don´t ask why, I don´t know)
         double tableWidth = getWidth() * 0.75;
-        double tableHeight = occupancyTable.getTable().getRowHeight() * (11.5);
-        occupancyTable.setSize((int) tableWidth, (int) tableHeight);
+        double tableHeight = customTable.getTable().getRowHeight() * (11.5);
+        customTable.setSize((int) tableWidth, (int) tableHeight);
 
     }
+
 
     /**
      * Fetches the data for single hotel choice
@@ -406,6 +423,7 @@ public class OccupancyFrame extends JFrame {
      * @param hotelID
      * @return
      */
+    /*
     private String [][] fetchSingleHotelData(int startYear, int endYear, int startMonth, int endMonth, int hotelID){
 
         int rowNumber = getRowCount(startYear, endYear, startMonth, endMonth);
@@ -536,6 +554,7 @@ public class OccupancyFrame extends JFrame {
 
         return workData;
     }
+    */
 
     /**
      * Initializes the mult hotel table
@@ -548,24 +567,36 @@ public class OccupancyFrame extends JFrame {
      */
     private void InitMultiOccupancyTable(int startYear, int endYear, int startMonth, int endMonth, String minCategory, String maxCategory){
 
-        if (occupancyTable != null){
-            remove(occupancyTable);
+        // Remove the previous table, if it exists
+        if (customTable != null) {
+            remove(customTable);
         }
 
-        selectedOccupancyData = fetchMultiHotelData(startYear, endYear, startMonth, endMonth, minCategory, maxCategory);
+        List <Occupancy> dataList = OccupancyDAO.fetchMultiOccupancyOverview(minCategory.length(), maxCategory.length(), startYear, endYear, startMonth, endMonth);
+        int hotelCount = HotelDAO.getHotelIDs(minCategory, maxCategory).size();
+        int rowCount = dataList.size();
+        int columnCount = columnNamesMulti.length;
 
-        occupancyTable = new CustomTable(selectedOccupancyData, columnNames);
-        occupancyTable.setLocation(100, 60);
-        occupancyTable.setVisible(true);
-        add(occupancyTable);
+        Object[][] data = new Object[rowCount][columnCount];
+        for (int i = 0; i < rowCount; i++) {
+            Occupancy occupancy = dataList.get(i); // Use dataList instead of hotels
+            data[i] = occupancy.toMultiObjectOverviewArray(hotelCount);
+        }
+
+        customTableModel = new CustomTableModel(data, columnNamesMulti);
+        customTable = new CustomTable(customTableModel);
+        customTable.setLocation(100, 60);
+
+        add(customTable);
 
         // Set the width of the JScrollPane to 3/4 of the window width and the height to equal the combined height of
         //the rows times 1.5 (don´t ask why, I don´t know)
         double tableWidth = getWidth() * 0.75;
-        double tableHeight = occupancyTable.getTable().getRowHeight() * (11.5);
-        occupancyTable.setSize((int) tableWidth, (int) tableHeight);
+        double tableHeight = customTable.getTable().getRowHeight() * (11.5);
+        customTable.setSize((int) tableWidth, (int) tableHeight);
 
     }
+
 
     /**
      * Fetches the data for multi hotel
@@ -577,10 +608,11 @@ public class OccupancyFrame extends JFrame {
      * @param maxCategory
      * @return
      */
+    /*
     private String [][] fetchMultiHotelData(int startYear, int endYear, int startMonth, int endMonth, String minCategory, String maxCategory){
 
         int rowNumber = getRowCount(startYear, endYear, startMonth, endMonth);
-        String [][] workData = new String[rowNumber][columnNames.length];
+        String [][] workData = new String[rowNumber][columnNamesMulti.length];
 
         //FORMAT:
         //"YEAR/MONTH", "AMOUNT SELECTED", "ROOMS", "USEDROOMS", "BEDS", "USEDBEDS"
@@ -704,6 +736,7 @@ public class OccupancyFrame extends JFrame {
         return workData;
 
     }
+     */
 
     /**
      * returns the number of rows needed
@@ -713,6 +746,7 @@ public class OccupancyFrame extends JFrame {
      * @param endMonth
      * @return
      */
+    /*
     private int getRowCount(int startYear, int endYear, int startMonth, int endMonth){
 
         int rowCount = 0;
@@ -744,13 +778,15 @@ public class OccupancyFrame extends JFrame {
 
     }
 
+     */
 
 
     /**
      * returns the last selected occupancy data for export
      * @return
      */
-    public static String[][] getSelectedOccupancyData() {
+    public static Object[][] getSelectedOccupancyData() {
         return selectedOccupancyData;
     }
+
 }

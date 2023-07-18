@@ -20,7 +20,7 @@ public class CustomTable extends JScrollPane {
      * @param data        The initial data for the table.
      * @param columnNames The column names for the table.
      */
-    public CustomTable(String[][] data, String[] columnNames) {
+    public CustomTable(Object [][] data, String[] columnNames) {
         this.tableModel = new CustomTableModel(data, columnNames);
         this.table = new JTable(tableModel);
 
