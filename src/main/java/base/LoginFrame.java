@@ -1,6 +1,6 @@
 package base;
 
-import sqlStuff.LoginHandler;
+import sqlStuff.UserDAO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +20,7 @@ public class LoginFrame extends JFrame {
     private JLabel passwordTag = new JLabel("PASSWORD");
     private JPasswordField passwordField = new JPasswordField("Password");
     private JButton registerButton = new JButton("REGISTRATION");
-    private LoginHandler loginHandler = new LoginHandler();
+    private UserDAO loginHandler = new UserDAO();
 
     public static String currentUserName;
 
@@ -43,14 +43,8 @@ public class LoginFrame extends JFrame {
         registerButtonInit();
         addLogo();
 
-        InitLoginHandler();
-
     }
 
-    private void InitLoginHandler(){
-        loginHandler = new LoginHandler();
-
-    }
     /**
      * Adds the logo on the screen
      */
@@ -130,7 +124,7 @@ public class LoginFrame extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                if (loginHandler.checkUserData(nameField.getText(), String.valueOf(passwordField.getPassword()))){
+                if (UserDAO.checkUserData(nameField.getText(), String.valueOf(passwordField.getPassword()))){
 
                     confirmInput();
 
