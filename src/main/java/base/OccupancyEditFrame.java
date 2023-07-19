@@ -122,7 +122,7 @@ public class OccupancyEditFrame extends JFrame {
                 int row = e.getFirstRow();
                 int column = e.getColumn();
                 //Checks whether selection is valid
-                if (row >= 0 && column >= 0) {
+                if (row >= 0 && (column == 2 || column == 3)) {
                     //Implements check box
                     JPanel inputPanel = new JPanel();
                     inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));

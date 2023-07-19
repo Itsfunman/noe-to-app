@@ -28,7 +28,7 @@ public class LoginHandler {
      */
     public boolean checkUserData(String name, String password) {
         try (Connection connection = getConnection();
-             PreparedStatement selectStatement = connection.prepareStatement("SELECT password FROM userdata WHERE name = ?")) {
+             PreparedStatement selectStatement = connection.prepareStatement("SELECT password FROM userdata WHERE userName = ?")) {
 
             selectStatement.setString(1, name);
             ResultSet resultSet = selectStatement.executeQuery();

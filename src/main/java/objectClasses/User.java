@@ -19,6 +19,7 @@ public class User {
 
     //Currently, the file only saves name and password, this can be changed by modifying the FileReader and FileWriter
     @Id
+    @Column(name="userName")
     private String name;
     @Id
     private String password;
@@ -50,8 +51,8 @@ public class User {
      */
     private void addUserToDB(String name, String password) {
         try (Connection connection = getConnection();
-             PreparedStatement selectStatement = connection.prepareStatement("SELECT COUNT(*) FROM userdata WHERE name = ?");
-             PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO userdata (name, password) VALUES (?, ?)")) {
+             PreparedStatement selectStatement = connection.prepareStatement("SELECT COUNT(*) FROM userdata WHERE userName = ?");
+             PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO userdata (userName, password) VALUES (?, ?)")) {
 
             // Check if the username already exists
             selectStatement.setString(1, name);
