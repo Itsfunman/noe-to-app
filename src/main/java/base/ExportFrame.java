@@ -1,7 +1,7 @@
 package base;
 
 
-import tableClasses.CapacityTable;
+import sqlStuff.CapacityDAO;
 import utilityClasses.PDFGenerator;
 
 import javax.swing.*;
@@ -87,8 +87,10 @@ public class ExportFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                    if (CapacityTable.getData() != null && OccupancyFrame.getSelectedOccupancyData() != null){
-                        pdfGenerator = new PDFGenerator(CapacityTable.getData(), OccupancyFrame.getSelectedOccupancyData());
+                    CapacityDAO.getCapacityViewFromDB();
+                    if (OccupancyFrame.getSelectedOccupancyData() != null){
+                        String [][] occupancyData = occupancyDataToString();
+                        pdfGenerator = new PDFGenerator(occupancyData, OccupancyFrame.getSelectedOccupancyData());
                     } else {
                         throw new IllegalArgumentException("BITTE WÄHLE ERST WERTE");
                     }
@@ -218,6 +220,20 @@ public class ExportFrame extends JFrame {
         exportLabel.setBounds(getWidth()/2 - 180,300,360,20);
         add(exportLabel);
 
+    }
+
+    private String [][] occupancyDataToString(){
+        Object[][] occupancyData = CapacityDAO.getCapacityViewFromDB();
+        String[][] occcupancyDataAsString = new String[occupancyData.length][];
+        for (int i = 0; i < occupancyData.length; i++) {
+            Object[] row = occupancyData[i];
+            occcupancyDataAsString[i] = new String[row.length];
+            for (int j = 0; j < row.length; j++) {
+                occcupancyDataAsString[i][j] = String.valueOf(row[j]);
+            }
+        }
+
+        return occcupancyDataAsString;
     }
 
 }

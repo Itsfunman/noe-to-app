@@ -124,7 +124,15 @@ public class PDFGenerator {
                 } else if (pages == totalPagesNeeded && totalPagesNeeded != 3){
                     partData = lastPage(occupancy, pages, totalPagesNeeded);
                 } else {
-                    partData = (String[][]) occupancy;
+                    // Convert Object[][] to String[][]
+                    partData = new String[occupancy.length][];
+                    for (int i = 0; i < occupancy.length; i++) {
+                        Object[] row = occupancy[i];
+                        partData[i] = new String[row.length];
+                        for (int j = 0; j < row.length; j++) {
+                            partData[i][j] = String.valueOf(row[j]);
+                        }
+                    }
                 }
 
                 InitTable(document, page, partData, occupancyNames, "OCCUPANCY");
@@ -155,7 +163,8 @@ public class PDFGenerator {
         for (int i = 0; i < endIndex - startIndex; i++){
             for (int j = 0; j < 6; j++){
 
-                partData[i][j] = (String) occupancy[startIndex + i][j];
+                partData[i][j] = String.valueOf(occupancy[startIndex + i][j]);
+                System.out.println("Called");
             }
         }
 
@@ -179,7 +188,7 @@ public class PDFGenerator {
 
         for (int i = 0; i < partData.length; i++){
             for (int j = 0; j < 6; j++){
-                partData[i][j] = (String) occupancy[startIndex + i][j];
+                partData[i][j] = String.valueOf(occupancy[startIndex + i][j]);
             }
         }
 

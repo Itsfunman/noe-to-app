@@ -1,20 +1,20 @@
 package base;
 
-
-
-import tableClasses.CapacityTable;
+import sqlStuff.CapacityDAO;
+import tableClasses.CustomTable;
+import tableClasses.CustomTableModel;
 
 import javax.swing.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-/**
- * Represents a frame for displaying capacity information.
- * This frame contains a toolbar and a capacity table.
- */
 public class CapacityFrame extends JFrame {
 
-    private CapacityTable capacityTable;
+    private CustomTable customTable;
+    private CustomTableModel customTableModel;
+
+    private String[] columnNames = new String[]{"CATEGORY", "BEDS", "ROOMS", "BEDS", "Ø ROOMS", "Ø BEDS"};
+
     private Toolbar toolbar;
 
     /**
@@ -55,17 +55,22 @@ public class CapacityFrame extends JFrame {
         });
     }
 
-    private void initCapacityTable() {
-        capacityTable = new CapacityTable();
-        capacityTable.setLocation(100, 60);
-        capacityTable.setVisible(true);
-        add(capacityTable);
+    private void initCapacityTable(){
 
-        // Set the width of the JScrollPane to 3/4 of the window width and the height to equal the combined height of
-        // the rows times 1.5 (don't ask why, I don't know)
-        double tableWidth = getWidth() * 0.75;
-        double tableHeight = capacityTable.getTable().getRowHeight() * (capacityTable.getTable().getRowCount() + 1.5);
-        capacityTable.setSize((int) tableWidth, (int) tableHeight);
+        // Remove the previous table, if it exists
+        if (customTable != null) {
+            remove(customTable);
+        }
+
+        Object [][] dataList = CapacityDAO.getCapacityViewFromDB();
+
+
+        customTableModel = new CustomTableModel(dataList, columnNames);
+        customTable = new CustomTable(customTableModel);
+        customTable.setBounds(10, 50, 770, 350);
+
+        add(customTable);
+
     }
-}
 
+}

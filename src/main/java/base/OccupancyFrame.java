@@ -37,7 +37,7 @@ public class OccupancyFrame extends JFrame {
     String [] columnNamesSingle = {"YEAR", "MONTH", "ROOMS", "USED", "BEDS", "USED"};
     private Toolbar toolbar;
 
-    public static Object [][] selectedOccupancyData;
+    private static Object [][] selectedOccupancyData;
 
     private int startYear;
     private int endYear;
@@ -206,7 +206,9 @@ public class OccupancyFrame extends JFrame {
 
         hotelComboBox = new JComboBox<>();
 
-        for (Hotel hotel : Hotel.hotels){
+        List <Hotel> hotels = HotelDAO.fetchDataFromDB();
+
+        for (Hotel hotel : hotels){
             hotelComboBox.addItem(hotel.getHotelName());
             hotelMap.put(hotel.getHotelName(), hotel);
         }
@@ -387,13 +389,13 @@ public class OccupancyFrame extends JFrame {
         int rowCount = dataList.size();
         int columnCount = columnNamesSingle.length;
 
-        Object[][] data = new Object[rowCount][columnCount];
+        selectedOccupancyData = new Object[rowCount][columnCount];
         for (int i = 0; i < rowCount; i++) {
             Occupancy occupancy = dataList.get(i); // Use dataList instead of hotels
-            data[i] = occupancy.toSingleObjectOverviewArray();
+            selectedOccupancyData[i] = occupancy.toSingleObjectOverviewArray();
         }
 
-        customTableModel = new CustomTableModel(data, columnNamesSingle);
+        customTableModel = new CustomTableModel(selectedOccupancyData, columnNamesSingle);
         customTable = new CustomTable(customTableModel);
         customTable.setLocation(100, 60);
 
@@ -428,13 +430,13 @@ public class OccupancyFrame extends JFrame {
         int rowCount = dataList.size();
         int columnCount = columnNamesMulti.length;
 
-        Object[][] data = new Object[rowCount][columnCount];
+        selectedOccupancyData = new Object[rowCount][columnCount];
         for (int i = 0; i < rowCount; i++) {
             Occupancy occupancy = dataList.get(i); // Use dataList instead of hotels
-            data[i] = occupancy.toMultiObjectOverviewArray(hotelCount);
+            selectedOccupancyData[i] = occupancy.toMultiObjectOverviewArray(hotelCount);
         }
 
-        customTableModel = new CustomTableModel(data, columnNamesMulti);
+        customTableModel = new CustomTableModel(selectedOccupancyData, columnNamesMulti);
         customTable = new CustomTable(customTableModel);
         customTable.setLocation(100, 60);
 

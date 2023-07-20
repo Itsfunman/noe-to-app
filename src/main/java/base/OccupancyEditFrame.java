@@ -4,6 +4,7 @@ package base;
 
 import objectClasses.Occupancy;
 import sqlStuff.DBConnection;
+import sqlStuff.HotelDAO;
 import sqlStuff.OccupancyDAO;
 import tableClasses.CustomTable;
 import tableClasses.CustomTableModel;
@@ -30,7 +31,9 @@ public class OccupancyEditFrame extends JFrame {
     private JToolBar toolbar;
     private CustomTable customTable;
     private JComboBox hotelChoice;
-    private HashMap<String, Hotel> hotelMap;
+
+    private HashMap<String, Hotel> hotelMap = new HashMap<>();
+
     private CustomTableModel customTableModel;
     //These values are initially set to -1 since no hotelID or partpos can have this value
     private int hotelID = -1;
@@ -63,15 +66,17 @@ public class OccupancyEditFrame extends JFrame {
      * Initializes a dropbox used to select hotels
      */
     private void InitHotelChoice() {
+
         hotelChoice = new JComboBox<>();
-        hotelChoice.setBounds(410, getHeight() - 70, 130, 20);
 
-        hotelMap = new HashMap<>();
+        List <Hotel> hotels = HotelDAO.fetchDataFromDB();
 
-        for (Hotel hotel : Hotel.hotels) {
+        for (Hotel hotel : hotels){
             hotelChoice.addItem(hotel.getHotelName());
             hotelMap.put(hotel.getHotelName(), hotel);
         }
+
+        hotelChoice.setBounds(320, getHeight() - 70, 160, 20);
 
         add(hotelChoice);
 
