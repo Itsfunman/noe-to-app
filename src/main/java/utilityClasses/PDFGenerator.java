@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
+import lombok.*;
+@Getter
+@Setter
 /**
  * Generates a pdf based on capacity and occupancy choice
  */
@@ -353,13 +355,4 @@ public class PDFGenerator {
         String replacement = "_";
         return fileName.replaceAll(invalidCharsRegex, replacement);
     }
-
-    /**
-     * returns the filename
-     * @return
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
 }
