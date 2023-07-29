@@ -3,7 +3,10 @@ package tableClasses;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import lombok.*;
 
+@Getter
+@Setter
 /**
  * A custom table component that extends JScrollPane and encapsulates a JTable.
  * It provides functionality for updating the table data and tracking the selected row.
@@ -76,59 +79,6 @@ public class CustomTable extends JScrollPane {
         tableModel.fireTableDataChanged(); // Notify the table model about the data change
     }
 
-    /**
-     * Returns the custom table model associated with the CustomTable.
-     *
-     * @return The custom table model.
-     */
-    public CustomTableModel getTableModel() {
-        return tableModel;
-    }
-
-    /**
-     * Sets the custom table model for the CustomTable.
-     *
-     * @param tableModel The custom table model to set.
-     */
-    public void setTableModel(CustomTableModel tableModel) {
-        this.tableModel = tableModel;
-    }
-
-    /**
-     * Returns the JTable component contained within the CustomTable.
-     *
-     * @return The JTable component.
-     */
-    public JTable getTable() {
-        return table;
-    }
-
-    /**
-     * Sets the JTable component for the CustomTable.
-     *
-     * @param table The JTable component to set.
-     */
-    public void setTable(JTable table) {
-        this.table = table;
-    }
-
-    /**
-     * Returns the index of the selected row in the table.
-     *
-     * @return The index of the selected row.
-     */
-    public int getSelectedRow() {
-        return selectedRow;
-    }
-
-    /**
-     * Sets the index of the selected row in the table.
-     *
-     * @param selectedRow The index of the selected row to set.
-     */
-    public void setSelectedRow(int selectedRow) {
-        this.selectedRow = selectedRow;
-    }
 
     /**
      * Returns the value at the specified row and column in the table.

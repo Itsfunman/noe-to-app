@@ -4,7 +4,10 @@ import javax.swing.table.AbstractTableModel;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import lombok.*;
 
+@Getter
+@Setter
 /**
  * A custom table model that extends AbstractTableModel and provides functionality for saving data to a file,
  * adding and removing rows, and managing table data and column names.
@@ -39,24 +42,21 @@ public class CustomTableModel extends AbstractTableModel {
         this.columnNames = columnNames;
     }
 
-    @Override
-    public int getRowCount() {
-        return data.length;
-    }
-
-    @Override
-    public int getColumnCount() {
-        return columnNames.length;
-    }
 
     @Override
     public Object getValueAt(int row, int col) {
         return data[row][col];
     }
 
+
     @Override
-    public String getColumnName(int col) {
-        return columnNames[col];
+    public int getRowCount() {
+        return 0;
+    }
+
+    @Override
+    public int getColumnCount() {
+        return 0;
     }
 
     @Override
@@ -80,50 +80,7 @@ public class CustomTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    /**
-     * Returns the current data in the table model.
-     *
-     * @return The current data.
-     */
-    public Object[][] getData() {
-        return this.data;
-    }
 
-    /**
-     * Returns the column names of the table model.
-     *
-     * @return The column names.
-     */
-    public String[] getColumnNames() {
-        return columnNames;
-    }
-
-    /**
-     * Sets the column names of the table model.
-     *
-     * @param columnNames The column names to set.
-     */
-    public void setColumnNames(String[] columnNames) {
-        this.columnNames = columnNames;
-    }
-
-    /**
-     * Returns the file name for saving the table data.
-     *
-     * @return The file name.
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * Sets the file name for saving the table data.
-     *
-     * @param fileName The file name to set.
-     */
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
 
     /**
      * Adds a new row with the provided rowData to the table.
