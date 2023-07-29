@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import sqlStuff.HotelDAO;
 import sqlStuff.OccupancyDAO;
+import javax.swing.*;
 
 /**
  * The Hotel class represents a hotel and provides methods to manage hotel information and occupancy data.
@@ -109,31 +110,115 @@ public class Hotel {
         this.hotelName = this.hotelName.replaceAll("/", "");
 
         try {
-            int categoryInt = Integer.parseInt(category);
-            this.category = createCategory(categoryInt);
-        } catch (Exception e){
+
+            // Validate and set category
+            if (!category.matches("^\\*+$")) {
+                throw new IllegalArgumentException("Ungültige Kategorie! Die Kategorie muss aus einem oder mehreren Sternen (*) bestehen.");
+            }
             this.category = category;
+
+            // Validate and set hotelName
+            if (hotelName.isEmpty()) {
+                throw new IllegalArgumentException("Hotelname darf nicht leer sein.");
+            }
+            this.hotelName = hotelName.replaceAll("^\"|\"$", "");
+            this.hotelName = this.hotelName.replaceAll("/", "");
+
+            // Validate and set hotelOwner
+            if (hotelOwner.isEmpty() || !hotelOwner.matches("^[a-zA-Z ]+$")) {
+                throw new IllegalArgumentException("Ungültiger Hotelbesitzer! Der Hotelbesitzer darf nicht leer sein und darf keine Zahlen oder Sonderzeichen enthalten.");
+            }
+            this.hotelOwner = hotelOwner.replaceAll("\"", "");
+
+            // Validate and set hotelContactInformation
+            if (hotelContactInformation.isEmpty()) {
+                throw new IllegalArgumentException("Kontaktinformationen dürfen nicht leer sein.");
+            }
+            this.hotelContactInformation = hotelContactInformation.replaceAll("\"", "");
+
+            // Validate and set address
+            if (address.isEmpty()) {
+                throw new IllegalArgumentException("Adresse darf nicht leer sein.");
+            }
+            this.address = address.replaceAll("\"", "");
+
+            // Validate and set city
+            if (city.isEmpty() || !city.matches("^[a-zA-Z]+$")) {
+                throw new IllegalArgumentException("Ungültige Stadt! Der Stadname darf nicht leer sein und darf keine Zahlen oder Sonderzeichen enthalten.");
+            }
+            this.city = city.replaceAll("\"", "");
+
+            // Validate and set cityCode
+            if (cityCode.isEmpty() || !cityCode.matches("^[0-9]+$") || cityCode.length() > 5) {
+                throw new IllegalArgumentException("Ungültiger Citycode! Der Citycode darf nicht leer sein, muss aus Zahlen bestehen und darf nicht länger als 5 Zahlen sein.");
+            }
+            this.cityCode = cityCode.replaceAll("\"", "");
+
+            // Validate and set phoneNumber
+            if (phoneNumber.isEmpty() || !phoneNumber.matches("^[0-9]+$")) {
+                throw new IllegalArgumentException("Ungültige Telefonnummer! Die Telefonnummer darf nicht leer sein und darf nur Zahlen enthalten.");
+            }
+            this.phoneNumber = phoneNumber.replaceAll("\"", "");
+
+            // Validate and set roomNumber
+            int roomNumberInt = Integer.parseInt(roomNumber);
+            if (roomNumberInt <= 0) {
+                throw new IllegalArgumentException("Ungültige Anzahl von Zimmern! Die Anzahl der Zimmer muss größer als 0 sein.");
+            }
+            this.roomNumber = roomNumberInt;
+
+            // Validate and set bedNumber
+            int bedNumberInt = Integer.parseInt(bedNumber);
+            if (bedNumberInt <= 0) {
+                throw new IllegalArgumentException("Ungültige Anzahl von Betten! Die Anzahl der Betten muss größer als 0 sein.");
+            }
+            this.bedNumber = bedNumberInt;
+
+            // Validate and set family, dog, spa, fitness
+            if (!family.equals("true") && !family.equals("false")) {
+                throw new IllegalArgumentException("Ungültiger Wert für Family! Der Wert muss entweder \"true\" oder \"false\" sein.");
+            }
+            this.family = Boolean.parseBoolean(family);
+
+            if (!dog.equals("true") && !dog.equals("false")) {
+                throw new IllegalArgumentException("Ungültiger Wert für Dog! Der Wert muss entweder \"true\" oder \"false\" sein.");
+            }
+            this.dog = Boolean.parseBoolean(dog);
+
+            if (!spa.equals("true") && !spa.equals("false")) {
+                throw new IllegalArgumentException("Ungültiger Wert für Spa! Der Wert muss entweder \"true\" oder \"false\" sein.");
+            }
+            this.spa = Boolean.parseBoolean(spa);
+
+            if (!fitness.equals("true") && !fitness.equals("false")) {
+                throw new IllegalArgumentException("Ungültiger Wert für Fitness! Der Wert muss entweder \"true\" oder \"false\" sein.");
+            }
+            this.fitness = Boolean.parseBoolean(fitness);
+
+            this.roomNumber = Integer.parseInt(roomNumber);
+            this.bedNumber = Integer.parseInt(bedNumber);
+            this.hotelOwner = hotelOwner.replaceAll("\"", "");
+            this.hotelContactInformation = hotelContactInformation.replaceAll("\"", "");
+            this.address = address.replaceAll("\"", "");
+            this.city = city.replaceAll("\"", "");
+            this.cityCode = cityCode.replaceAll("\"", "");
+            this.phoneNumber = phoneNumber.replaceAll("\"", "");
+            this.family = Boolean.parseBoolean(family);
+            this.dog = Boolean.parseBoolean(dog);
+            this.spa = Boolean.parseBoolean(spa);
+            this.fitness = Boolean.parseBoolean(fitness);
+
+            // Add hotel to the occupancy table
+            OccupancyDAO.addHotelToOccupancyTable(this);
+        } catch (NumberFormatException e) {
+            showErrorMessage("Ungültige Eingabe! Die Zimmeranzahl und Bettenanzahl müssen ganze Zahlen sein.");
+        } catch (IllegalArgumentException e) {
+            showErrorMessage(e.getMessage());
         }
+    }
 
-
-        this.roomNumber = Integer.parseInt(roomNumber);
-        this.bedNumber = Integer.parseInt(bedNumber);
-        this.hotelOwner = hotelOwner.replaceAll("\"", "");
-        this.hotelContactInformation = hotelContactInformation.replaceAll("\"", "");
-        this.address = address.replaceAll("\"", "");
-        this.city = city.replaceAll("\"", "");
-        this.cityCode = cityCode.replaceAll("\"", "");
-        this.phoneNumber = phoneNumber.replaceAll("\"", "");
-        this.family = Boolean.parseBoolean(family);
-        this.dog = Boolean.parseBoolean(dog);
-        this.spa = Boolean.parseBoolean(spa);
-        this.fitness = Boolean.parseBoolean(fitness);
-
-
-
-        System.out.println("THIS IS CALLED TO ADD");
-        OccupancyDAO.addHotelToOccupancyTable(this);
-
+    private void showErrorMessage(String errorMessage) {
+        JOptionPane.showMessageDialog(null, errorMessage, "Fehlermeldung", JOptionPane.ERROR_MESSAGE);
     }
 
     /**
