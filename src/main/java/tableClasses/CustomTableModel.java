@@ -51,12 +51,12 @@ public class CustomTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return 0;
+        return data.length;
     }
 
     @Override
     public int getColumnCount() {
-        return 0;
+        return columnNames.length;
     }
 
     @Override

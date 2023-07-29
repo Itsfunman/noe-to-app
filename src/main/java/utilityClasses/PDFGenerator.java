@@ -124,7 +124,7 @@ public class PDFGenerator {
                 if (pages < totalPagesNeeded){
                     partData = getPartData(occupancy, pages, totalPagesNeeded);
                 } else if (pages == totalPagesNeeded && totalPagesNeeded != 3){
-                    partData = lastPage(occupancy, pages, totalPagesNeeded);
+                    partData = lastPage(occupancy, pages);
                 } else {
                     // Convert Object[][] to String[][]
                     partData = new String[occupancy.length][];
@@ -152,10 +152,9 @@ public class PDFGenerator {
      * Extra method for last page because it is formatted differently
      * @param occupancy
      * @param currentPage
-     * @param totalPagesNeeded
      * @return
      */
-    private String [][] lastPage(Object [][] occupancy, int currentPage, int totalPagesNeeded){
+    private String [][] lastPage(Object [][] occupancy, int currentPage){
 
         int startIndex = (currentPage * 30) - (3*30);
         int endIndex = occupancy.length;
